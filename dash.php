@@ -9,23 +9,18 @@
 	require "./functions/access.php";
 	require_once "./template/header.php";
 	require "functions/dbfunc.php";
-
   $loc = $_SESSION['loc'];
-
   $new_arrivals = false;
   $quote = false;
   $clock = false;
   $banner = false;
-
   $banner = $_SESSION["banner"];
   $activedash = $_SESSION["activedash"];
-
   if($banner == "true"){
   	$banner = true;
   }elseif($banner == "false"){
   	$banner = false;
   }
-
   if($activedash == 'clock'){
   	$clock = true;
   }elseif($activedash == 'quote'){
@@ -37,7 +32,6 @@
 	  $quote = false;
 	  $clock = false;
   }
-
 	$data = checknews($conn, $loc);
 	if($data){
 		$news = true;
@@ -48,17 +42,15 @@
 	}else{
 		$news = false;
 	}
-
  $img_flag = true;
 	if(!$e_img){
 		$img_flag = false;
 	}
-
 	$jsonfile = file_get_contents("assets/quotes.json");
   $quotes = json_decode($jsonfile, true);
   $onequote = $quotes[rand(0, count($quotes) - 1)];
 ?>
-<body style="background-color: #F1EADE;"> 
+<body style="background-color: #003865;"> 
 <!-- MAIN CONTENT START -->
 <div class="content" style="min-height: calc(100vh - 90px);">
 	<div class="container-fluid">
@@ -140,10 +132,15 @@
 	    </div>
 	    <div class="col-md-6 text-center" style="margin-top: 24px;">
 	    	<div>
-		    	<h2>In Out Management System</h2>
-		    	<h3><?php echo $_SESSION['locname']; ?></h3>
+			<div class="text_titulo1">
+			<h2>Escanea Tu ID Card:</h2>
+			</div>
+			<div class="elementor-divider"> 
+				<span class="elementor-divider-separator"> </span>
+			</div>
+		    	<!-- <h3><?php echo $_SESSION['locname']; ?></h3> -->
 		    	<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="GET">
-		        <input type="text" name="id" id="usn" class="" value="" autofocus="true">
+		        <input type="text" name="id" id="usn" class="form_imput_id_card" value="" autofocus="true">
 					</form>
 		    </div>
 	    	<?php
@@ -164,9 +161,13 @@
 		    <div class="h1 t-shadow">
 					<?php
 						if ($d_status == "OUT") {
-						    echo "<span class='status-inout text-danger animated flash'>OUT</span>";
+						    /* echo "<span class='status-inout text-danger animated flash'>OUT</span>";*/
+							echo "<span class='status-inout text-danger animated flash'>HASTA PRONTO!!!</span>";
+                            echo "<embed src='../inout/assets/sound/Hasta_pronto.mp3' HEIGHT=0 WIDTH=0></embed>";
 						} elseif ($d_status == "IN") {
-						    echo "<span class='status-inout text-success animated flash'>IN</span>";
+						    /*echo "<span class='status-inout text-success animated flash'>IN</span>";*/
+							echo "<span class='status-inout text-success animated flash'>BIENVENID@!!!</span>";
+                            echo "<embed src='../inout/assets/sound/Bienvenido.mp3' HEIGHT=0 WIDTH=0></embed>";
 						}
 					?>
 				</div>
@@ -174,17 +175,22 @@
 					<?php
 						if ($msg == "1") {
 							?> <span class="animated flash"> <?php 
-						    echo "<span class='text-primary'>Your ".$_SESSION['noname']." is: " . $usn . "<br>Entry time is: " . date('g:i A', strtotime($time))."</span>";
+						    /*echo "<span class='text-primary'>Your ".$_SESSION['noname']." is: " . $usn . "<br>Entry time is: " . date('g:i A', strtotime($time))."</span>";*/
+							echo "<span class='text-primary'>Tu usuario de CRAI ".$_SESSION['noname']." es: " . $usn . "<br>Hora de ingreso: " . date('g:i A', strtotime($time))."</span>";
 						    ?> </span> <?php
 						} elseif ($msg == "2") {
 						    # code...
 						    ?> <span class="animated flash"> <?php 
-						    echo "<span class='text-warning'>You just Checked In.<br> Wait for 10 Seconds to Check Out.</span>";
+						    /*echo "<span class='text-warning'>You just Checked In.<br> Wait for 10 Seconds to Check Out.</span>";*/
+							echo "<span class='text-warning'>Acabas de registrar tu entrada.<br> Espera 10 seg. si deseas registrar tu salida.</span>";
+							echo "<embed src='../inout/assets/sound/You_just_Checked_In.mp3' HEIGHT=0 WIDTH=0></embed>";
 						    ?> </span> <?php
 						} elseif ($msg == "3") {
 						    # code...
 						    ?> <span class="animated flash"> <?php 
-						    echo "<span class='text-danger'>Invalid or Expired ".$_SESSION['noname']."<br> Contact Librarian for more details.</span>";
+						    /*echo "<span class='text-danger'>Invalid or Expired ".$_SESSION['noname']."<br> Contact Librarian for more details.</span>";*/
+							echo "<span class='text-danger'>ID CARD Inválido o No registrado para uso del CRAI.<br> Contacta con un bibliotecario para más detalles.</span>";
+							echo "<embed src='../inout/assets/sound/Invalid_or_Expired.mp3' HEIGHT=0 WIDTH=0></embed>";
 						    ?> </span> <?php
 						} elseif ($msg == "4") {
 						    # code...
@@ -194,20 +200,22 @@
 						} elseif ($msg == "5") {
 						    # code...
 						    ?> <span class="animated flash"> <?php 
-						    echo "<span class='text-info'>You just Checked Out.<br> Wait for 10 Seconds to Check In.</span>";
+						    /*echo "<span class='text-info'>You just Checked Out.<br> Wait for 10 Seconds to Check In.</span>";*/
+							echo "<span class='text-info'>Acabas de registrar tu salida.<br> Espera 10 seg. si deseas registrar tu entrada.</span>";
+							echo "<embed src='../inout/assets/sound/You_just_Checked_Out.mp3' HEIGHT=0 WIDTH=0></embed>";
 						    ?> </span> <?php
 						} else { ?> 
 							<div class="idle">
-								<div class="animated pulse infinite"> 
+							<!--	<div class="animated pulse infinite"> 
 							    <span class='text-info'>SCAN YOUR ID CARD</span>
-							  </div>
+							  </div> -->
 							  <div class="row">
 									<div class="col-md-3">
 				            <div class="card card-stats">
 				              <div class="card-header card-header-info card-header-icon">
 				                <div class="card-icon">
 				                </div>
-				                <p class="card-category">Gentlemen</p>
+				                <p class="card-category">Hombres</p>
 				                <h3 class="card-title"><?php echo $male[0]; ?></h3>
 				              </div>
 				              <div class="card-footer">
@@ -222,7 +230,7 @@
 				              <div class="card-header card-header-rose card-header-icon">
 				                <div class="card-icon">
 				                </div>
-				                <p class="card-category">Ladies</p>
+				                <p class="card-category">Mujeres</p>
 				                <h3 class="card-title"><?php echo $female[0]; ?></h3>
 				              </div>
 				              <div class="card-footer">
@@ -237,7 +245,7 @@
 				              <div class="card-header card-header-success card-header-icon">
 				                <div class="card-icon">
 				                </div>
-				                <p class="card-category">Checked In</p>
+				                <p class="card-category">Somos</p>
 				                <h3 class="card-title"><?php echo $tin[0]; ?></h3>
 				              </div>
 				              <div class="card-footer">
@@ -252,7 +260,7 @@
 				              <div class="card-header card-header-warning card-header-icon">
 				                <div class="card-icon">
 				                </div>
-				                <p class="card-category">Day Count</p>
+				                <p class="card-category">Hoy</p>
 				                <h3 class="card-title"><?php echo $visit[0]; ?></h3>
 				              </div>
 				              <div class="card-footer">
@@ -287,4 +295,4 @@
 <!-- MAIN CONTENT ENDS -->
 <?php
 	require_once "./template/footer.php";
-?>	
+?>

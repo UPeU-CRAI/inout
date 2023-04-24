@@ -16,7 +16,7 @@
       <script src="assets/js/custom.js" type="text/javascript" ></script>
     <script src="assets/js/plugins/bootstrap-notify.js"></script>
     <?php
-      date_default_timezone_set("Asia/Kolkata");
+      date_default_timezone_set("America/Lima");
       ?>
   </head>
   <body class="off-canvas-sidebar" cz-shortcut-listen="true">        

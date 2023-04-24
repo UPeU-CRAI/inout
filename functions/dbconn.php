@@ -1,9 +1,9 @@
 <?php
 	$servername = "localhost";
 	$username = "root";
-	$password = "root";
-	$db = "inout";
-	$koha = "koha_library";
+	$password = "7L937l6TWTEJSYt@";
+	$db = "inoutdb";
+	$koha = "koha_bul";
 	$conn = mysqli_connect($servername, $username, $password, $db);
 	if (!$conn) {
 	    die("Connection failed: " . mysqli_connect_error($conn));

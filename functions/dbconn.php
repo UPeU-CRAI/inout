@@ -18,5 +18,5 @@
 		return mysqli_real_escape_string($conn, $str);
 	}
 	// var_dump(function_exists('mysqli_connect'));
-	date_default_timezone_set("Asia/Kolkata");
+	date_default_timezone_set("America/Lima");
 ?>

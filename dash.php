@@ -143,6 +143,22 @@
 		        <input type="text" name="id" id="usn" class="form_imput_id_card" value="" autofocus="true">
 					</form>
 		    </div>
+
+			<script>
+				document.addEventListener('DOMContentLoaded', function () {
+					var usnInput = document.getElementById('usn');
+
+					// Escucha el clic en cualquier lugar del documento
+					document.addEventListener('click', function (event) {
+						// Verifica si el clic no fue dentro del input
+						if (event.target !== usnInput) {
+							// Enfoca nuevamente el input
+							usnInput.focus();
+						}
+					});
+				});
+			</script>
+
 	    	<?php
 	    		if(isset($d_status)){
 	    	?>
@@ -163,11 +179,11 @@
 						if ($d_status == "OUT") {
 						    /* echo "<span class='status-inout text-danger animated flash'>OUT</span>";*/
 							echo "<span class='status-inout text-danger animated flash'>HASTA PRONTO!!!</span>";
-                            echo "<embed src='../inout/assets/sound/Hasta_pronto.mp3' HEIGHT=0 WIDTH=0></embed>";
+                            echo "<embed src='./assets/sound/Hasta_pronto.mp3' HEIGHT=0 WIDTH=0></embed>";
 						} elseif ($d_status == "IN") {
 						    /*echo "<span class='status-inout text-success animated flash'>IN</span>";*/
 							echo "<span class='status-inout text-success animated flash'>BIENVENID@!!!</span>";
-                            echo "<embed src='../inout/assets/sound/Bienvenido.mp3' HEIGHT=0 WIDTH=0></embed>";
+                            echo "<embed src='./assets/sound/Bienvenido.mp3' HEIGHT=0 WIDTH=0></embed>";
 						}
 					?>
 				</div>
@@ -183,14 +199,14 @@
 						    ?> <span class="animated flash"> <?php 
 						    /*echo "<span class='text-warning'>You just Checked In.<br> Wait for 10 Seconds to Check Out.</span>";*/
 							echo "<span class='text-warning'>Acabas de registrar tu entrada.<br> Espera 10 seg. si deseas registrar tu salida.</span>";
-							echo "<embed src='../inout/assets/sound/You_just_Checked_In.mp3' HEIGHT=0 WIDTH=0></embed>";
+							echo "<embed src='./assets/sound/You_just_Checked_In.mp3' HEIGHT=0 WIDTH=0></embed>";
 						    ?> </span> <?php
 						} elseif ($msg == "3") {
 						    # code...
 						    ?> <span class="animated flash"> <?php 
 						    /*echo "<span class='text-danger'>Invalid or Expired ".$_SESSION['noname']."<br> Contact Librarian for more details.</span>";*/
 							echo "<span class='text-danger'>ID CARD Inválido o No registrado para uso del CRAI.<br> Contacta con un bibliotecario para más detalles.</span>";
-							echo "<embed src='../inout/assets/sound/Invalid_or_Expired.mp3' HEIGHT=0 WIDTH=0></embed>";
+							echo "<embed src='./assets/sound/Invalid_or_Expired.mp3' HEIGHT=0 WIDTH=0></embed>";
 						    ?> </span> <?php
 						} elseif ($msg == "4") {
 						    # code...
@@ -202,7 +218,7 @@
 						    ?> <span class="animated flash"> <?php 
 						    /*echo "<span class='text-info'>You just Checked Out.<br> Wait for 10 Seconds to Check In.</span>";*/
 							echo "<span class='text-info'>Acabas de registrar tu salida.<br> Espera 10 seg. si deseas registrar tu entrada.</span>";
-							echo "<embed src='../inout/assets/sound/You_just_Checked_Out.mp3' HEIGHT=0 WIDTH=0></embed>";
+							echo "<embed src='./assets/sound/You_just_Checked_Out.mp3' HEIGHT=0 WIDTH=0></embed>";
 						    ?> </span> <?php
 						} else { ?> 
 							<div class="idle">
@@ -284,7 +300,7 @@
 <script type="text/javascript">
 	$('span').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
 	  	setTimeout(function(){
-			window.location.replace("/inout/dash.php");
+			window.location.replace("./dash.php");
 		}, 5200);
 	});
 	document.getElementById("usn").focus();
@@ -292,6 +308,7 @@
 		// window.location.replace("/inout/dash.php");
 	}, 9800);
 </script>
+
 <!-- MAIN CONTENT ENDS -->
 <?php
 	require_once "./template/footer.php";

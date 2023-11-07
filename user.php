@@ -230,7 +230,7 @@ include './functions/dbfunc.php';
 					$(".inout").empty().append("___");
 				}, 5200);
 				setTimeout(function(){
-					window.location.replace("/inout/user.php");
+					window.location.replace("./user.php");
 				}, 5700);
 			});
 		</script>

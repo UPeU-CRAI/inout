@@ -5,13 +5,16 @@ class GreetingGenerator {
     private $userRole;
     private $currentTime;
     private $eventType;
+    private $birthDate; // Nueva propiedad
     private $greetingText;
 
-    public function __construct($userName, $userRole, $currentTime, $eventType) {
-        $this->userName = $userName;
-        $this->userRole = $userRole;
-        $this->currentTime = $currentTime;
-        $this->eventType = $eventType;
+    // Constructor actualizado
+    public function __construct($userData) {
+        $this->userName = isset($userData['name']) ? $userData['name'] : 'Usuario Desconocido';
+        $this->userRole = isset($userData['role']) ? $userData['role'] : 'Usuario';
+        $this->currentTime = isset($userData['currentTime']) ? $userData['currentTime'] : date('H:i');
+        $this->eventType = isset($userData['eventType']) ? $userData['eventType'] : 'entry';
+        $this->birthDate = isset($userData['birthDate']) ? $userData['birthDate'] : null; // Almacenar fecha de nacimiento
     }
 
     private function generate() {
@@ -28,7 +31,7 @@ class GreetingGenerator {
 
         $actionGreeting = ($this->eventType === 'entry') ? "Bienvenido" : "Hasta pronto";
 
-        // Capitalize the first letter of the role
+        // Capitalizar el rol como antes
         $capitalizedRole = ucfirst(strtolower($this->userRole));
 
         $this->greetingText = sprintf(
@@ -38,11 +41,23 @@ class GreetingGenerator {
             $this->userName,
             $actionGreeting
         );
+
+        // Lógica de cumpleaños
+        if ($this->birthDate) {
+            $currentDate = date('m-d');
+            // Extraer mes y día de la fecha de nacimiento. Asegurarse que no sea null.
+            $birthDateMonthDay = date('m-d', strtotime($this->birthDate));
+
+            if ($currentDate === $birthDateMonthDay) {
+                $this->greetingText .= " ¡Feliz cumpleaños!";
+            }
+        }
     }
 
     public function getGreetingText() {
-        $this->generate();
+        $this->generate(); // Asegura que el saludo (y el de cumpleaños) se genere
         return $this->greetingText;
     }
 }
+
 ?>

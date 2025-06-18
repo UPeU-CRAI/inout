@@ -9,6 +9,7 @@
 	require "./functions/access.php";
 	require_once "./template/header.php";
 	require "functions/dbfunc.php";
+	require_once 'functions/GreetingGenerator.php';
   $loc = $_SESSION['loc'];
   $new_arrivals = false;
   $quote = false;
@@ -176,16 +177,52 @@
 				?>
 		    <div class="h1 t-shadow">
 					<?php
-						if ($d_status == "OUT") {
-						    /* echo "<span class='status-inout text-danger animated flash'>OUT</span>";*/
-							echo "<span class='status-inout text-danger animated flash'>HASTA PRONTO!!!</span>";
-                            echo "<embed src='./assets/sound/Hasta_pronto.mp3' HEIGHT=0 WIDTH=0></embed>";
-						} elseif ($d_status == "IN") {
-						    /*echo "<span class='status-inout text-success animated flash'>IN</span>";*/
-							echo "<span class='status-inout text-success animated flash'>BIENVENID@!!!</span>";
-                            echo "<embed src='./assets/sound/Bienvenido.mp3' HEIGHT=0 WIDTH=0></embed>";
-						}
-					?>
+            $greetingTextForTTS = "";
+
+            if(isset($d_status)){ // This condition already exists
+                if ($d_status == "IN" || $d_status == "OUT") {
+                    // require_once 'functions/GreetingGenerator.php'; // Moved to top
+                    // Determine userRole. Check $e_role (likely from DB) or $_SESSION, then default.
+                    $userRole = 'usuario'; // Default role
+                    if (isset($e_role) && !empty($e_role)) {
+                        $userRole = $e_role;
+                    } elseif (isset($_SESSION['user_role']) && !empty($_SESSION['user_role'])) {
+                        $userRole = $_SESSION['user_role'];
+                    }
+
+                    $currentTime = date('H:i');
+                    $eventType = ($d_status == "IN") ? 'entry' : 'exit';
+                    $userNameForGreeting = isset($e_name) ? $e_name : 'Usuario';
+
+                    $greeter = new GreetingGenerator($userNameForGreeting, $userRole, $currentTime, $eventType);
+                    $saludoPersonalizado = $greeter->getGreetingText();
+                    $greetingTextForTTS = $saludoPersonalizado;
+
+                    echo "<span class='status-inout " . ($d_status == "IN" ? "text-success" : "text-danger") . " animated flash'>" . htmlspecialchars($saludoPersonalizado) . "</span>";
+                }
+            }
+
+            /*
+            if ($d_status == "OUT") {
+                echo "<span class='status-inout text-danger animated flash'>HASTA PRONTO!!!</span>";
+                echo "<embed src='./assets/sound/Hasta_pronto.mp3' HEIGHT=0 WIDTH=0></embed>";
+            } elseif ($d_status == "IN") {
+                echo "<span class='status-inout text-success animated flash'>BIENVENID@!!!</span>";
+                echo "<embed src='./assets/sound/Bienvenido.mp3' HEIGHT=0 WIDTH=0></embed>";
+            }
+            */
+        ?>
+        <?php if (!empty($greetingTextForTTS)): ?>
+        <script>
+          var textoParaVoz = "<?php echo addslashes($greetingTextForTTS); ?>";
+          // Ensure play_tts.php exists and is correctly configured
+          var audio = new Audio('play_tts.php?text=' + encodeURIComponent(textoParaVoz));
+          audio.play().catch(function(error) {
+            console.error("Error playing TTS audio:", error);
+            // Fallback or error handling if needed
+          });
+        </script>
+        <?php endif; ?>
 				</div>
 				<div class="h2 t-shadow">
 					<?php

@@ -181,20 +181,16 @@
 
             if(isset($d_status)){ // This condition already exists
                 if ($d_status == "IN" || $d_status == "OUT") {
-                    // require_once 'functions/GreetingGenerator.php'; // Moved to top
-                    // Determine userRole. Check $e_role (likely from DB) or $_SESSION, then default.
-                    $userRole = 'usuario'; // Default role
-                    if (isset($e_role) && !empty($e_role)) {
-                        $userRole = $e_role;
-                    } elseif (isset($_SESSION['user_role']) && !empty($_SESSION['user_role'])) {
-                        $userRole = $_SESSION['user_role'];
-                    }
+                    // Prepare $userData for GreetingGenerator
+                    $userData = [
+                        'name' => isset($e_name_full) ? $e_name_full : (isset($e_name) ? $e_name : 'Usuario Desconocido'),
+                        'role' => isset($e_category_desc) ? $e_category_desc : 'Usuario',
+                        'birthDate' => isset($e_birth_date) ? $e_birth_date : null,
+                        'currentTime' => date('H:i'),
+                        'eventType' => ($d_status == "IN") ? 'entry' : 'exit'
+                    ];
 
-                    $currentTime = date('H:i');
-                    $eventType = ($d_status == "IN") ? 'entry' : 'exit';
-                    $userNameForGreeting = isset($e_name) ? $e_name : 'Usuario';
-
-                    $greeter = new GreetingGenerator($userNameForGreeting, $userRole, $currentTime, $eventType);
+                    $greeter = new GreetingGenerator($userData); // Pass the array to the constructor
                     $saludoPersonalizado = $greeter->getGreetingText();
                     $greetingTextForTTS = $saludoPersonalizado;
 

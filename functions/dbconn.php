@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../vendor/autoload.php'; // Added for Composer dependencies
+
 // Load database configuration
 // __DIR__ is the directory of the current file (functions/)
 // So __DIR__ . '/../db_config.php' points to db_config.php in the root directory

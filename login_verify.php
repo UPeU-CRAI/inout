@@ -28,7 +28,7 @@
 
 	// Get user data by username first
 	// Using a simplified query; ensure all necessary fields (id, username, pass, pass_hashed, active, role) are selected
-	$sql_get_user = "SELECT id, username, fname, pass, pass_hashed, role, active FROM users WHERE username = ?";
+	$sql_get_user = "SELECT id, username, fname, pass, role, active FROM users WHERE username = ?";	
 	$stmt_get_user = mysqli_prepare($conn, $sql_get_user);
 
 	if (!$stmt_get_user) {

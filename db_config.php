@@ -1,16 +1,15 @@
 <?php
-// db_config.php
 return [
     'database_inout' => [
-        'servername' => '192.168.25.6',
-        'username'   => 'root',
-        'password'   => '123456',
+        'servername' => 'consola-mariadb',
+        'username'   => 'Uinoutl',
+        'password'   => 'DbL1n0u72023#$',
         'db'         => 'inout_bul',
     ],
     'database_koha' => [
-        'servername' => '192.168.25.6',
-        'username'   => 'root',
-        'password'   => '123456',
+        'servername' => 'consola-mariadb',
+        'username'   => 'koha_bul',
+        'password'   => 'rP"K)|k#TjQEHs8w',
         'db'         => 'koha_bul',
     ],
 ];

@@ -1,0 +1,10 @@
+{
+    "require": {
+        "google/cloud-text-to-speech": "^1.0"
+    },
+    "config": {
+        "platform": {
+            "php": "7.4.33"
+        }
+    }
+}

@@ -1,5 +1,11 @@
 # Sistema de Gestión InOut
 
+[![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
+[![PHP Version](https://img.shields.io/badge/PHP-7.x%2B-blue.svg)](https://www.php.net/)
+[![MySQL](https://img.shields.io/badge/Database-MySQL-orange.svg)](https://www.mysql.com/)
+[![Bootstrap](https://img.shields.io/badge/Framework-Bootstrap-purple.svg)](https://getbootstrap.com/)
+[![DataTables](https://img.shields.io/badge/Library-DataTables-red.svg)](https://datatables.net/)
+
 Este proyecto es un sistema de gestión web desarrollado en PHP que facilita el registro y control de entradas y salidas. Está diseñado con una interfaz de usuario moderna y responsiva, utilizando Bootstrap y Material Dashboard, e integra DataTables para una gestión eficiente de la información.
 
 ## ✨ Características Principales

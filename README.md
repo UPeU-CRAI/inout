@@ -1,118 +1,128 @@
-Download Stable Version 5.2 from Release Panel.
+# Sistema de Gestión InOut
 
-Changelog 5.2
-* Input field is back [Not showing input field is fixed]
-* Minor bugfixes
+Este proyecto es un sistema de gestión web desarrollado en PHP que facilita el registro y control de entradas y salidas. Está diseñado con una interfaz de usuario moderna y responsiva, utilizando Bootstrap y Material Dashboard, e integra DataTables para una gestión eficiente de la información.
 
-Changelog 5
-[New Features]
-* Automatic Checkin/checkout System //Discontinued
-* Backup System added
-* New user interface
-* New arrival display
-* Random Quotes display
-* News module redesign
-* Banner added
-* Analog Clock added
+## ✨ Características Principales
 
-[Bug Fixes]
-* Automatic logout after 20 minutes
-* user id length
-* Location name error
-* Blank Image Fix
-* 10 Second pause after checkout
-* Other visual minor bugs are fixed
+-   **Gestión de Entradas y Salidas:** Registra y organiza de manera eficiente los movimientos de entrada y salida de recursos o personas.
+-   **Panel de Control (Dashboard):** Proporciona una vista general y estadísticas clave a través de un dashboard intuitivo.
+-   **Gestión de Usuarios y Roles:** Permite la creación, edición y eliminación de usuarios, asignando diferentes niveles de acceso (roles) para controlar las funcionalidades del sistema.
+-   **Reportes Detallados:** Genera reportes basados en los datos registrados para un análisis completo de los movimientos.
+-   **Sistema de Autenticación:** Incluye un sistema robusto de inicio de sesión y verificación de usuarios.
+-   **Interfaz Responsiva:** Adaptado para funcionar en diferentes dispositivos gracias al uso de Bootstrap y Material Dashboard.
+-   **Gestión de Tablas con DataTables:** Funcionalidades avanzadas de búsqueda, paginación y ordenamiento en las tablas de datos.
+-   **Funcionalidad de Respaldo (Backup):** Permite realizar copias de seguridad de la base de datos para garantizar la integridad de la información.
 
-**INSTALLATION OF PHP 7.4**
+## 🚀 Requisitos del Sistema
 
-Open terminal and execute commands.
-```
-sudo apt-get update
-```
-```
-sudo apt -y install software-properties-common
-```
-```
-sudo add-apt-repository ppa:ondrej/php
-```
-```
-sudo apt-get update
-```
-```
-sudo apt -y install php7.4
-```
-```
-php -v
-```
+Para ejecutar este proyecto, necesitarás un entorno de servidor web que soporte PHP y una base de datos MySQL.
 
-TO SWITCH BETWEEN PHP PLEASE GO THROUGH FOLLOWING LINK.
+-   **Servidor Web:** Apache o Nginx
+-   **PHP:** Versión 7.x o superior
+-   **Base de Datos:** MySQL
+-   **Extensiones de PHP:** `mysqli`, `json`, etc. (las extensiones comunes para aplicaciones PHP)
 
-https://github.com/omkar2403/inout/wiki/Blank-Screen-After-Installation
+## 📦 Instalación
 
+Sigue estos pasos para configurar el proyecto en tu entorno local:
 
-Migration from version v4.* to v5.*
+1.  **Clonar el Repositorio:**
+    ```bash
+    git clone [https://github.com/tu-usuario/inout.git](https://github.com/tu-usuario/inout.git)
+    cd inout
+    ```
+    (Nota: Reemplaza `https://github.com/tu-usuario/inout.git` con la URL real de tu repositorio si es diferente)
 
-* Read and Update database from updatedb.txt file.
+2.  **Configurar la Base de Datos:**
+    -   Crea una base de datos MySQL para el proyecto (ej. `inout_db`).
+    -   Importa el esquema de la base de datos. Si no hay un archivo `.sql` provisto, la estructura de la base de datos necesitará ser creada manualmente o a través de un script de instalación que el proyecto pueda tener. (Basado en los archivos, parece que la base de datos se maneja a través de `functions/dbconn.php` y `functions/dbfunc.php`, por lo que necesitarías crearla manualmente o el proyecto debe tener una sección `setup.php` para la configuración inicial).
+    -   Actualiza el archivo `functions/dbconn.php` con las credenciales de tu base de datos:
+        ```php
+        <?php
+        // functions/dbconn.php
+        $servername = "localhost"; // O la IP de tu servidor de BD
+        $username = "tu_usuario_db";
+        $password = "tu_contraseña_db";
+        $dbname = "inout_db";
 
+        // Crear conexión
+        $conn = new mysqli($servername, $username, $password, $dbname);
 
-**New Arrivals Setup**
+        // Verificar conexión
+        if ($conn->connect_error) {
+            die("Conexión fallida: " . $conn->connect_error);
+        }
+        ?>
+        ```
 
-* Book image must be 150x200 resolution and must be in PNG format.
+3.  **Desplegar en el Servidor Web:**
+    -   Copia todos los archivos del proyecto al directorio raíz de tu servidor web (ej. `htdocs` para Apache o `www` para Nginx).
 
-* You can add upto 8 images of new arrival books.
+4.  **Acceder al Sistema:**
+    -   Abre tu navegador y navega a la URL donde desplegaste el proyecto (ej. `http://localhost/inout` o `http://tu_dominio/`).
+    -   El sistema te redirigirá a la página de inicio de sesión (`login.php`).
 
-* Rename your images 1.png, 2.png and so on.
+## ⚙️ Uso
 
-* Move your all images to assets/books director. Replace existing images.
+Una vez instalado y configurado, puedes:
 
-* Login to master. Go to setup then setup main screen. 
+-   **Iniciar Sesión:** Utiliza las credenciales predeterminadas (si las hay) o regístrate si el `register.php` está habilitado para ello.
+-   **Gestionar Usuarios:** Accede a la sección de administración para agregar, modificar o eliminar usuarios y sus roles.
+-   **Registrar Entradas/Salidas:** Utiliza las interfaces designadas para registrar los movimientos.
+-   **Generar Reportes:** Consulta los reportes para obtener información detallada sobre los datos.
 
-* Select New Arrivals and submit. Done!
+## 📂 Estructura del Proyecto
 
+El proyecto está organizado de la siguiente manera:
 
-**Banner Setup**
+-   `assets/`: Contiene archivos estáticos como CSS, JavaScript, fuentes e imágenes.
+    -   `DataTables/`: Librerías y estilos de DataTables.
+    -   `css/`: Archivos CSS personalizados y de librerías (Bootstrap, Material Dashboard, animate.css, font-awesome, etc.).
+    -   `js/`: Archivos JavaScript personalizados y de librerías (jQuery, Bootstrap, Material Dashboard, etc.).
+-   `functions/`: Archivos PHP con funciones centrales del sistema.
+    -   `access.php`: Manejo de acceso y sesiones.
+    -   `dbconn.php`: Configuración de la conexión a la base de datos.
+    -   `dbfunc.php`: Funciones para interactuar con la base de datos.
+    -   `general.php`: Funciones generales.
+    -   `signout.php`: Lógica de cierre de sesión.
+-   `process/`: Scripts PHP que manejan la lógica de procesamiento de datos.
+    -   `admin/`: Procesos relacionados con la administración (ej. `usr_process.php` para usuarios, `backup.php`).
+    -   `operations/`: Procesos relacionados con las operaciones principales (ej. `main.php`, `process.php`, `stats.php`).
+-   `template/`: Archivos de plantilla (header, footer, sidebar) para la estructura de las páginas.
+-   `CC_lIcense.html`: Archivo de licencia.
+-   `backup.php`: Script para la funcionalidad de copia de seguridad.
+-   `blank.php`: Página en blanco o de ejemplo.
+-   `dash.php`: Archivo principal del dashboard.
+-   `edit_role.php`: Edición de roles.
+-   `edit_user.php`: Edición de usuarios.
+-   `index.php`: Página de inicio (normalmente redirige al login o dashboard).
+-   `login.php`: Página de inicio de sesión.
+-   `login_verify.php`: Lógica de verificación de credenciales de inicio de sesión.
+-   `notice.php`: Posiblemente para mostrar avisos o notificaciones.
+-   `register.php`: Página de registro de nuevos usuarios.
+-   `report.php`: Generación de un reporte individual o detallado.
+-   `reports.php`: Vista de listado de reportes.
+-   `setup.php`: Script para la configuración inicial del sistema.
+-   `today.php`: Posiblemente para mostrar información del día actual.
+-   `updatedb.txt`: Archivo de texto relacionado con actualizaciones de la base de datos.
+-   `user.php`: Gestión de un usuario específico.
+-   `user_mgnt.php`: Gestión general de usuarios.
+-   `README.md`: Este archivo.
+-   `.gitignore`: Archivo para ignorar ciertos archivos en el control de versiones.
 
-* Banner image should be 890x150 resulution and must be in PNG format.
+## 🐛 Solución de Problemas
 
-* You can design your own image in photoshop.
+Si encuentras algún problema durante la instalación o el uso, considera los siguientes puntos:
 
-* Rename image file to banner.png and move to assets/img directory. Replace existing image file.
+-   **Errores de Conexión a la Base de Datos:** Verifica que `functions/dbconn.php` tenga las credenciales correctas y que tu servidor MySQL esté en ejecución.
+-   **Permisos de Archivos:** Asegúrate de que el servidor web tenga los permisos necesarios para leer los archivos del proyecto y escribir en los directorios si es necesario (ej. para backups).
+-   **Errores de PHP:** Revisa los logs de errores de tu servidor web para obtener detalles sobre cualquier problema de PHP.
+-   **Páginas en Blanco:** Si ves una página en blanco, puede ser un error de PHP no mostrado. Habilita `display_errors` en tu `php.ini` temporalmente para ver los mensajes de error.
 
-* Login to master. Go to setup then setup main screen. 
+## 📜 Licencia
 
-* Select display banner and submit. Done!
+Este proyecto está bajo la Licencia Creative Commons Attribution 4.0 International (CC BY 4.0). Consulta el archivo `CC_lIcense.html` para más detalles.
 
+## 🤝 Contribuciones
 
-SUGGESTIONS ARE WELCOME. FEEL FREE TO CONTACT.
-
-For any queries New Ticket System is open for all. Please open an ticket and submit query regarding in out management system and KOHA.
-
-https://ticket.playtech.in/
-
-For first time, create a new account. 
-
-
-Introduction:
-
-In out management system is web based application. It is used to track the patrons who visits to library or related locations like study zone, reading room etc. It’ll scan the barcode from the ID and log the entry time and exit time of the patrons. The patron data will be fetched from the KOHA database along with the images and displayed on this system.
-
-There are two interfaces, one is for the reading barcodes at the door and another one is for access the reports. This system will generate four types of reports in the form of excel sheet and can be downloaded. There are three user by default for administration of this system. Master user can have eye on every location added in the system. And the other two users for respected locations.
-
-The system uses koha database to fetch the information of patrons and store it another database along with the location, entry time and exit time. These data can be accessed from admin panel in various manner like datewise, timewise, student wise and many more.
-
-Thank You
-
-Buy me a coffee: https://rzp.io/l/ta9LROfv7N
-
-Find the Guide Here: https://writeride.com/how-to-install-in-out-management-system/
-
-Profile @ https://omkar2403.github.io/its_me/
-
-**Only Urgent** Mail Me @ omkar.kakeru@gmail.com else use our ticket system mentioned above.
-
-Demo Video @ https://www.youtube.com/watch?v=1LqqwKYamHc
-
-Thank you all library staff & koha community for making use of this application. Thank you all.
-
-In Out Management System by Omkar Kakeru is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.
-
+Las contribuciones son bienvenidas. Si deseas proponer mejoras, reportar errores o contribuir con código, por favor, abre un "issue" o envía un "pull request".

@@ -1,4 +1,6 @@
 <?php
+//define('ENV_FILE', '/u01/vhosts/inout.upeu.edu.pe/httpdocs/koha-inout/fronts/koha-inout-lima/.env');
+//require_once ENV_FILE;
 	include "./process/operations/main.php";
 	include "./process/operations/stats.php";
 	$title = "Gate Register";
@@ -206,7 +208,7 @@
 						    ?> <span class="animated flash"> <?php 
 						    /*echo "<span class='text-danger'>Invalid or Expired ".$_SESSION['noname']."<br> Contact Librarian for more details.</span>";*/
 							echo "<span class='text-danger'>ID CARD Inválido o No registrado para uso del CRAI.<br> Contacta con un bibliotecario para más detalles.</span>";
-							echo "<embed src='./assets/sound/Invalid_or_Expired.mp3' HEIGHT=0 WIDTH=0></embed>";
+							echo "<embed src='./assets/sound/codigo_invalido.mp3' HEIGHT=0 WIDTH=0></embed>";
 						    ?> </span> <?php
 						} elseif ($msg == "4") {
 						    # code...

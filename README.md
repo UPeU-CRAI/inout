@@ -18,7 +18,8 @@ Este proyecto es un sistema de gestión web desarrollado en PHP que facilita el 
 -   **Interfaz Responsiva:** Adaptado para funcionar en diferentes dispositivos gracias al uso de Bootstrap y Material Dashboard.
 -   **Gestión de Tablas con DataTables:** Funcionalidades avanzadas de búsqueda, paginación y ordenamiento en las tablas de datos.
 -   **Funcionalidad de Respaldo (Backup):** Permite realizar copias de seguridad de la base de datos para garantizar la integridad de la información.
--   **PersonalizedGreeting:** Genera un saludo audible personalizado utilizando Google Cloud Text-to-Speech.
+-   **Saludos Personalizados con TTS:** Genera mensajes de bienvenida a partir de los datos del usuario usando Google Cloud Text-to-Speech.
+
 
 ## 🚀 Requisitos del Sistema
 
@@ -49,6 +50,8 @@ Sigue estos pasos para configurar el proyecto en tu entorno local:
         ```bash
         cp .env.example .env
         # Edita el archivo .env con los datos de tu base de datos
+        # y la ruta de tus credenciales de Google Cloud TTS
+        # puedes definir el idioma por defecto con TTS_LANGUAGE_CODE
 ```
 
 3.  **Desplegar en el Servidor Web:**

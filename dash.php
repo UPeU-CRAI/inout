@@ -8,9 +8,10 @@
 	if(!isset($_SESSION['id']) && empty($_SESSION['id'])) {
    header("location:login.php");
 	}
-	require "./functions/access.php";
-	require_once "./template/header.php";
-	require "functions/dbfunc.php";
+        require "./functions/access.php";
+        require_once "./template/header.php";
+        require "functions/dbfunc.php";
+        require_once "functions/personalized_greeting.php";
   $loc = $_SESSION['loc'];
   $new_arrivals = false;
   $quote = false;
@@ -178,15 +179,17 @@
 				?>
 		    <div class="h1 t-shadow">
 					<?php
-						if ($d_status == "OUT") {
-						    /* echo "<span class='status-inout text-danger animated flash'>OUT</span>";*/
-							echo "<span class='status-inout text-danger animated flash'>HASTA PRONTO!!!</span>";
-                            echo "<embed src='./assets/sound/Hasta_pronto.mp3' HEIGHT=0 WIDTH=0></embed>";
-						} elseif ($d_status == "IN") {
-						    /*echo "<span class='status-inout text-success animated flash'>IN</span>";*/
-							echo "<span class='status-inout text-success animated flash'>BIENVENID@!!!</span>";
-                            echo "<embed src='./assets/sound/Bienvenido.mp3' HEIGHT=0 WIDTH=0></embed>";
-						}
+                                                if ($d_status == "OUT") {
+                                                    /* echo "<span class='status-inout text-danger animated flash'>OUT</span>";*/
+                                                        $g = new PersonalizedGreeting("HASTA PRONTO!!!");
+                                                        echo "<span class='status-inout text-danger animated flash'>" . $g->getText() . "</span>";
+                                                        echo $g->getAudioElement();
+                                                } elseif ($d_status == "IN") {
+                                                    /*echo "<span class='status-inout text-success animated flash'>IN</span>";*/
+                                                        $g = new PersonalizedGreeting("BIENVENID@!!!");
+                                                        echo "<span class='status-inout text-success animated flash'>" . $g->getText() . "</span>";
+                                                        echo $g->getAudioElement();
+                                                }
 					?>
 				</div>
 				<div class="h2 t-shadow">
@@ -201,14 +204,16 @@
 						    ?> <span class="animated flash"> <?php 
 						    /*echo "<span class='text-warning'>You just Checked In.<br> Wait for 10 Seconds to Check Out.</span>";*/
 							echo "<span class='text-warning'>Acabas de registrar tu entrada.<br> Espera 10 seg. si deseas registrar tu salida.</span>";
-							echo "<embed src='./assets/sound/You_just_Checked_In.mp3' HEIGHT=0 WIDTH=0></embed>";
+                                                        $g = new PersonalizedGreeting("Acabas de registrar tu entrada. Espera 10 seg. si deseas registrar tu salida.");
+                                                        echo $g->getAudioElement();
 						    ?> </span> <?php
 						} elseif ($msg == "3") {
 						    # code...
 						    ?> <span class="animated flash"> <?php 
 						    /*echo "<span class='text-danger'>Invalid or Expired ".$_SESSION['noname']."<br> Contact Librarian for more details.</span>";*/
 							echo "<span class='text-danger'>ID CARD Inválido o No registrado para uso del CRAI.<br> Contacta con un bibliotecario para más detalles.</span>";
-							echo "<embed src='./assets/sound/codigo_invalido.mp3' HEIGHT=0 WIDTH=0></embed>";
+                                                        $g = new PersonalizedGreeting("ID CARD Inválido o No registrado para uso del CRAI. Contacta con un bibliotecario para más detalles.");
+                                                        echo $g->getAudioElement();
 						    ?> </span> <?php
 						} elseif ($msg == "4") {
 						    # code...
@@ -220,7 +225,8 @@
 						    ?> <span class="animated flash"> <?php 
 						    /*echo "<span class='text-info'>You just Checked Out.<br> Wait for 10 Seconds to Check In.</span>";*/
 							echo "<span class='text-info'>Acabas de registrar tu salida.<br> Espera 10 seg. si deseas registrar tu entrada.</span>";
-							echo "<embed src='./assets/sound/You_just_Checked_Out.mp3' HEIGHT=0 WIDTH=0></embed>";
+                                                        $g = new PersonalizedGreeting("Acabas de registrar tu salida. Espera 10 seg. si deseas registrar tu entrada.");
+                                                        echo $g->getAudioElement();
 						    ?> </span> <?php
 						} else { ?> 
 							<div class="idle">

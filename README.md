@@ -20,6 +20,7 @@ Este proyecto es un sistema de gestión web desarrollado en PHP que facilita el 
 -   **Funcionalidad de Respaldo (Backup):** Permite realizar copias de seguridad de la base de datos para garantizar la integridad de la información.
 -   **Saludos Personalizados con TTS:** Genera mensajes de bienvenida a partir de los datos del usuario usando Google Cloud Text-to-Speech.
 
+
 ## 🚀 Requisitos del Sistema
 
 Para ejecutar este proyecto, necesitarás un entorno de servidor web que soporte PHP y una base de datos MySQL.
@@ -28,6 +29,8 @@ Para ejecutar este proyecto, necesitarás un entorno de servidor web que soporte
 -   **PHP:** Versión 7.x o superior
 -   **Base de Datos:** MySQL
 -   **Extensiones de PHP:** `mysqli`, `json`, etc. (las extensiones comunes para aplicaciones PHP)
+-   **Composer:** Necesario para instalar dependencias PHP adicionales.
+-   **Librería de Google Cloud Text-to-Speech:** Instalable con `composer require google/cloud-text-to-speech`.
 
 ## 📦 Instalación
 
@@ -57,6 +60,10 @@ Sigue estos pasos para configurar el proyecto en tu entorno local:
 4.  **Acceder al Sistema:**
     -   Abre tu navegador y navega a la URL donde desplegaste el proyecto (ej. `http://localhost/inout` o `http://tu_dominio/`).
     -   El sistema te redirigirá a la página de inicio de sesión (`login.php`).
+5.  **Configurar Google Cloud Text-to-Speech:**
+    -   Crea un proyecto en Google Cloud y genera una clave de servicio (archivo JSON).
+    -   Define la ruta del JSON en `GOOGLE_APPLICATION_CREDENTIALS` dentro de tu `.env`.
+    -   Establece `TTS_LANGUAGE` y `TTS_VOICE` con el idioma y voz preferidos.
 
 ## ⚙️ Uso
 

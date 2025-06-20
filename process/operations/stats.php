@@ -1,19 +1,39 @@
 <?php
-  $loc = $_SESSION['loc'];
+  $loc = sanitize($conn, $_SESSION['loc']);
   $date = date('Y-m-d');
-  $query = "SELECT count(sl) FROM `inout` WHERE date='$date' and loc='$loc'";
-  $result = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error($conn));
+
+  $stmt = $conn->prepare('SELECT count(sl) FROM `inout` WHERE date=? and loc=?');
+  $stmt->bind_param('ss', $date, $loc);
+  $stmt->execute();
+  $result = $stmt->get_result();
   $visit = mysqli_fetch_row($result);
-  $query = "SELECT count(sl) FROM `inout` WHERE date='$date' and gender='M' and status='IN' and loc='$loc'";
-  $result = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error($conn));
+  $stmt->close();
+
+  $stmt = $conn->prepare("SELECT count(sl) FROM `inout` WHERE date=? and gender='M' and status='IN' and loc=?");
+  $stmt->bind_param('ss', $date, $loc);
+  $stmt->execute();
+  $result = $stmt->get_result();
   $male = mysqli_fetch_row($result);
-  $query = "SELECT count(sl) FROM `inout` WHERE date='$date' and gender='F' and status='IN' and loc='$loc'";
-  $result = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error($conn));
+  $stmt->close();
+
+  $stmt = $conn->prepare("SELECT count(sl) FROM `inout` WHERE date=? and gender='F' and status='IN' and loc=?");
+  $stmt->bind_param('ss', $date, $loc);
+  $stmt->execute();
+  $result = $stmt->get_result();
   $female = mysqli_fetch_row($result);
-  $query = "SELECT count(sl) FROM `inout` WHERE date='$date' and status='IN' and loc='$loc'";
-  $result = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error($conn));
+  $stmt->close();
+
+  $stmt = $conn->prepare("SELECT count(sl) FROM `inout` WHERE date=? and status='IN' and loc=?");
+  $stmt->bind_param('ss', $date, $loc);
+  $stmt->execute();
+  $result = $stmt->get_result();
   $tin = mysqli_fetch_row($result);
+  $stmt->close();
+
   // $query = "SELECT cc, COUNT(sl) FROM `inout` GROUP BY cc LIMIT 4";
-  $query = "SELECT cc, COUNT(sl) FROM `inout` WHERE date='$date' AND loc='$loc' GROUP BY cc ORDER BY RAND() LIMIT 3 ";
-  $extraCount = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error($conn));
+  $stmt = $conn->prepare("SELECT cc, COUNT(sl) FROM `inout` WHERE date=? AND loc=? GROUP BY cc ORDER BY RAND() LIMIT 3 ");
+  $stmt->bind_param('ss', $date, $loc);
+  $stmt->execute();
+  $extraCount = $stmt->get_result();
+  $stmt->close();
 ?>

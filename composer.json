@@ -1,0 +1,7 @@
+{
+    "name": "upeu/inout",
+    "require": {
+        "php": "^8.0",
+        "google/cloud-text-to-speech": "^2.2"
+    }
+}

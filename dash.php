@@ -11,7 +11,7 @@
         require "./functions/access.php";
         require_once "./template/header.php";
         require "functions/dbfunc.php";
-        require_once "functions/personalized_greeting.php";
+        require_once "functions/PersonalizedGreeting.php";
   $loc = $_SESSION['loc'];
   $new_arrivals = false;
   $quote = false;
@@ -185,16 +185,26 @@
 				?>
 		    <div class="h1 t-shadow">
 					<?php
-                                                if ($d_status == "OUT") {
-                                                    /* echo "<span class='status-inout text-danger animated flash'>OUT</span>";*/
-                                                        $g = new PersonalizedGreeting("HASTA PRONTO!!!");
-                                                        echo "<span class='status-inout text-danger animated flash'>" . $g->getText() . "</span>";
-                                                        echo $g->getAudioElement();
-                                                } elseif ($d_status == "IN") {
-                                                    /*echo "<span class='status-inout text-success animated flash'>IN</span>";*/
-                                                        $g = new PersonalizedGreeting("BIENVENID@!!!");
-                                                        echo "<span class='status-inout text-success animated flash'>" . $g->getText() . "</span>";
-                                                        echo $g->getAudioElement();
+                                                if ($d_status == "OUT" || $d_status == "IN") {
+                                                        $g = new PersonalizedGreeting();
+                                                        $timeOfDay = (int)date('G');
+                                                        if ($timeOfDay < 12) {
+                                                                $timeOfDay = 'morning';
+                                                        } elseif ($timeOfDay < 18) {
+                                                                $timeOfDay = 'afternoon';
+                                                        } else {
+                                                                $timeOfDay = 'evening';
+                                                        }
+                                                        $text = $g->buildGreeting(
+                                                                $e_name ?? '',
+                                                                $timeOfDay,
+                                                                $_SESSION['categorycode'] ?? '',
+                                                                $_SESSION['dateofbirth'] ?? null,
+                                                                $_SESSION['country'] ?? null
+                                                        );
+                                                        $css = $d_status == "IN" ? 'text-success' : 'text-danger';
+                                                        echo "<span class='status-inout {$css} animated flash'>" . $text . "</span>";
+                                                        echo $g->synthesizeGreeting($text);
                                                 }
 					?>
 				</div>
@@ -208,18 +218,18 @@
 						} elseif ($msg == "2") {
 						    # code...
 						    ?> <span class="animated flash"> <?php 
-						    /*echo "<span class='text-warning'>You just Checked In.<br> Wait for 10 Seconds to Check Out.</span>";*/
-							echo "<span class='text-warning'>Acabas de registrar tu entrada.<br> Espera 10 seg. si deseas registrar tu salida.</span>";
-                                                        $g = new PersonalizedGreeting("Acabas de registrar tu entrada. Espera 10 seg. si deseas registrar tu salida.");
-                                                        echo $g->getAudioElement();
+                                                    /*echo "<span class='text-warning'>You just Checked In.<br> Wait for 10 Seconds to Check Out.</span>";*/
+                                                        echo "<span class='text-warning'>Acabas de registrar tu entrada.<br> Espera 10 seg. si deseas registrar tu salida.</span>";
+                                                        $g = new PersonalizedGreeting();
+                                                        echo $g->synthesizeGreeting('Acabas de registrar tu entrada. Espera 10 seg. si deseas registrar tu salida.');
 						    ?> </span> <?php
 						} elseif ($msg == "3") {
 						    # code...
 						    ?> <span class="animated flash"> <?php 
 						    /*echo "<span class='text-danger'>Invalid or Expired ".$_SESSION['noname']."<br> Contact Librarian for more details.</span>";*/
-							echo "<span class='text-danger'>ID CARD Inválido o No registrado para uso del CRAI.<br> Contacta con un bibliotecario para más detalles.</span>";
-                                                        $g = new PersonalizedGreeting("ID CARD Inválido o No registrado para uso del CRAI. Contacta con un bibliotecario para más detalles.");
-                                                        echo $g->getAudioElement();
+                                                        echo "<span class='text-danger'>ID CARD Inválido o No registrado para uso del CRAI.<br> Contacta con un bibliotecario para más detalles.</span>";
+                                                        $g = new PersonalizedGreeting();
+                                                        echo $g->synthesizeGreeting('ID CARD Inválido o No registrado para uso del CRAI. Contacta con un bibliotecario para más detalles.');
 						    ?> </span> <?php
 						} elseif ($msg == "4") {
 						    # code...
@@ -229,10 +239,10 @@
 						} elseif ($msg == "5") {
 						    # code...
 						    ?> <span class="animated flash"> <?php 
-						    /*echo "<span class='text-info'>You just Checked Out.<br> Wait for 10 Seconds to Check In.</span>";*/
-							echo "<span class='text-info'>Acabas de registrar tu salida.<br> Espera 10 seg. si deseas registrar tu entrada.</span>";
-                                                        $g = new PersonalizedGreeting("Acabas de registrar tu salida. Espera 10 seg. si deseas registrar tu entrada.");
-                                                        echo $g->getAudioElement();
+                                                    /*echo "<span class='text-info'>You just Checked Out.<br> Wait for 10 Seconds to Check In.</span>";*/
+                                                        echo "<span class='text-info'>Acabas de registrar tu salida.<br> Espera 10 seg. si deseas registrar tu entrada.</span>";
+                                                        $g = new PersonalizedGreeting();
+                                                        echo $g->synthesizeGreeting('Acabas de registrar tu salida. Espera 10 seg. si deseas registrar tu entrada.');
 						    ?> </span> <?php
 						} else { ?> 
 							<div class="idle">

@@ -6,7 +6,7 @@
     $sql = "DELETE FROM `tmp2` WHERE `time` < DATE_SUB(NOW(),INTERVAL '00:10' MINUTE_SECOND)";
     $result = mysqli_query($conn, $sql) or die("Invalid query: 1" . mysqli_error());
     if (isset($_GET['id'])) {
-        $usn = strtoupper($_GET['id']);
+        $usn = strtoupper(sanitize($conn, $_GET['id']));
         $date = date('Y-m-d');
         $time = date('H:i:s');
         error_reporting(E_ALL);
@@ -18,17 +18,26 @@
         $data1 = mysqli_fetch_row($result);
         $stmt->close();
         //image fetching
-        $sql = "SELECT imagefile FROM patronimage WHERE borrowernumber = '$data1[1]'";
-        $result = mysqli_query($koha, $sql);
+        $stmt = $koha->prepare('SELECT imagefile FROM patronimage WHERE borrowernumber = ?');
+        $stmt->bind_param('i', $data1[1]);
+        $stmt->execute();
+        $result = $stmt->get_result();
         $data2 = mysqli_fetch_row($result);
+        $stmt->close();
         //Patron category code fetching
-        $sql = "SELECT description FROM categories WHERE categorycode = '$data1[3]'";
-        $result = mysqli_query($koha, $sql);
+        $stmt = $koha->prepare('SELECT description FROM categories WHERE categorycode = ?');
+        $stmt->bind_param('s', $data1[3]);
+        $stmt->execute();
+        $result = $stmt->get_result();
         $data3 = mysqli_fetch_row($result);
+        $stmt->close();
         //Branch information fetching
-        $sql = "SELECT branchname FROM branches WHERE branchcode = '$data1[4]'";
-        $result = mysqli_query($koha, $sql);
+        $stmt = $koha->prepare('SELECT branchname FROM branches WHERE branchcode = ?');
+        $stmt->bind_param('s', $data1[4]);
+        $stmt->execute();
+        $result = $stmt->get_result();
         $data4 = mysqli_fetch_row($result);
+        $stmt->close();
         if ($data1) {
             $_SESSION['categorycode'] = $data1[3];
             $_SESSION['dateofbirth'] = $data1[9];

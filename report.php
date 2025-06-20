@@ -77,30 +77,38 @@
 	  $tdate = date("Y-m-d", strtotime($tdate));
 	  $flag = $_POST['rtype'];
 
-	  if($flag == "Short"){
-	  	if($slib == "Master"){
-        $sql = "SELECT date, SUBTIME(`exit`,`entry`)  FROM `inout` WHERE `cardnumber`='$usn' AND `date` BETWEEN '$fdate' AND '$tdate'";
+          if($flag == "Short"){
+                if($slib == "Master"){
+        $stmt = $conn->prepare('SELECT date, SUBTIME(`exit`,`entry`) FROM `inout` WHERE `cardnumber`=? AND `date` BETWEEN ? AND ?');
+        $stmt->bind_param('sss', $usn, $fdate, $tdate);
       }else{
-        $sql = "SELECT date, SUBTIME(`exit`,`entry`)  FROM `inout` WHERE `cardnumber`='$usn' AND (`date` BETWEEN '$fdate' AND '$tdate') AND `loc`='$slib'";
+        $stmt = $conn->prepare('SELECT date, SUBTIME(`exit`,`entry`) FROM `inout` WHERE `cardnumber`=? AND (`date` BETWEEN ? AND ?) AND `loc`=?');
+        $stmt->bind_param('ssss', $usn, $fdate, $tdate, $slib);
       }
-      $result = mysqli_query($conn, $sql) or die("Invalid query: " . mysqli_error($conn));
+      $stmt->execute();
+      $result = $stmt->get_result();
       while ($row = mysqli_fetch_array($result)) {
         $secs = strtotime($row[1]) - strtotime("00:00:00");
         $query = "INSERT INTO `tmp1` (`date`, `secs`) VALUES ('".$row[0]."', '".$secs."');";
         $res = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error($conn));
       }
+      $stmt->close();
       $sql = "SELECT date, DAYNAME(`DATE`), SUM(`secs`) FROM `tmp1` GROUP BY date";
       $result = mysqli_query($conn, $sql) or die("Invalid query: " . mysqli_error($conn));
-	  } //end of short
+          } //end of short
 
-	  if($flag == "Detail"){
-	  	if($slib=="Master"){
-      	$sql = "SELECT date, SUBTIME(`exit`,`entry`), `exit`, `entry`, DAYNAME(`DATE`), `loc`  FROM `inout` WHERE `cardnumber`='$usn' AND `date` between '$fdate' and '$tdate'";
+          if($flag == "Detail"){
+                if($slib=="Master"){
+        $stmt = $conn->prepare('SELECT date, SUBTIME(`exit`,`entry`), `exit`, `entry`, DAYNAME(`DATE`), `loc`  FROM `inout` WHERE `cardnumber`=? AND `date` between ? and ?');
+        $stmt->bind_param('sss', $usn, $fdate, $tdate);
       }else{
-      	$sql = "SELECT date, SUBTIME(`exit`,`entry`), `exit`, `entry`, DAYNAME(`DATE`), `loc`  FROM `inout` WHERE `cardnumber`='$usn' AND (`date` between '$fdate' and '$tdate') and `loc`='$slib'";
+        $stmt = $conn->prepare('SELECT date, SUBTIME(`exit`,`entry`), `exit`, `entry`, DAYNAME(`DATE`), `loc`  FROM `inout` WHERE `cardnumber`=? AND (`date` between ? and ?) and `loc`=?');
+        $stmt->bind_param('ssss', $usn, $fdate, $tdate, $slib);
       }
-      $result = mysqli_query($conn, $sql) or die("Invalid query: " . mysqli_error($conn));
-	  } //end of detail report
+      $stmt->execute();
+      $result = $stmt->get_result();
+      $stmt->close();
+          } //end of detail report
 
 	}
 

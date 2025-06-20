@@ -43,9 +43,11 @@
 			        	<?php
 			        		$date = date('d-m-Y');
 			        		echo "<script type='text/javascript'>var printMsg = '".$_SESSION['lib']." Today (".$date.") Inout System Data';</script>";
-			        		$date = date('Y-m-d');
-                  $sql = "SELECT * FROM `inout` WHERE date = '$date' and `loc` = '$slib'";
-                  $result = mysqli_query($conn, $sql) or die("Invalid query: " . mysqli_error());
+                        $date = date('Y-m-d');
+                  $stmt = $conn->prepare('SELECT * FROM `inout` WHERE date = ? and `loc` = ?');
+                  $stmt->bind_param('ss', $date, $slib);
+                  $stmt->execute();
+                  $result = $stmt->get_result();
                   while ($row = mysqli_fetch_array($result)) {
                 ?>
                 	<tr>
@@ -64,7 +66,8 @@
                   	<td><?php echo $row['exit']; ?></td>
                   </tr>
                 <?php
-                  } //while end
+                  }
+                  $stmt->close(); //while end
 			        	?>
 			        </tbody>
 			        <tfoot>

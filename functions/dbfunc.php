@@ -136,12 +136,18 @@
   }
 
   function logthis($conn, $id, $date, $time, $usertype, $userid, $action){
-    $sql = "INSERT INTO `log` (`id`, `date`, `time`, `usertype`, `userid`, `action`) VALUES ('".$id."', '".$date."', '".$time."', '".$usertype."', '".$userid."', '".$action."')";
-    $result = mysqli_query($conn, $sql);
+    $stmt = mysqli_prepare($conn, 'INSERT INTO `log` (`id`, `date`, `time`, `usertype`, `userid`, `action`) VALUES (?, ?, ?, ?, ?, ?)');
+    if(!$stmt){
+      echo "Can't prepare statement " . mysqli_error($conn);
+      exit;
+    }
+    mysqli_stmt_bind_param($stmt, 'isssss', $id, $date, $time, $usertype, $userid, $action);
+    $result = mysqli_stmt_execute($stmt);
     if(!$result){
       echo "Can't retrieve data " . mysqli_error($conn);
       exit;
     }
+    mysqli_stmt_close($stmt);
     return $result;
   }
 

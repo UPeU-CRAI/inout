@@ -11,7 +11,7 @@
         $time = date('H:i:s');
         error_reporting(E_ALL);
         //patron data fetching
-        $stmt = $koha->prepare("SELECT CONCAT(title,' ',firstname,' ',surname) AS surname,borrowernumber,sex,categorycode,branchcode,sort1,sort2,mobile,email FROM borrowers WHERE cardnumber=? AND dateexpiry > ?");
+        $stmt = $koha->prepare("SELECT CONCAT(title,' ',firstname,' ',surname) AS surname,borrowernumber,sex,categorycode,branchcode,sort1,sort2,mobile,email,dateofbirth,country FROM borrowers WHERE cardnumber=? AND dateexpiry > ?");
         $stmt->bind_param('ss', $usn, $date);
         $stmt->execute();
         $result = $stmt->get_result() or die("Invalid query: 2" . mysqli_error());
@@ -30,6 +30,9 @@
         $result = mysqli_query($koha, $sql);
         $data4 = mysqli_fetch_row($result);
         if ($data1) {
+            $_SESSION['categorycode'] = $data1[3];
+            $_SESSION['dateofbirth'] = $data1[9];
+            $_SESSION['country'] = $data1[10];
             $stmt = $conn->prepare('SELECT * FROM `inout` WHERE `cardnumber`=? AND `date`=? AND `status`=\'IN\'');
             $stmt->bind_param('ss', $usn, $date);
             $stmt->execute();
@@ -136,6 +139,7 @@
             $e_name = NULL;
             $d_status = NULL;
             $e_img = NULL;
+            unset($_SESSION['categorycode'], $_SESSION['dateofbirth'], $_SESSION['country']);
             $date = NULL;
             $time1 = "-";
         }
@@ -144,6 +148,7 @@
         $d_status = NULL;
         $e_img = NULL;
         $msg = NULL;
+        unset($_SESSION['categorycode'], $_SESSION['dateofbirth'], $_SESSION['country']);
         $date = NULL;
         $time1 = "-";
     }

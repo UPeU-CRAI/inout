@@ -171,9 +171,15 @@
 		    	<?php } else { ?>
 		    		<img src="assets/img/placeholder.png" class="rounded-circle mb-4" alt="...">
 		    	<?php } ?>
-					<h4 class="mb-0" style="font-weight: 800;"><?php echo $e_name; ?></h4>
-					<p class="mb-2"><?php echo $usn; ?></p>
-				</div>
+                                        <h4 class="mb-0" style="font-weight: 800;"><?php echo $e_name; ?></h4>
+                                        <p class="mb-2"><?php echo $usn; ?></p>
+                                        <?php if(isset($_SESSION['categorycode'])) { ?>
+                                                <p class="mb-1">Categoría: <?php echo $_SESSION['categorycode']; ?></p>
+                                        <?php }
+                                              if(isset($_SESSION['dateofbirth']) && isset($_SESSION['country'])) { ?>
+                                                <p class="mb-1">Nacimiento: <?php echo $_SESSION['dateofbirth']; ?> | País: <?php echo $_SESSION['country']; ?></p>
+                                        <?php } ?>
+                                </div>
 				<?php
 					}
 				?>

@@ -42,24 +42,11 @@ Sigue estos pasos para configurar el proyecto en tu entorno local:
 2.  **Configurar la Base de Datos:**
     -   Crea una base de datos MySQL para el proyecto (ej. `inout_db`).
     -   Importa el esquema de la base de datos. Si no hay un archivo `.sql` provisto, la estructura de la base de datos necesitará ser creada manualmente o a través de un script de instalación que el proyecto pueda tener. (Basado en los archivos, parece que la base de datos se maneja a través de `functions/dbconn.php` y `functions/dbfunc.php`, por lo que necesitarías crearla manualmente o el proyecto debe tener una sección `setup.php` para la configuración inicial).
-    -   Actualiza el archivo `functions/dbconn.php` con las credenciales de tu base de datos:
-        ```php
-        <?php
-        // functions/dbconn.php
-        $servername = "localhost"; // O la IP de tu servidor de BD
-        $username = "tu_usuario_db";
-        $password = "tu_contraseña_db";
-        $dbname = "inout_db";
-
-        // Crear conexión
-        $conn = new mysqli($servername, $username, $password, $dbname);
-
-        // Verificar conexión
-        if ($conn->connect_error) {
-            die("Conexión fallida: " . $conn->connect_error);
-        }
-        ?>
-        ```
+    -   Copia el archivo `.env.example` a `.env` y actualiza las credenciales de conexión:
+        ```bash
+        cp .env.example .env
+        # Edita el archivo .env con los datos de tu base de datos
+```
 
 3.  **Desplegar en el Servidor Web:**
     -   Copia todos los archivos del proyecto al directorio raíz de tu servidor web (ej. `htdocs` para Apache o `www` para Nginx).
@@ -120,7 +107,7 @@ El proyecto está organizado de la siguiente manera:
 
 Si encuentras algún problema durante la instalación o el uso, considera los siguientes puntos:
 
--   **Errores de Conexión a la Base de Datos:** Verifica que `functions/dbconn.php` tenga las credenciales correctas y que tu servidor MySQL esté en ejecución.
+-   **Errores de Conexión a la Base de Datos:** Asegúrate de que el archivo `.env` contenga las credenciales correctas y que tu servidor MySQL esté en ejecución.
 -   **Permisos de Archivos:** Asegúrate de que el servidor web tenga los permisos necesarios para leer los archivos del proyecto y escribir en los directorios si es necesario (ej. para backups).
 -   **Errores de PHP:** Revisa los logs de errores de tu servidor web para obtener detalles sobre cualquier problema de PHP.
 -   **Páginas en Blanco:** Si ves una página en blanco, puede ser un error de PHP no mostrado. Habilita `display_errors` en tu `php.ini` temporalmente para ver los mensajes de error.

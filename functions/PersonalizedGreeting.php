@@ -3,6 +3,7 @@ class PersonalizedGreeting
 {
     private $languageCode;
     private $credentialsPath;
+    private $voiceName;
 
     public function __construct()
     {
@@ -10,6 +11,7 @@ class PersonalizedGreeting
         $env = file_exists($envPath) ? parse_ini_file($envPath, false, INI_SCANNER_TYPED) : [];
         $this->credentialsPath = $env['TTS_CREDENTIALS_PATH'] ?? '';
         $this->languageCode = $env['TTS_LANGUAGE_CODE'] ?? 'es-ES';
+        $this->voiceName = $env['TTS_VOICE'] ?? null;
     }
 
     public function buildGreeting(string $name, string $timeOfDay, string $category, ?string $birthday = null, ?string $country = null): string
@@ -64,6 +66,9 @@ class PersonalizedGreeting
 
         $voice = (new Google\Cloud\TextToSpeech\V1\VoiceSelectionParams())
             ->setLanguageCode($this->languageCode);
+        if ($this->voiceName) {
+            $voice->setName($this->voiceName);
+        }
 
         $audioConfig = (new Google\Cloud\TextToSpeech\V1\AudioConfig())
             ->setAudioEncoding(Google\Cloud\TextToSpeech\V1\AudioEncoding::MP3);

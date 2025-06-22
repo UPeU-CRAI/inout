@@ -62,8 +62,13 @@ Sigue estos pasos para configurar el proyecto en tu entorno local:
     -   El sistema te redirigirá a la página de inicio de sesión (`login.php`).
 5.  **Configurar Google Cloud Text-to-Speech:**
     -   Crea un proyecto en Google Cloud y genera una clave de servicio (archivo JSON).
-    -   Define la ruta del JSON en `TTS_CREDENTIALS_PATH` dentro de tu `.env`.
-    -   Establece `TTS_LANGUAGE_CODE` y opcionalmente `TTS_VOICE` con el idioma y voz preferidos.
+    -   Define las variables `TTS_CREDENTIALS_PATH`, `TTS_LANGUAGE_CODE` y `TTS_VOICE` en tu archivo `.env`:
+
+        ```env
+        TTS_CREDENTIALS_PATH=/u01/vhosts/inout.upeu.edu.pe/credentials/inout-tts.json
+        TTS_LANGUAGE_CODE=es-ES
+        TTS_VOICE=es-ES-Standard-A
+        ```
 
 ## ⚙️ Uso
 

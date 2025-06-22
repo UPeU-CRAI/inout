@@ -73,7 +73,12 @@ class PersonalizedGreeting
         $audioConfig = (new Google\Cloud\TextToSpeech\V1\AudioConfig())
             ->setAudioEncoding(Google\Cloud\TextToSpeech\V1\AudioEncoding::MP3);
 
-        $response = $client->synthesizeSpeech($input, $voice, $audioConfig);
+        $request = Google\Cloud\TextToSpeech\V1\SynthesizeSpeechRequest::build(
+            $input,
+            $voice,
+            $audioConfig
+        );
+        $response = $client->synthesizeSpeech($request);
         $audioContent = $response->getAudioContent();
         $client->close();
 

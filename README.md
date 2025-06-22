@@ -78,6 +78,11 @@ Una vez instalado y configurado, puedes:
 -   **Gestionar Usuarios:** Accede a la sección de administración para agregar, modificar o eliminar usuarios y sus roles.
 -   **Registrar Entradas/Salidas:** Utiliza las interfaces designadas para registrar los movimientos.
 -   **Generar Reportes:** Consulta los reportes para obtener información detallada sobre los datos.
+-   **Probar Google TTS:** Con las credenciales configuradas en el archivo `.env`, ejecuta:
+    ```bash
+    php tests/tts_test.php
+    ```
+    Esto generará el archivo `tests/tts_test.mp3` como prueba de que la integración funciona.
 
 ## 📂 Estructura del Proyecto
 

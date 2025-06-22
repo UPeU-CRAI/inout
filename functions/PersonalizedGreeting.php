@@ -12,6 +12,12 @@ class PersonalizedGreeting
         $this->credentialsPath = $env['TTS_CREDENTIALS_PATH'] ?? '';
         $this->languageCode = $env['TTS_LANGUAGE_CODE'] ?? 'es-ES';
         $this->voiceName = $env['TTS_VOICE'] ?? null;
+
+        if (empty($this->credentialsPath) || !is_readable($this->credentialsPath)) {
+            throw new RuntimeException(
+                "Text-to-Speech credentials file not found or unreadable at '{$this->credentialsPath}'."
+            );
+        }
     }
 
     public function buildGreeting(string $name, string $timeOfDay, string $category, ?string $birthday = null, ?string $country = null): string
@@ -73,7 +79,12 @@ class PersonalizedGreeting
         $audioConfig = (new Google\Cloud\TextToSpeech\V1\AudioConfig())
             ->setAudioEncoding(Google\Cloud\TextToSpeech\V1\AudioEncoding::MP3);
 
-        $response = $client->synthesizeSpeech($input, $voice, $audioConfig);
+        $request = Google\Cloud\TextToSpeech\V1\SynthesizeSpeechRequest::build(
+            $input,
+            $voice,
+            $audioConfig
+        );
+        $response = $client->synthesizeSpeech($request);
         $audioContent = $response->getAudioContent();
         $client->close();
 

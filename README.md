@@ -95,6 +95,16 @@ Una vez instalado y configurado, puedes:
     ```
     Este comando debe crear `tests/tts_test.mp3` si todo está configurado correctamente.
 
+### Ejecutar pruebas
+
+Las pruebas automatizadas se ejecutan con PHPUnit. Instala primero las dependencias con `composer install` y luego ejecuta:
+
+```bash
+vendor/bin/phpunit
+```
+
+Esto ejecutará la suite ubicada en el directorio `tests`.
+
 ## 📂 Estructura del Proyecto
 
 El proyecto está organizado de la siguiente manera:

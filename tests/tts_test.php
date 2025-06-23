@@ -15,8 +15,6 @@ if (!$credentials) {
     exit(1);
 }
 
-putenv('GOOGLE_APPLICATION_CREDENTIALS=' . $credentials);
-
 use Google\Cloud\TextToSpeech\V1\Client\TextToSpeechClient;
 use Google\Cloud\TextToSpeech\V1\SynthesisInput;
 use Google\Cloud\TextToSpeech\V1\VoiceSelectionParams;

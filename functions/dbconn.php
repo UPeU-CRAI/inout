@@ -1,34 +1,30 @@
 <?php
-$envPath = dirname(__DIR__) . '/.env';
-if (!file_exists($envPath)) {
-    throw new RuntimeException(
-        "Environment file '.env' not found. Copy '.env.example' and configure your database credentials."
-    );
-}
+require_once __DIR__ . '/../vendor/autoload.php';
 
-$env = parse_ini_file($envPath, false, INI_SCANNER_TYPED);
-if ($env === false) {
-    throw new RuntimeException("Failed to parse .env file at {$envPath}.");
-}
+use Dotenv\Dotenv;
 
-$requiredInout = ['INOUT_DB_HOST', 'INOUT_DB_USER', 'INOUT_DB_PASS', 'INOUT_DB_NAME'];
-$requiredKoha  = ['KOHA_DB_HOST', 'KOHA_DB_USER', 'KOHA_DB_PASS', 'KOHA_DB_NAME'];
+// Cargar el archivo .env de la raíz del proyecto
+$dotenv = Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
 
-foreach (array_merge($requiredInout, $requiredKoha) as $key) {
-    if (!array_key_exists($key, $env) || $env[$key] === '') {
-        throw new RuntimeException("Missing or empty '{$key}' in .env. Configure your database settings.");
+$required = [
+    'INOUT_DB_HOST', 'INOUT_DB_USER', 'INOUT_DB_PASS', 'INOUT_DB_NAME',
+    'KOHA_DB_HOST', 'KOHA_DB_USER', 'KOHA_DB_PASS', 'KOHA_DB_NAME'
+];
+
+foreach ($required as $key) {
+    if (!isset($_ENV[$key]) || trim($_ENV[$key]) === '') {
+        throw new RuntimeException("❌ Falta la variable de entorno: {$key}");
     }
 }
 
-$debug   = !empty($env['DEBUG']);
+// Configuración de logs y depuración
+$debug = isset($_ENV['DEBUG']) && $_ENV['DEBUG'] == 1;
 $logFile = dirname(__DIR__) . '/logs/error.log';
 if (!is_dir(dirname($logFile))) {
     mkdir(dirname($logFile), 0775, true);
 }
 
-/**
- * Log an error message and display a generic HTML error when debug is disabled.
- */
 function handleConnectionError(string $message, bool $debug, string $logFile): void
 {
     $date = date('c');
@@ -38,28 +34,20 @@ function handleConnectionError(string $message, bool $debug, string $logFile): v
         throw new RuntimeException($message);
     }
 
-    echo '<p>Database connection error. Please contact the administrator.</p>';
+    echo '<p>Error de conexión a la base de datos. Contacte al administrador.</p>';
     exit;
 }
 
-$servername = $env['INOUT_DB_HOST'];
-$username   = $env['INOUT_DB_USER'];
-$password   = $env['INOUT_DB_PASS'];
-$db         = $env['INOUT_DB_NAME'];
-
-$conn = mysqli_connect($servername, $username, $password, $db);
+// Conexión a la base de datos InOut
+$conn = mysqli_connect($_ENV['INOUT_DB_HOST'], $_ENV['INOUT_DB_USER'], $_ENV['INOUT_DB_PASS'], $_ENV['INOUT_DB_NAME']);
 if (!$conn) {
-    handleConnectionError('InOut DB connection failed (' . mysqli_connect_errno() . '): ' . mysqli_connect_error(), $debug, $logFile);
+    handleConnectionError('❌ Falló la conexión a la DB InOut: ' . mysqli_connect_error(), $debug, $logFile);
 }
 
-$kohaServername = $env['KOHA_DB_HOST'];
-$kohaUsername   = $env['KOHA_DB_USER'];
-$kohaPassword   = $env['KOHA_DB_PASS'];
-$kohaDb         = $env['KOHA_DB_NAME'];
-
-$koha = mysqli_connect($kohaServername, $kohaUsername, $kohaPassword, $kohaDb);
+// Conexión a la base de datos Koha
+$koha = mysqli_connect($_ENV['KOHA_DB_HOST'], $_ENV['KOHA_DB_USER'], $_ENV['KOHA_DB_PASS'], $_ENV['KOHA_DB_NAME']);
 if (!$koha) {
-    handleConnectionError('Koha DB connection failed (' . mysqli_connect_errno() . '): ' . mysqli_connect_error(), $debug, $logFile);
+    handleConnectionError('❌ Falló la conexión a la DB Koha: ' . mysqli_connect_error(), $debug, $logFile);
 }
 
 function sanitize($conn, $str)

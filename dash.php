@@ -191,7 +191,7 @@ error_reporting(E_ALL);
 				?>
 		    <div class="h1 t-shadow">
 					<?php
-                                                if ($d_status == "OUT" || $d_status == "IN") {
+                                                if (isset($d_status) && ($d_status === 'OUT' || $d_status === 'IN')) {
                                                         $g = new PersonalizedGreeting();
                                                         $timeOfDay = (int)date('G');
                                                         if ($timeOfDay < 12) {

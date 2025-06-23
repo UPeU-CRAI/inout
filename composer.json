@@ -2,6 +2,7 @@
     "name": "upeu/inout",
     "require": {
         "php": "^8.0",
-        "google/cloud-text-to-speech": "^2.2"
+        "google/cloud-text-to-speech": "^2.2",
+        "vlucas/phpdotenv": "^5.6"
     }
 }

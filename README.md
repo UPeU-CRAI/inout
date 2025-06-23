@@ -62,6 +62,7 @@ Sigue estos pasos para configurar el proyecto en tu entorno local:
 
 4.  **Desplegar en el Servidor Web:**
     -   Copia todos los archivos del proyecto al directorio raíz de tu servidor web (ej. `htdocs` para Apache o `www` para Nginx).
+    -   En cada entorno donde despliegues el proyecto debes ejecutar `composer install` para generar el directorio `vendor/`. Si este paso se omite, páginas como `login.php` terminarán con el mensaje **"Vendor autoload not found"**.
 
 5.  **Acceder al Sistema:**
     -   Abre tu navegador y navega a la URL donde desplegaste el proyecto (ej. `http://localhost/inout` o `http://tu_dominio/`).

@@ -2,15 +2,15 @@
 
 require_once __DIR__ . '/functions/autoload_helper.php';
 require_vendor_autoload(__DIR__);
+require_once __DIR__ . '/functions/dbconn.php';
 
 // Mostrar errores si DEBUG está activo
-if (getenv('DEBUG')) {
+$debug = $_ENV['DEBUG'] ?? getenv('DEBUG');
+if ($debug) {
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
 }
-
-require_once './functions/dbconn.php';
 date_default_timezone_set("America/Lima");
 
 // Obtener lista de ubicaciones

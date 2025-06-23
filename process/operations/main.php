@@ -164,8 +164,8 @@ function registerEntry($conn, $usn, $user, $category, $branch, $date, $entryTime
     $sl = getsl($conn, "sl", "inout");
     $stmt = $conn->prepare("
         INSERT INTO `inout` (
-            sl, cardnumber, name, gender, date, entry, exit, status,
-            loc, cc, branch, sort1, sort2, email, mob
+            `sl`, `cardnumber`, `name`, `gender`, `date`, `entry`, `exit`, `status`,
+            `loc`, `cc`, `branch`, `sort1`, `sort2`, `email`, `mob`
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
     $stmt->bind_param(

@@ -1,4 +1,10 @@
 <?php
+require_once __DIR__ . '/vendor/autoload.php';
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 //define('ENV_FILE', '/u01/vhosts/inout.upeu.edu.pe/httpdocs/koha-inout/fronts/koha-inout-lima/.env');
 //require_once ENV_FILE;
 	include "./process/operations/main.php";
@@ -204,7 +210,16 @@
                                                         );
                                                         $css = $d_status == "IN" ? 'text-success' : 'text-danger';
                                                         echo "<span class='status-inout {$css} animated flash'>" . $text . "</span>";
-                                                        echo $g->synthesizeGreeting($text);
+                                                        //echo $g->synthesizeGreeting($text);
+							try {
+							    //echo $g->synthesizeGreeting($text);
+							    $greeting = $g->synthesizeGreeting($text);
+							    echo $greeting;
+							    file_put_contents('/tmp/audio_tag.html', $greeting);
+
+							} catch (Throwable $e) {
+							    echo "<pre>Error en síntesis: " . $e->getMessage() . "</pre>";
+							}	
                                                 }
 					?>
 				</div>

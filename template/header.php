@@ -16,7 +16,7 @@
 		<script src="assets/js/plugins/bootstrap-notify.js"></script>
 		<link rel="stylesheet" type="text/css" href="assets/css/animate.css">
 		<?php
-			if($table){
+			if (isset($table) && $table == 'some_value'){
 		?>
 				<link rel="stylesheet" type="text/css" href="assets/DataTables/datatables.min.css"/>
 				<script type="text/javascript" src="assets/DataTables/datatables.min.js"></script>

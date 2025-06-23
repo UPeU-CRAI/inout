@@ -1,5 +1,11 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php';
+$autoloadPath = __DIR__ . '/vendor/autoload.php';
+if (!file_exists($autoloadPath)) {
+    throw new RuntimeException(
+        "Autoload file not found at '{$autoloadPath}'. Please run 'composer install'."
+    );
+}
+require_once $autoloadPath;
 
 use Google\Cloud\TextToSpeech\V1\TextToSpeechClient;
 

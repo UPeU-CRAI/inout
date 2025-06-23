@@ -52,7 +52,7 @@ Sigue estos pasos para configurar el proyecto en tu entorno local:
 3.  **Configurar la Base de Datos:**
     -   Crea una base de datos MySQL para el proyecto (ej. `inout_db`).
     -   Importa el esquema de la base de datos. Si no hay un archivo `.sql` provisto, la estructura de la base de datos necesitará ser creada manualmente o a través de un script de instalación que el proyecto pueda tener. (Basado en los archivos, parece que la base de datos se maneja a través de `functions/dbconn.php` y `functions/dbfunc.php`, por lo que necesitarías crearla manualmente o el proyecto debe tener una sección `setup.php` para la configuración inicial).
-    -   Copia el archivo `.env.example` a `.env` y actualiza las credenciales de conexión:
+    -   Copia el archivo `.env.example` a `.env` y actualiza las credenciales de conexión. **Este archivo es obligatorio para que la aplicación pueda conectarse a la base de datos:**
         ```bash
         cp .env.example .env
         # Edita el archivo .env con los datos de tu base de datos

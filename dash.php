@@ -1,5 +1,6 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/functions/autoload_helper.php';
+require_vendor_autoload(__DIR__);
 
 if (getenv('DEBUG')) {
     ini_set('display_errors', 1);

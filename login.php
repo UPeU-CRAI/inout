@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/functions/autoload_helper.php';
+require_vendor_autoload(__DIR__);
+?>
 <html lang="en" class="perfect-scrollbar-off">
   <head>
     <?php
@@ -7,9 +11,6 @@ if (getenv('DEBUG')) {
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
 }
-
-// 👇 Importante: carga automática de clases
-require_once __DIR__ . '/vendor/autoload.php';
 
       include './functions/dbconn.php';
     ?>

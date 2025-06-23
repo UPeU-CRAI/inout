@@ -4,13 +4,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-echo '<pre>';
-print_r($_ENV);
-print_r($_SERVER);
-echo '</pre>';
-
-
-
 require_once __DIR__ . '/functions/autoload_helper.php';
 require_vendor_autoload(__DIR__);
 
@@ -101,14 +94,8 @@ if ($result) {
                         </div>
                     </div>
                 </form>
-
-                <!-- RazorPay Payment Button (si aplica) -->
-                <form>
-                    <script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_GffqOJ4TsFX8hN" async></script>
-                </form>
             </div>
         </div>
-
         <footer class="footer">
             <div class="container">
                 <nav class="float-left footer-menu">

@@ -15,8 +15,9 @@
 	  <div class="row">
 	    <div class="col-md-6 ml-auto mr-auto">
 	    	<?php
-	    	if(isset($_GET['editrole'])) {
-	    		$res = getDataById($conn, "roles", $_GET['editrole']);
+                if(isset($_GET['editrole'])) {
+                        $roleId = (int) $_GET['editrole'];
+                        $res = getDataById($conn, "roles", $roleId);
 				$row = mysqli_fetch_array($res);
 				$section = explode(';',$row[3]);
 			?>

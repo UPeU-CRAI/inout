@@ -2,6 +2,7 @@
 require_once __DIR__ . '/functions/autoload_helper.php';
 require_vendor_autoload(__DIR__);
 ?>
+<!DOCTYPE html>
 <html lang="en" class="perfect-scrollbar-off">
   <head>
     <?php

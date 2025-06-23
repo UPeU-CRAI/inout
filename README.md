@@ -36,14 +36,20 @@ Para ejecutar este proyecto, necesitarás un entorno de servidor web que soporte
 
 Sigue estos pasos para configurar el proyecto en tu entorno local:
 
-1.  **Clonar el Repositorio:**
+1.  **Clonar el Repositorio:***
     ```bash
     git clone [https://github.com/tu-usuario/inout.git](https://github.com/tu-usuario/inout.git)
     cd inout
     ```
     (Nota: Reemplaza `https://github.com/tu-usuario/inout.git` con la URL real de tu repositorio si es diferente)
+2.  **Instalar dependencias PHP:**
+    ```bash
+    composer install
+    ```
+    Esto creará el directorio `vendor/` y el archivo `vendor/autoload.php` con la clase `TextToSpeechClient` disponible.
 
-2.  **Configurar la Base de Datos:**
+
+3.  **Configurar la Base de Datos:**
     -   Crea una base de datos MySQL para el proyecto (ej. `inout_db`).
     -   Importa el esquema de la base de datos. Si no hay un archivo `.sql` provisto, la estructura de la base de datos necesitará ser creada manualmente o a través de un script de instalación que el proyecto pueda tener. (Basado en los archivos, parece que la base de datos se maneja a través de `functions/dbconn.php` y `functions/dbfunc.php`, por lo que necesitarías crearla manualmente o el proyecto debe tener una sección `setup.php` para la configuración inicial).
     -   Copia el archivo `.env.example` a `.env` y actualiza las credenciales de conexión:
@@ -54,13 +60,13 @@ Sigue estos pasos para configurar el proyecto en tu entorno local:
         # puedes definir el idioma por defecto con TTS_LANGUAGE_CODE
 ```
 
-3.  **Desplegar en el Servidor Web:**
+4.  **Desplegar en el Servidor Web:**
     -   Copia todos los archivos del proyecto al directorio raíz de tu servidor web (ej. `htdocs` para Apache o `www` para Nginx).
 
-4.  **Acceder al Sistema:**
+5.  **Acceder al Sistema:**
     -   Abre tu navegador y navega a la URL donde desplegaste el proyecto (ej. `http://localhost/inout` o `http://tu_dominio/`).
     -   El sistema te redirigirá a la página de inicio de sesión (`login.php`).
-5.  **Configurar Google Cloud Text-to-Speech:**
+6.  **Configurar Google Cloud Text-to-Speech:**
     -   Crea un proyecto en Google Cloud y genera una clave de servicio (archivo JSON).
     -   Define las variables `TTS_CREDENTIALS_PATH`, `TTS_LANGUAGE_CODE` y `TTS_VOICE` en tu archivo `.env`:
 

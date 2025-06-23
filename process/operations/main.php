@@ -168,8 +168,12 @@ function registerEntry($conn, $usn, $user, $category, $branch, $date, $entryTime
             `loc`, `cc`, `branch`, `sort1`, `sort2`, `email`, `mob`
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
+    // 'i' indicates the first parameter ($sl) is an integer and the
+    // remaining 14 placeholders expect strings. Building the type string
+    // dynamically improves readability.
+    $typeString = 'i' . str_repeat('s', 14);
     $stmt->bind_param(
-        'issssssssssssss',
+        $typeString,
         $sl,
         $usn,
         $user['fullname'],

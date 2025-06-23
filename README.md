@@ -77,7 +77,7 @@ Sigue estos pasos para configurar el proyecto en tu entorno local:
         TTS_LANGUAGE_CODE=es-ES
         TTS_VOICE=es-ES-Standard-A
         ```
--   Para verificar tu configuración de TTS, ejecuta `php tests/tts_test.php`. Este script debería guardar `tests/tts_test.mp3`. Úsalo después de cada despliegue para confirmar que las credenciales de Google TTS son válidas y que la librería se carga correctamente.
+-   Como verificación rápida, ejecuta `php tests/tts_test.php` después de definir las variables TTS. Este script creará `tests/tts_test.mp3` si las credenciales y dependencias de Google TTS están instaladas correctamente.
 -   Si deseas ver los mensajes de error de PHP durante el desarrollo, establece `DEBUG=1` en tu archivo `.env`.
 
 
@@ -89,11 +89,11 @@ Una vez instalado y configurado, puedes:
 -   **Gestionar Usuarios:** Accede a la sección de administración para agregar, modificar o eliminar usuarios y sus roles.
 -   **Registrar Entradas/Salidas:** Utiliza las interfaces designadas para registrar los movimientos.
 -   **Generar Reportes:** Consulta los reportes para obtener información detallada sobre los datos.
--   **Probar Google TTS:** Con las credenciales configuradas en el archivo `.env`, ejecuta:
+-   **Probar Google TTS:** Ejecuta `php tests/tts_test.php` para confirmar rapidamente que las credenciales y dependencias de TTS están instaladas.
     ```bash
     php tests/tts_test.php
     ```
-    Esto generará el archivo `tests/tts_test.mp3` como prueba de que la integración funciona. Ejecuta esta prueba después de cada despliegue para confirmar que las credenciales de Google TTS son válidas y que la librería se carga correctamente.
+    Este comando debe crear `tests/tts_test.mp3` si todo está configurado correctamente.
 
 ## 📂 Estructura del Proyecto
 

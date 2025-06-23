@@ -3,20 +3,25 @@ use PHPUnit\Framework\TestCase;
 
 class PersonalizedGreetingTest extends TestCase
 {
-    private string $envPath;
-    private string $originalEnv;
+    private ?string $originalTtsPath;
     private string $dummyPath = '/tmp/dummy_credentials.json';
 
     protected function setUp(): void
     {
-        $this->envPath = dirname(__DIR__) . '/.env';
-        $this->originalEnv = file_exists($this->envPath) ? file_get_contents($this->envPath) : '';
-        file_put_contents($this->envPath, "TTS_CREDENTIALS_PATH={$this->dummyPath}\n");
+        $this->originalTtsPath = getenv('TTS_CREDENTIALS_PATH') ?: null;
+        putenv('TTS_CREDENTIALS_PATH=' . $this->dummyPath);
+        $_ENV['TTS_CREDENTIALS_PATH'] = $this->dummyPath;
     }
 
     protected function tearDown(): void
     {
-        file_put_contents($this->envPath, $this->originalEnv);
+        if ($this->originalTtsPath !== null) {
+            putenv('TTS_CREDENTIALS_PATH=' . $this->originalTtsPath);
+            $_ENV['TTS_CREDENTIALS_PATH'] = $this->originalTtsPath;
+        } else {
+            putenv('TTS_CREDENTIALS_PATH');
+            unset($_ENV['TTS_CREDENTIALS_PATH']);
+        }
     }
 
     public function testThrowsWhenCredentialsFileMissing(): void

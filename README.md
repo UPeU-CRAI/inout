@@ -76,6 +76,7 @@ Sigue estos pasos para configurar el proyecto en tu entorno local:
         TTS_VOICE=es-ES-Standard-A
         ```
 -   Para verificar tu configuración de TTS, ejecuta `php tests/tts_test.php`. Este script guarda `tests/tts_test.mp3`.
+-   Si deseas ver los mensajes de error de PHP durante el desarrollo, establece `DEBUG=1` en tu archivo `.env`.
 
 
 ## ⚙️ Uso

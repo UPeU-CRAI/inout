@@ -9,15 +9,19 @@
 		return $result;
 	}
 	
-	function getspecificrole($conn, $id){
-		$sql = "SELECT * FROM roles where id=$id";
-		$result = mysqli_query($conn, $sql);
-		if(!$result){
-			echo "Can't retrieve data " . mysqli_error($conn);
-			exit;
-		}
-		return $result;
-	}
+        function getspecificrole($conn, $id){
+                $id = (int) $id;
+                $stmt = mysqli_prepare($conn, 'SELECT * FROM roles WHERE id = ?');
+                if(!$stmt){
+                        echo "Can't prepare statement " . mysqli_error($conn);
+                        exit;
+                }
+                mysqli_stmt_bind_param($stmt, 'i', $id);
+                mysqli_stmt_execute($stmt);
+                $result = mysqli_stmt_get_result($stmt);
+                mysqli_stmt_close($stmt);
+                return $result;
+        }
 
 	function getusers($conn){
 		$sql = "SELECT * FROM users";
@@ -29,15 +33,19 @@
 		return $result;
 	}
 
-	function getspecificuser($conn, $id){
-		$sql = "SELECT * FROM users where id=$id";
-		$result = mysqli_query($conn, $sql);
-		if(!$result){
-			echo "Can't retrieve data " . mysqli_error($conn);
-			exit;
-		}
-		return $result;
-	}
+        function getspecificuser($conn, $id){
+                $id = (int) $id;
+                $stmt = mysqli_prepare($conn, 'SELECT * FROM users WHERE id = ?');
+                if(!$stmt){
+                        echo "Can't prepare statement " . mysqli_error($conn);
+                        exit;
+                }
+                mysqli_stmt_bind_param($stmt, 'i', $id);
+                mysqli_stmt_execute($stmt);
+                $result = mysqli_stmt_get_result($stmt);
+                mysqli_stmt_close($stmt);
+                return $result;
+        }
 
 	function getData($conn, $table){
 		$sql = "SELECT * FROM $table";
@@ -49,15 +57,20 @@
 		return $result;
 	}
 
-	function getDataById($conn, $table, $id){
-		$sql = "SELECT * FROM $table where id=$id";
-		$result = mysqli_query($conn, $sql);
-		if(!$result){
-			echo "Can't retrieve data " . mysqli_error($conn);
-			exit;
-		}
-		return $result;
-	}
+        function getDataById($conn, $table, $id){
+                $id = (int) $id;
+                $sql = "SELECT * FROM `$table` WHERE id = ?";
+                $stmt = mysqli_prepare($conn, $sql);
+                if(!$stmt){
+                        echo "Can't prepare statement " . mysqli_error($conn);
+                        exit;
+                }
+                mysqli_stmt_bind_param($stmt, 'i', $id);
+                mysqli_stmt_execute($stmt);
+                $result = mysqli_stmt_get_result($stmt);
+                mysqli_stmt_close($stmt);
+                return $result;
+        }
 
 	function getQueue($conn){
 		$query = "SELECT count(_id) FROM reg WHERE status='queue' AND session='{$_SESSION['t']}'";
@@ -74,15 +87,24 @@
 		return $result;
 	}
 
-	function getDataBySpesificId($conn, $table, $var, $var2){
-		$sql = "SELECT * FROM $table where $var = $var2";
-		$result = mysqli_query($conn, $sql);
-		if(!$result){
-			echo "Can't retrieve data " . mysqli_error($conn);
-			exit;
-		}
-		return $result;
-	}
+        function getDataBySpesificId($conn, $table, $var, $var2){
+                $sql = "SELECT * FROM `$table` WHERE `$var` = ?";
+                $stmt = mysqli_prepare($conn, $sql);
+                if(!$stmt){
+                        echo "Can't prepare statement " . mysqli_error($conn);
+                        exit;
+                }
+                if(is_numeric($var2)){
+                        $var2 = (int) $var2;
+                        mysqli_stmt_bind_param($stmt, 'i', $var2);
+                }else{
+                        mysqli_stmt_bind_param($stmt, 's', $var2);
+                }
+                mysqli_stmt_execute($stmt);
+                $result = mysqli_stmt_get_result($stmt);
+                mysqli_stmt_close($stmt);
+                return $result;
+        }
 
 	function setupStats($conn){
 	  $query = "SELECT value FROM `setup` where var='cname'";

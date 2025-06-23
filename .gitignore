@@ -2,3 +2,5 @@
 blank.php
 vendor/
 test_tts.php
+logs/*
+!logs/.gitkeep

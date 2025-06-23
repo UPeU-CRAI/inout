@@ -76,7 +76,7 @@ if (getenv('DEBUG')) {
                        <select name="loc" required="" class="selectpicker" data-style="select-with-transition" title="Select Location">
                         <?php
                           $query = "SELECT * FROM loc";
-                          $res = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error());
+                          $res = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error($conn));
                           while($row=mysqli_fetch_array($res)){
                             echo "<option>".$row['1']."</option>";
                           }

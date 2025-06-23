@@ -23,10 +23,11 @@
               <h4 class="card-title">Edit User</h4>
           	</div>
 					  <div class="card-body">
-				    	<?php
-				    		if(isset($_GET['edituser'])) {
-				    			$res = getDataById($conn, "users", $_GET['edituser']);
-								$row = mysqli_fetch_array($res);
+                                        <?php
+                                                if(isset($_GET['edituser'])) {
+                                                        $userId = (int) $_GET['edituser'];
+                                                        $res = getDataById($conn, "users", $userId);
+                                                                $row = mysqli_fetch_array($res);
 							?>
 							<form name="form4" action="process/admin/usr_process.php" method="POST">
 		        		<div class="form-group bmd-form-group">

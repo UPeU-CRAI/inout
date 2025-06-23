@@ -38,7 +38,8 @@ class PersonalizedGreeting
 
         if (empty($this->credentialsPath) || !is_readable($this->credentialsPath)) {
             throw new RuntimeException(
-                "Text-to-Speech credentials file not found or unreadable at '{$this->credentialsPath}'."
+                "Text-to-Speech credentials file not found or unreadable at '{$this->credentialsPath}'. "
+                . 'Check the TTS_CREDENTIALS_PATH variable.'
             );
         }
     }

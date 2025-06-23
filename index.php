@@ -1,9 +1,10 @@
 <?php
-	session_start();
-	// ob_start(ob_gzhandler);
-	$title = "Dashboard";
-	$acc_code = "INDEX";
-	require "./functions/access.php";
+        session_start();
+        // ob_start(ob_gzhandler);
+        $title = "Dashboard";
+        $acc_code = "INDEX";
+        require "./functions/access.php";
+        $msg = $_GET['msg'] ?? null;
 	require_once "./template/header.php";
 	require_once "./template/sidebar.php";
 ?>
@@ -22,13 +23,13 @@
 </script>
 <!-- MAIN CONTENT ENDS -->
 <?php
-    if($_GET['msg']=="Evening"){
+    if ($msg === 'Evening') {
       echo "<script type='text/javascript'>showNotification('top','right','Good Evening ".$_SESSION['user_name']."', 'info');</script>";
     }
-    if($_GET['msg']=="Morning"){
+    if ($msg === 'Morning') {
       echo "<script type='text/javascript'>showNotification('top','right','Good Morning ".$_SESSION['user_name']."', 'info');</script>";
     }
-    if($_GET['msg']=="Noon"){
+    if ($msg === 'Noon') {
       echo "<script type='text/javascript'>showNotification('top','right','Good After Noon ".$_SESSION['user_name']."', 'info');</script>";
     }
 	require_once "./template/footer.php";

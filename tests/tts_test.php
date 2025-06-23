@@ -22,6 +22,7 @@ use Google\Cloud\TextToSpeech\V1\SynthesisInput;
 use Google\Cloud\TextToSpeech\V1\VoiceSelectionParams;
 use Google\Cloud\TextToSpeech\V1\AudioConfig;
 use Google\Cloud\TextToSpeech\V1\AudioEncoding;
+use Google\Cloud\TextToSpeech\V1\SynthesizeSpeechRequest;
 
 // Crear cliente
 $client = new TextToSpeechClient([
@@ -41,11 +42,16 @@ if ($voiceName) {
 }
 
 // Configuración de audio
+
 $audioConfig = (new AudioConfig())
     ->setAudioEncoding(AudioEncoding::MP3);
+$request = (new SynthesizeSpeechRequest())
+    ->setInput($input)
+    ->setVoice($voice)
+    ->setAudioConfig($audioConfig);
 
 // Ejecutar la síntesis
-$response = $client->synthesizeSpeech($input, $voice, $audioConfig);
+$response = $client->synthesizeSpeech($request);
 $client->close();
 
 // Guardar resultado

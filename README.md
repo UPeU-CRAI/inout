@@ -141,6 +141,7 @@ Si encuentras algún problema durante la instalación o el uso, considera los si
 -   **Errores de Conexión a la Base de Datos:** Asegúrate de que el archivo `.env` contenga las credenciales correctas y que tu servidor MySQL esté en ejecución.
 -   **Permisos de Archivos:** Asegúrate de que el servidor web tenga los permisos necesarios para leer los archivos del proyecto y escribir en los directorios si es necesario (ej. para backups).
 -   **Errores de PHP:** Revisa los logs de errores de tu servidor web para obtener detalles sobre cualquier problema de PHP.
+-   **Credenciales TTS no legibles:** Si el archivo indicado en `TTS_CREDENTIALS_PATH` no existe o no tiene permisos de lectura, la aplicación mostrará una excepción indicando esa variable.
 -   **Páginas en Blanco:** Si ves una página en blanco, puede ser un error de PHP no mostrado. Habilita `display_errors` en tu `php.ini` temporalmente para ver los mensajes de error.
 
 ## 📜 Licencia

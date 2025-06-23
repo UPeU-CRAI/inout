@@ -239,45 +239,10 @@ $acc_code = "U02";
 					?>
 				</div>
 				<div class="h2 t-shadow">
-					<?php
-						if ($msg == "1") {
-							?> <span class="animated flash"> <?php 
-						    /*echo "<span class='text-primary'>Your ".($_SESSION['noname'] ?? 'Usuario')." is: " . $usn . "<br>Entry time is: " . date('g:i A', strtotime($time))."</span>";*/
-							echo "<span class='text-primary'>Tu usuario de CRAI ".($_SESSION['noname'] ?? 'Usuario')." es: " . $usn . "<br>Hora de ingreso: " . date('g:i A', strtotime($time))."</span>";
-						    ?> </span> <?php
-						} elseif ($msg == "2") {
-						    # code...
-						    ?> <span class="animated flash"> <?php 
-                                                    /*echo "<span class='text-warning'>You just Checked In.<br> Wait for 10 Seconds to Check Out.</span>";*/
-                                                        echo "<span class='text-warning'>Acabas de registrar tu entrada.<br> Espera 10 seg. si deseas registrar tu salida.</span>";
-                                                        if ($greeter) {
-                                                            echo $greeter->synthesizeGreeting('Acabas de registrar tu entrada. Espera 10 seg. si deseas registrar tu salida.');
-                                                        }
-						    ?> </span> <?php
-						} elseif ($msg == "3") {
-						    # code...
-						    ?> <span class="animated flash"> <?php 
-						    /*echo "<span class='text-danger'>Invalid or Expired ".($_SESSION['noname'] ?? 'Usuario')."<br> Contact Librarian for more details.</span>";*/
-                                                        echo "<span class='text-danger'>ID CARD Inválido o No registrado para uso del CRAI.<br> Contacta con un bibliotecario para más detalles.</span>";
-                                                        if ($greeter) {
-                                                            echo $greeter->synthesizeGreeting('ID CARD Inválido o No registrado para uso del CRAI. Contacta con un bibliotecario para más detalles.');
-                                                        }
-						    ?> </span> <?php
-						} elseif ($msg == "4") {
-						    # code...
-						    ?> <span class="animated flash"> <?php 
-						    echo "<span class='text-success'>Your Exit time is: " . date('g:i A', strtotime($time)) . "<br><span class='text-warning'>Total Time Duration : ".$otime[0]."</span>";
-						    ?> </span> <?php
-						} elseif ($msg == "5") {
-						    # code...
-						    ?> <span class="animated flash"> <?php 
-                                                    /*echo "<span class='text-info'>You just Checked Out.<br> Wait for 10 Seconds to Check In.</span>";*/
-                                                        echo "<span class='text-info'>Acabas de registrar tu salida.<br> Espera 10 seg. si deseas registrar tu entrada.</span>";
-                                                        if ($greeter) {
-                                                            echo $greeter->synthesizeGreeting('Acabas de registrar tu salida. Espera 10 seg. si deseas registrar tu entrada.');
-                                                        }
-						    ?> </span> <?php
-						} else { ?> 
+                                        <?php
+                                            if (!empty($msg)) {
+                                                echo "<span class='animated flash'>" . htmlspecialchars($msg) . "</span>";
+                                            } else { ?>
 							<div class="idle">
 							<!--	<div class="animated pulse infinite"> 
 							    <span class='text-info'>SCAN YOUR ID CARD</span>

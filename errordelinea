@@ -1,7 +1,0 @@
-<?php
-$lines = file('.env');
-foreach ($lines as $i => $line) {
-    if (preg_match('/[^\w\.\-=_\/@":]/', trim($line)) && strpos($line, '#') !== 0) {
-        echo "❌ Posible error en línea ".($i+1).": $line\n";
-    }
-}

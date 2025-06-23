@@ -47,15 +47,20 @@
                 return $result;
         }
 
-	function getData($conn, $table){
-		$sql = "SELECT * FROM $table";
-		$result = mysqli_query($conn, $sql);
-		if(!$result){
-			echo "Can't retrieve data " . mysqli_error($conn);
-			exit;
-		}
-		return $result;
-	}
+        function getData($conn, $table){
+                $allowed = ['users', 'roles', 'loc', 'news', 'tablet', 'reg', 'setup', 'log', 'inout', 'inout_log', 'tmp2'];
+                if(!in_array($table, $allowed, true)){
+                        throw new InvalidArgumentException('Invalid table name');
+                }
+
+                $sql = "SELECT * FROM `$table`";
+                $result = mysqli_query($conn, $sql);
+                if(!$result){
+                        echo "Can't retrieve data " . mysqli_error($conn);
+                        exit;
+                }
+                return $result;
+        }
 
         function getDataById($conn, $table, $id){
                 $id = (int) $id;

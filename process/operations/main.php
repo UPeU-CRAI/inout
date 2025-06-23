@@ -76,49 +76,11 @@ $_SESSION['categorycode'] = $user['categorycode'];
 $_SESSION['dateofbirth']  = $user['dateofbirth'];
 $_SESSION['country']      = $user['country'];
 
-// ¿Ya tiene entrada hoy?
-$stmt = $conn->prepare("SELECT * FROM `inout` WHERE cardnumber = ? AND date = ? AND status = 'IN'");
-$stmt->bind_param('ss', $usn, $date);
-$stmt->execute();
-$inResult = $stmt->get_result();
-$inRecord = $inResult->fetch_assoc();
-$stmt->close();
-
-if ($inRecord) {
-    if (!inTmp2($conn, $usn)) {
-        if ($inRecord['loc'] !== ($_SESSION['locname'] ?? '')) {
-            // Entrada anterior en otra sede, cerrar y registrar nueva
-            checkOut($conn, $inRecord['sl'], $time);
-            registerEntry($conn, $usn, $user, $category, $branch, $date, $time, $_SESSION['libtime'], 'IN', $loc);
-            $msg = "1";
-            $d_status = "IN";
-        } else {
-            // Cierre normal
-            checkOut($conn, $inRecord['sl'], $time);
-            $stmt = $conn->prepare("SELECT SUBTIME(`exit`, `entry`) FROM `inout` WHERE cardnumber = ? AND sl = ?");
-            $stmt->bind_param('si', $usn, $inRecord['sl']);
-            $stmt->execute();
-            $res = $stmt->get_result();
-            $otime = $res->fetch_row();
-            $stmt->close();
-
-            $msg = "4";
-            $d_status = "OUT";
-        }
-        addToTmp2($conn, $usn);
-    } else {
-        $msg = "2"; // Registro duplicado reciente
-    }
-} else {
-    if (inTmp2($conn, $usn)) {
-        $msg = "5"; // Duplicado de salida
-    } else {
-        registerEntry($conn, $usn, $user, $category, $branch, $date, $time, $_SESSION['libtime'], 'IN', $loc);
-        $msg = "1";
-        $d_status = "IN";
-        addToTmp2($conn, $usn);
-    }
-}
+// Registrar asistencia en la nueva tabla de log
+$attendance = handleAttendance($usn, $conn);
+$d_status   = $attendance['status'];
+$msg        = $attendance['message'];
+$time       = $attendance['timestamp'];
 
 $e_name = $user['fullname'] ?? '';
 $time1 = date('g:i A', strtotime($time));
@@ -192,5 +154,40 @@ function registerEntry($conn, $usn, $user, $category, $branch, $date, $entryTime
     );
     $stmt->execute();
     $stmt->close();
+}
+
+function handleAttendance(string $id, mysqli $conn): array {
+    $id = strtoupper(sanitize($conn, $id));
+    $timestamp = date('Y-m-d H:i:s');
+
+    $stmt = $conn->prepare("SELECT status, timestamp FROM inout_log WHERE id = ? ORDER BY timestamp DESC LIMIT 1");
+    $stmt->bind_param('s', $id);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $last = $res->fetch_assoc();
+    $stmt->close();
+
+    $status = 'IN';
+    if ($last && $last['status'] === 'IN') {
+        $diff = strtotime($timestamp) - strtotime($last['timestamp']);
+        if ($diff >= 10) {
+            $status = 'OUT';
+        }
+    }
+
+    $message = $status === 'IN'
+        ? "Entrada registrada a las " . date('g:i A', strtotime($timestamp))
+        : "Salida registrada a las " . date('g:i A', strtotime($timestamp));
+
+    $stmt = $conn->prepare("INSERT INTO inout_log (id, timestamp, status) VALUES (?, ?, ?)");
+    $stmt->bind_param('sss', $id, $timestamp, $status);
+    $stmt->execute();
+    $stmt->close();
+
+    return [
+        'status' => $status,
+        'message' => $message,
+        'timestamp' => $timestamp,
+    ];
 }
 ?>

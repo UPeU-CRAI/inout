@@ -77,7 +77,8 @@ Sigue estos pasos para configurar el proyecto en tu entorno local:
         TTS_LANGUAGE_CODE=es-ES
         TTS_VOICE=es-ES-Standard-A
         ```
--   Como verificación rápida, ejecuta `php tests/tts_test.php` después de definir las variables TTS. Este script creará `tests/tts_test.mp3` si las credenciales y dependencias de Google TTS están instaladas correctamente.
+    -   No es necesario establecer `GOOGLE_APPLICATION_CREDENTIALS`; la clase de saludo pasa la ruta de las credenciales directamente a la biblioteca de Google.
+    -   Como verificación rápida, ejecuta `php tests/tts_test.php` después de definir las variables TTS. Este script creará `tests/tts_test.mp3` si las credenciales y dependencias de Google TTS están instaladas correctamente.
 -   Si deseas ver los mensajes de error de PHP durante el desarrollo, establece `DEBUG=1` en tu archivo `.env`.
 
 

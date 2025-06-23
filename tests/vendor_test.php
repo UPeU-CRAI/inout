@@ -16,11 +16,11 @@ if (!file_exists($credentialsPath)) {
     exit(1);
 }
 
-// Establecer la variable de entorno para GCP
-putenv("GOOGLE_APPLICATION_CREDENTIALS={$credentialsPath}");
-
 try {
-    $client = new TextToSpeechClient();
+    // Pasar las credenciales directamente al cliente
+    $client = new TextToSpeechClient([
+        'credentials' => $credentialsPath,
+    ]);
     echo "✅ Google Cloud TextToSpeechClient cargado correctamente." . PHP_EOL;
 } catch (Throwable $e) {
     echo "❌ Error: " . $e->getMessage() . PHP_EOL;

@@ -8,26 +8,38 @@ if (getenv('DEBUG')) {
     error_reporting(E_ALL);
 }
 
-//define('ENV_FILE', '/u01/vhosts/inout.upeu.edu.pe/httpdocs/koha-inout/fronts/koha-inout-lima/.env');
-//require_once ENV_FILE;
-	include "./process/operations/main.php";
-	include "./process/operations/stats.php";
-	$title = "Gate Register";
-	$acc_code = "U02";
-	if(!isset($_SESSION['id']) && empty($_SESSION['id'])) {
-   header("location:login.php");
-	}
-        require "./functions/access.php";
-        require_once "./template/header.php";
-        require "functions/dbfunc.php";
-        require_once "functions/PersonalizedGreeting.php";
-  $loc = $_SESSION['loc'];
+session_start();
+
+if (!isset($_SESSION['id'])) {
+    header('Location: login.php');
+    exit();
+}
+
+require './functions/access.php';
+require 'functions/dbfunc.php';
+include './process/operations/main.php';
+include './process/operations/stats.php';
+require './template/header.php';
+require_once 'functions/PersonalizedGreeting.php';
+
+try {
+    $greeter = new PersonalizedGreeting();
+} catch (Throwable $e) {
+    $greeter = null;
+    if (getenv('DEBUG')) {
+        echo '<p style="color:red">' . htmlspecialchars($e->getMessage()) . '</p>';
+    }
+}
+
+$title = "Gate Register";
+$acc_code = "U02";
+  $loc = $_SESSION['loc'] ?? '';
   $new_arrivals = false;
   $quote = false;
   $clock = false;
   $banner = false;
-  $banner = $_SESSION["banner"];
-  $activedash = $_SESSION["activedash"];
+  $banner = $_SESSION['banner'] ?? null;
+  $activedash = $_SESSION['activedash'] ?? null;
   if($banner == "true"){
   	$banner = true;
   }elseif($banner == "false"){
@@ -73,7 +85,7 @@ if (getenv('DEBUG')) {
 	        	<?php if($banner) { ?>
 							<img class="img-responsive" src="assets/img/banner.png">
 						<?php }else{ ?>
-							<h3 class="text-center"><?php echo $_SESSION['lib']; ?></h3>
+                                                        <h3 class="text-center"><?php echo $_SESSION['lib'] ?? ''; ?></h3>
 	        	<?php } ?>
 	        <?php if($news) { ?>
 	        	<div class="card-block">
@@ -194,8 +206,8 @@ if (getenv('DEBUG')) {
 				?>
 		    <div class="h1 t-shadow">
 					<?php
-                                                if (isset($d_status) && ($d_status === 'OUT' || $d_status === 'IN')) {
-                                                        $g = new PersonalizedGreeting();
+                                                if (isset($d_status) && ($d_status === 'OUT' || $d_status === 'IN') && $greeter) {
+                                                        $g = $greeter;
                                                         $timeOfDay = (int)date('G');
                                                         if ($timeOfDay < 12) {
                                                                 $timeOfDay = 'morning';
@@ -230,24 +242,26 @@ if (getenv('DEBUG')) {
 					<?php
 						if ($msg == "1") {
 							?> <span class="animated flash"> <?php 
-						    /*echo "<span class='text-primary'>Your ".$_SESSION['noname']." is: " . $usn . "<br>Entry time is: " . date('g:i A', strtotime($time))."</span>";*/
-							echo "<span class='text-primary'>Tu usuario de CRAI ".$_SESSION['noname']." es: " . $usn . "<br>Hora de ingreso: " . date('g:i A', strtotime($time))."</span>";
+						    /*echo "<span class='text-primary'>Your ".($_SESSION['noname'] ?? 'Usuario')." is: " . $usn . "<br>Entry time is: " . date('g:i A', strtotime($time))."</span>";*/
+							echo "<span class='text-primary'>Tu usuario de CRAI ".($_SESSION['noname'] ?? 'Usuario')." es: " . $usn . "<br>Hora de ingreso: " . date('g:i A', strtotime($time))."</span>";
 						    ?> </span> <?php
 						} elseif ($msg == "2") {
 						    # code...
 						    ?> <span class="animated flash"> <?php 
                                                     /*echo "<span class='text-warning'>You just Checked In.<br> Wait for 10 Seconds to Check Out.</span>";*/
                                                         echo "<span class='text-warning'>Acabas de registrar tu entrada.<br> Espera 10 seg. si deseas registrar tu salida.</span>";
-                                                        $g = new PersonalizedGreeting();
-                                                        echo $g->synthesizeGreeting('Acabas de registrar tu entrada. Espera 10 seg. si deseas registrar tu salida.');
+                                                        if ($greeter) {
+                                                            echo $greeter->synthesizeGreeting('Acabas de registrar tu entrada. Espera 10 seg. si deseas registrar tu salida.');
+                                                        }
 						    ?> </span> <?php
 						} elseif ($msg == "3") {
 						    # code...
 						    ?> <span class="animated flash"> <?php 
-						    /*echo "<span class='text-danger'>Invalid or Expired ".$_SESSION['noname']."<br> Contact Librarian for more details.</span>";*/
+						    /*echo "<span class='text-danger'>Invalid or Expired ".($_SESSION['noname'] ?? 'Usuario')."<br> Contact Librarian for more details.</span>";*/
                                                         echo "<span class='text-danger'>ID CARD Inválido o No registrado para uso del CRAI.<br> Contacta con un bibliotecario para más detalles.</span>";
-                                                        $g = new PersonalizedGreeting();
-                                                        echo $g->synthesizeGreeting('ID CARD Inválido o No registrado para uso del CRAI. Contacta con un bibliotecario para más detalles.');
+                                                        if ($greeter) {
+                                                            echo $greeter->synthesizeGreeting('ID CARD Inválido o No registrado para uso del CRAI. Contacta con un bibliotecario para más detalles.');
+                                                        }
 						    ?> </span> <?php
 						} elseif ($msg == "4") {
 						    # code...
@@ -259,8 +273,9 @@ if (getenv('DEBUG')) {
 						    ?> <span class="animated flash"> <?php 
                                                     /*echo "<span class='text-info'>You just Checked Out.<br> Wait for 10 Seconds to Check In.</span>";*/
                                                         echo "<span class='text-info'>Acabas de registrar tu salida.<br> Espera 10 seg. si deseas registrar tu entrada.</span>";
-                                                        $g = new PersonalizedGreeting();
-                                                        echo $g->synthesizeGreeting('Acabas de registrar tu salida. Espera 10 seg. si deseas registrar tu entrada.');
+                                                        if ($greeter) {
+                                                            echo $greeter->synthesizeGreeting('Acabas de registrar tu salida. Espera 10 seg. si deseas registrar tu entrada.');
+                                                        }
 						    ?> </span> <?php
 						} else { ?> 
 							<div class="idle">

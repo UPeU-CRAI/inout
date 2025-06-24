@@ -20,28 +20,24 @@ if (!is_dir(dirname($logFile))) {
     mkdir(dirname($logFile), 0775, true);
 }
 
-function handleConnectionError(string $message, bool $debug, string $logFile): void
+function handleConnectionError(string $message, string $logFile): void
 {
     $date = date('c');
     file_put_contents($logFile, "[$date] $message\n", FILE_APPEND);
 
-    if (!$debug) {
-        $message = 'Error de conexión a la base de datos. Contacte al administrador.';
-    }
-
+    // Siempre lanzar una excepción para que los llamadores manejen el error.
     throw new RuntimeException($message);
 }
 
 // Conexión a la base de datos InOut
 $conn = mysqli_connect($_ENV['INOUT_DB_HOST'], $_ENV['INOUT_DB_USER'], $_ENV['INOUT_DB_PASS'], $_ENV['INOUT_DB_NAME']);
 if (!$conn) {
-    handleConnectionError('❌ Falló la conexión a la DB InOut: ' . mysqli_connect_error(), $debug, $logFile);
+    handleConnectionError('❌ Falló la conexión a la DB InOut: ' . mysqli_connect_error(), $logFile);
 }
 
 if (!mysqli_set_charset($conn, 'utf8mb4')) {
     handleConnectionError(
         '❌ No se pudo establecer el conjunto de caracteres utf8mb4 en la DB InOut: ' . mysqli_error($conn),
-        $debug,
         $logFile
     );
 }
@@ -49,13 +45,12 @@ if (!mysqli_set_charset($conn, 'utf8mb4')) {
 // Conexión a la base de datos Koha
 $koha = mysqli_connect($_ENV['KOHA_DB_HOST'], $_ENV['KOHA_DB_USER'], $_ENV['KOHA_DB_PASS'], $_ENV['KOHA_DB_NAME']);
 if (!$koha) {
-    handleConnectionError('❌ Falló la conexión a la DB Koha: ' . mysqli_connect_error(), $debug, $logFile);
+    handleConnectionError('❌ Falló la conexión a la DB Koha: ' . mysqli_connect_error(), $logFile);
 }
 
 if (!mysqli_set_charset($koha, 'utf8mb4')) {
     handleConnectionError(
         '❌ No se pudo establecer el conjunto de caracteres utf8mb4 en la DB Koha: ' . mysqli_error($koha),
-        $debug,
         $logFile
     );
 }

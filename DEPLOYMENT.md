@@ -9,6 +9,8 @@ To deploy the InOut system on a new server:
    - `KOHA_DB_HOST`, `KOHA_DB_USER`, `KOHA_DB_PASS`, `KOHA_DB_NAME`
    - `GOOGLE_APPLICATION_CREDENTIALS`, `TTS_LANGUAGE_CODE`, `TTS_VOICE`
    Ensure the web server user can read this file by running `ls -l .env`.
+   If `GOOGLE_APPLICATION_CREDENTIALS` is not defined the application will
+   throw a runtime exception during startup.
 4. Make sure the web server user can read the application files and write to any directories that require write access (such as `logs/`).
 
 These steps complement the installation instructions in `README.md` and ensure that the application boots correctly in production.

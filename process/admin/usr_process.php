@@ -54,8 +54,9 @@
 	if (isset($_POST['addUser'])) {
 		$id = getsl($conn, 'id', 'users');
 		$date = date("d/m/Y H:m A");
-		$pass = mysqli_real_escape_string($conn, $_POST['password']);
-		$pass = sha1($pass);
+                $pass = mysqli_real_escape_string($conn, $_POST['password']);
+                // store password using PHP's password_hash for better security
+                $pass = password_hash($pass, PASSWORD_DEFAULT);
 		$sql = "INSERT INTO users (id, username, fname, pass, role, active, llogin) VALUES ('".$id."', '".$_POST['username']."', '".$_POST['fname']."', '".$pass."', '".$_POST['role']."', '1', '".$date."')";
 		if (mysqli_query($conn, $sql)) {
 			header('location:../../user_mgnt.php?msg=5');
@@ -70,13 +71,14 @@
 	}
 
 	if (isset($_POST['editUser'])) {
-		if(!$_POST['pass']){
-			$sql = "UPDATE users SET username = '".$_POST['username']."', fname = '".$_POST['fname']."', role = '".$_POST['role']."', active = '".$_POST['active']."' WHERE id = '".$_POST['id']."'";
-		}else{
-			$pass = mysqli_real_escape_string($conn, $_POST['pass']);
-			$pass = sha1($pass);
-			$sql = "UPDATE users SET username = '".$_POST['username']."', fname = '".$_POST['fname']."', pass = '".$pass."', role = '".$_POST['role']."', active = '".$_POST['active']."' WHERE id = '".$_POST['id']."'";
-		}
+                if(!$_POST['pass']){
+                        $sql = "UPDATE users SET username = '".$_POST['username']."', fname = '".$_POST['fname']."', role = '".$_POST['role']."', active = '".$_POST['active']."' WHERE id = '".$_POST['id']."'";
+                }else{
+                        $pass = mysqli_real_escape_string($conn, $_POST['pass']);
+                        // update password using password_hash to replace older SHA1 scheme
+                        $pass = password_hash($pass, PASSWORD_DEFAULT);
+                        $sql = "UPDATE users SET username = '".$_POST['username']."', fname = '".$_POST['fname']."', pass = '".$pass."', role = '".$_POST['role']."', active = '".$_POST['active']."' WHERE id = '".$_POST['id']."'";
+                }
 		if (mysqli_query($conn, $sql)) {
 			header('location:../../user_mgnt.php?msg=6');
 		} else {

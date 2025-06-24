@@ -23,22 +23,33 @@
 		$_SESSION['t'] = "Evening";
 	}
 
-	$name = sanitize($conn, $name);
-	$pass = sanitize($conn, $pass);
+        $name = sanitize($conn, $name);
+        $pass = sanitize($conn, $pass);
 
-	$pass = sha1($pass);
+        // get from db using username only
+        $query = "SELECT * from users where username = '".$name."'";
+        $result = mysqli_query($conn, $query);
+        if(!$result){
+                echo "Empty data " . mysqli_error($conn);
+                exit;
+        }
+        $user = mysqli_fetch_assoc($result);
 
-	// get from db
-	$query = "SELECT * from users where username = '".$name."' and pass = '".$pass."'";
-	$result = mysqli_query($conn, $query);
-	if(!$result){
-		echo "Empty data " . mysqli_error($conn);
-		exit;
-	}
-	$user = mysqli_fetch_assoc($result);
+        $valid = false;
+        if($user){
+                if(password_verify($pass, $user['pass'])){
+                        $valid = true;
+                }elseif(sha1($pass) === $user['pass']){
+                        $valid = true;
+                        // migrate legacy SHA1 hash to password_hash
+                        $newHash = password_hash($pass, PASSWORD_DEFAULT);
+                        mysqli_query($conn, "UPDATE users SET pass = '".$newHash."' WHERE id = '".$user['id']."'");
+                        $user['pass'] = $newHash;
+                }
+        }
 
-	if($name == $user['username'] && $pass == $user['pass'] ){
-		if($user['active']==1){
+        if($valid){
+                if($user['active']==1){
 			//initialise the basic data from setup
 			$query = "SELECT * from setup";
 			$setupArray = mysqli_query($conn, $query);

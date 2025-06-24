@@ -7,7 +7,8 @@ try {
     require_once __DIR__ . '/functions/env_loader.php';
     require_once __DIR__ . '/functions/dbconn.php';
 } catch (RuntimeException $e) {
-    echo $e->getMessage();
+    http_response_code(500);
+    echo '<p>Ocurri\xC3\xB3 un problema al conectar con el servidor. Intente m\xC3\xA1s tarde.</p>';
     exit(1);
 }
 

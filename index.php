@@ -6,7 +6,8 @@ try {
     require_vendor_autoload(__DIR__);
     require_once __DIR__ . '/functions/env_loader.php';
 } catch (RuntimeException $e) {
-    echo $e->getMessage();
+    http_response_code(500);
+    echo '<p>Ocurri\xC3\xB3 un error al iniciar la aplicaci\xC3\xB3n. Por favor, intente m\xC3\xA1s tarde.</p>';
     exit(1);
 }
 

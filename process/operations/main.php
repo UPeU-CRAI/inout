@@ -14,7 +14,7 @@ try {
 } catch (RuntimeException $e) {
     header('Content-Type: application/json');
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'message' => 'Ocurri\xC3\xB3 un problema en el servidor. Intente m\xC3\xA1s tarde.']);
     exit(1);
 }
 
@@ -113,7 +113,13 @@ try {
     error_log("Error en API de asistencia (main.php): " . $e->getMessage());
 
     // Preparar un mensaje amigable para el usuario.
-    $response['message'] = $e instanceof InvalidArgumentException ? $e->getMessage() : 'Error: ' . $e->getMessage();
+    if ($e instanceof InvalidArgumentException) {
+        $response['message'] = $e->getMessage();
+    } elseif ($e instanceof RuntimeException) {
+        $response['message'] = 'Ocurri\xC3\xB3 un problema en el servidor. Intente m\xC3\xA1s tarde.';
+    } else {
+        $response['message'] = 'Error: ' . $e->getMessage();
+    }
     
     // Establecer el código de estado HTTP a 500 para indicar un error de servidor.
     http_response_code(500);

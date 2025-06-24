@@ -194,5 +194,4 @@
 <!-- MAIN CONTENT ENDS -->
 <?php
 	require_once "./template/footer.php";
-	// ob_end_flush();
 ?>

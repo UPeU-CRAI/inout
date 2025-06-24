@@ -104,5 +104,4 @@
     echo "<script type='text/javascript'>showNotification('top','right','Status Updated', 'success');</script>";
   }
 	require_once "./template/footer.php";
-	// ob_end_flush();
 ?>

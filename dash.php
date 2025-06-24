@@ -1,6 +1,7 @@
 <?php
 // Iniciar la sesión es lo primero, para poder verificar el acceso.
-session_start();
+require_once __DIR__ . '/vendor/autoload.php';
+App\Bootstrap::init(__DIR__);
 
 // Si el usuario no ha iniciado sesión, se le redirige a la página de login.
 if (!isset($_SESSION['id'])) {
@@ -12,8 +13,7 @@ if (!isset($_SESSION['id'])) {
 
 // Incluir archivos necesarios para la estructura básica y la base de datos.
 // Se asume que estos archivos no procesan datos, solo definen funciones y conexiones.
-require_once __DIR__ . '/functions/dbconn.php';
-require_once __DIR__ . '/functions/dbfunc.php';
+// Conexiones a la base de datos disponibles vía App\Bootstrap
 
 // Este script carga las estadísticas para los 4 cuadros de resumen.
 // Se mantiene porque es parte del estado inicial del dashboard.

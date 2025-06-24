@@ -1,7 +1,7 @@
 <?php
-// 1. Cargar toda la aplicación con una sola línea.
-// Si algo falla durante el arranque, bootstrap.php detendrá la ejecución con un error claro.
-require_once __DIR__ . '/functions/bootstrap.php';
+// 1. Inicializar la aplicación utilizando las nuevas clases.
+require_once __DIR__ . '/vendor/autoload.php';
+App\Bootstrap::init(__DIR__);
 
 // 2. Lógica de la página (verificar sesión, etc.)
 // Si el usuario ya está logueado, usualmente se le redirige al dashboard.

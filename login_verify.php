@@ -1,7 +1,7 @@
 <?php
-// 1. Cargar y arrancar TODA la aplicación.
-// Esta línea ahora garantiza que get_db_connection() y sanitize() existen.
-require_once __DIR__ . '/functions/bootstrap.php';
+// 1. Inicializar la aplicación con las nuevas clases.
+require_once __DIR__ . '/vendor/autoload.php';
+App\Bootstrap::init(__DIR__);
 
 // 2. Validar que los datos del formulario fueron enviados.
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST['user']) || empty($_POST['pass'])) {

@@ -1,6 +1,5 @@
 <?php
   session_start();
-  // ob_start(ob_gzhandler);
   $title = "Backup";
   $acc_code = "R01";
   require "./functions/access.php";

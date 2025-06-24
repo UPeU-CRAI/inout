@@ -1,4 +1,7 @@
 <?php
+// Ensure environment variables from .env are loaded
+require_once __DIR__ . '/env.php';
+
 // Database connection settings are read from environment variables.
 
 $servername  = $_ENV['INOUT_DB_HOST'] ?? 'localhost';

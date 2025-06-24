@@ -29,3 +29,11 @@ VALUES
   ('banner', 'false'),
   ('activedash', 'quote');
 
+# Create table for attendance log
+CREATE TABLE `inout_log` (
+  `log_id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` varchar(30) NOT NULL,
+  `timestamp` datetime NOT NULL,
+  `status` varchar(10) NOT NULL,
+  PRIMARY KEY (`log_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

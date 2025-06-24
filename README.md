@@ -91,6 +91,22 @@ https://ticket.playtech.in/
 
 For first time, create a new account. 
 
+## Configuration
+
+Copy `.env.example` to `.env` and update the values with your database credentials before running the application.
+
+Environment variables used:
+
+- `INOUT_DB_HOST`
+- `INOUT_DB_USER`
+- `INOUT_DB_PASS`
+- `INOUT_DB_NAME`
+- `KOHA_DB_HOST`
+- `KOHA_DB_USER`
+- `KOHA_DB_PASS`
+- `KOHA_DB_NAME`
+
+
 
 Introduction:
 

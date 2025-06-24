@@ -39,6 +39,14 @@ try {
     }
 } catch (Exception $e) {
     error_log('Error en login_verify.php: ' . $e->getMessage());
-    header('Location: login.php?msg=Ocurrió un error en el servidor.');
+
+    $debug = $_ENV['DEBUG'] ?? false;
+    if (!empty($debug) && strtolower($debug) !== 'false') {
+        $msg = urlencode($e->getMessage());
+    } else {
+        $msg = 'Ocurrió un error en el servidor.';
+    }
+
+    header('Location: login.php?msg=' . $msg);
     exit();
 }

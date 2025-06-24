@@ -113,7 +113,7 @@ try {
     error_log("Error en API de asistencia (main.php): " . $e->getMessage());
 
     // Preparar un mensaje amigable para el usuario.
-    $response['message'] = $e instanceof InvalidArgumentException ? $e->getMessage() : 'Error: ' . $e->getMessage();
+    $response['message'] = $e->getMessage();
     
     // Establecer el código de estado HTTP a 500 para indicar un error de servidor.
     http_response_code(500);

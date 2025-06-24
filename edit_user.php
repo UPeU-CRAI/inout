@@ -1,6 +1,5 @@
 <?php
 	session_start();	
-	// ob_start(ob_gzhandler);
 	$title = "Edit Role";
 	$acc_code = "A02";
 	require "./functions/access.php";

@@ -1,6 +1,5 @@
 <?php
 	session_start();
-	// ob_start(ob_gzhandler);
 	$title = "Dashboard";
 	$acc_code = "";
 	require "./functions/access.php";

@@ -43,13 +43,17 @@ try {
     // --- PASO 2: ESTABLECER Y VERIFICAR CONEXIONES A LA BASE DE DATOS ---
     require_once dirname(__DIR__, 2) . '/functions/dbconn.php';
     
-    $conn = get_db_connection(); // Conexión local
-    if (!$conn || $conn->connect_error) {
-        throw new RuntimeException("Error al conectar con la base de datos local: " . ($conn->connect_error ?? 'Error desconocido'));
+    // Conexiones a la BD establecidas en dbconn.php
+    if (!isset($conn) || !$conn instanceof mysqli || $conn->connect_error) {
+        throw new RuntimeException(
+            "Error al conectar con la base de datos local: " . ($conn->connect_error ?? 'Variable no instanciada')
+        );
     }
 
     if (!isset($koha) || !$koha instanceof mysqli || $koha->connect_error) {
-        throw new RuntimeException("Error al conectar con la base de datos de Koha: " . ($koha->connect_error ?? 'Variable no instanciada'));
+        throw new RuntimeException(
+            "Error al conectar con la base de datos de Koha: " . ($koha->connect_error ?? 'Variable no instanciada')
+        );
     }
 
     // --- PASO 3: PROCESAR LOS DATOS DEL USUARIO ---

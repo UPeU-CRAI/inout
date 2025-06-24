@@ -1,7 +1,6 @@
 .DS_Store
 blank.php
 vendor/
-test_tts.php
 .phpunit.result.cache
 logs/*
 !logs/.gitkeep

@@ -230,5 +230,4 @@
     echo "<script type='text/javascript'>showNotification('top','right','Location Added Successfully', 'success');</script>";
   }
 	require_once "./template/footer.php";
-	// ob_end_flush();
 ?>

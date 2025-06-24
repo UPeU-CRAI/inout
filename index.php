@@ -1,8 +1,20 @@
 <?php
 
+require_once __DIR__ . '/functions/autoload_helper.php';
+require_vendor_autoload(__DIR__);
+
+use Dotenv\Dotenv;
+
+// Cargar variables de entorno antes de revisar el modo DEBUG
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
 // --- LÍNEAS DE DEPURACIÓN ---
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+$debug = $_ENV['DEBUG'] ?? getenv('DEBUG');
+if ($debug) {
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+}
 // ---------------------------
 
 session_start();

@@ -2,16 +2,14 @@
 
 declare(strict_types=1);
 
-// Se asegura de que el cargador de Composer esté disponible.
-// La ruta es relativa al directorio del script que instancia esta clase.
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+// Se asegura de que el cargador de Composer esté disponible y las variables de entorno cargadas.
+require_once __DIR__ . '/env_loader.php';
 
 use Google\Cloud\TextToSpeech\V1\AudioConfig;
 use Google\Cloud\TextToSpeech\V1\AudioEncoding;
 use Google\Cloud\TextToSpeech\V1\SynthesisInput;
 use Google\Cloud\TextToSpeech\V1\TextToSpeechClient;
 use Google\Cloud\TextToSpeech\V1\VoiceSelectionParams;
-use Dotenv\Dotenv;
 
 /**
  * Gestiona la creación y síntesis de saludos de voz personalizados
@@ -40,10 +38,7 @@ class PersonalizedGreeting
      */
     public function __construct()
     {
-        // Carga las variables de entorno desde el directorio raíz del proyecto.
-        $dotenv = Dotenv::createImmutable(dirname(__DIR__));
-        $dotenv->load();
-
+        // Las variables de entorno ya están disponibles por env_loader.php
         $this->credentialsPath = $_ENV['GOOGLE_APPLICATION_CREDENTIALS'] ?? '';
         $this->languageCode = $_ENV['TTS_LANGUAGE_CODE'] ?? 'es-ES';
         $this->voiceName = $_ENV['TTS_VOICE'] ?? null;

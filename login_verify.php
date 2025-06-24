@@ -15,21 +15,26 @@ $conn = get_db_connection();
 // 4. Procesar y verificar las credenciales.
 try {
     $user = sanitize($conn, $_POST['user']);
-    $pass_sha1 = sha1(trim($_POST['pass']));
-    
-    $stmt = $conn->prepare("SELECT id, user, name, pass, role, loc, lib_name, banner, dashboard FROM users WHERE user = ? AND pass = ?");
-    $stmt->bind_param("ss", $user, $pass_sha1);
+    $stmt = $conn->prepare(
+        "SELECT id, user, name, pass, role, loc, lib_name, banner, dashboard
+         FROM users WHERE user = ?"
+    );
+    $stmt->bind_param('s', $user);
     $stmt->execute();
     $result = $stmt->get_result();
     $udata = $result->fetch_assoc();
     $stmt->close();
 
-    if ($udata) {
+    if ($udata && password_verify($_POST['pass'], $udata['pass'])) {
         // Éxito: Guardar datos en la sesión y redirigir.
         $_SESSION['id'] = $udata['id'];
         $_SESSION['user_name'] = $udata['name'];
-        // ... (guardar otras variables de sesión)
-        
+        $_SESSION['role'] = $udata['role'];
+        $_SESSION['loc'] = $udata['loc'];
+        $_SESSION['lib_name'] = $udata['lib_name'];
+        $_SESSION['banner'] = $udata['banner'];
+        $_SESSION['dashboard'] = $udata['dashboard'];
+
         header('Location: dash.php');
         exit();
     } else {

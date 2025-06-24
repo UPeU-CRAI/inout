@@ -208,7 +208,7 @@
 			        <div class="card-body">
 		            <?php 
 		              $query = "SELECT loc FROM `loc`";
-		              $result = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error());
+                              $result = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error($conn));
 		              while($res = mysqli_fetch_array($result)){
 		                echo "<div class='row'><div class='col-md-12'><h4>".$res['loc']."</h4></div></div>";
 		              }

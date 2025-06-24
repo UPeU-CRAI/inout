@@ -39,6 +39,14 @@ $response = [
     'audioPlayer' => ''
 ];
 
+try {
+    require_once dirname(__DIR__, 2) . '/functions/dbconn.php';
+} catch (RuntimeException $e) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    exit;
+}
+
 // Variables de conexión que se usarán en el bloque principal.
 $conn = null;
 $koha = null;
@@ -50,8 +58,6 @@ try {
     }
 
     // --- PASO 2: ESTABLECER Y VERIFICAR CONEXIONES A LA BASE DE DATOS ---
-    require_once dirname(__DIR__, 2) . '/functions/dbconn.php';
-    
     // Conexiones a la BD establecidas en dbconn.php
     if (!isset($conn) || !$conn instanceof mysqli || $conn->connect_error) {
         throw new RuntimeException(

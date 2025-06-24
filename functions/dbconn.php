@@ -29,12 +29,8 @@ function handleConnectionError(string $message, bool $debug, string $logFile): v
     $date = date('c');
     file_put_contents($logFile, "[$date] $message\n", FILE_APPEND);
 
-    if ($debug) {
-        throw new RuntimeException($message);
-    }
-
-    echo '<p>Error de conexión a la base de datos. Contacte al administrador.</p>';
-    exit;
+    $userMessage = $debug ? $message : 'Error de conexión a la base de datos. Contacte al administrador.';
+    throw new RuntimeException($userMessage);
 }
 
 // Conexión a la base de datos InOut

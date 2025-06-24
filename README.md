@@ -51,7 +51,7 @@ Sigue estos pasos para configurar el proyecto en tu entorno local:
 
 3.  **Configurar la Base de Datos:**
     -   Crea una base de datos MySQL para el proyecto (ej. `inout_db`).
-    -   Importa el esquema de la base de datos y ejecuta las consultas de `updatedb.txt` (incluye la creación de la tabla `inout_log`).
+    -   Importa el esquema de la base de datos y ejecuta las consultas de `updatedb.txt` (incluye la creación de la tabla `inout_log` y el `CREATE TABLE users` con las columnas `lib_name`, `banner` y `dashboard`).
     -   Copia el archivo `.env.example` a `.env` y actualiza las credenciales de conexión. **Este archivo es obligatorio para que la aplicación pueda conectarse a la base de datos:**
         ```bash
         cp .env.example .env

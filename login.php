@@ -7,7 +7,7 @@ try {
     require_once __DIR__ . '/functions/env_loader.php';
     require_once __DIR__ . '/functions/dbconn.php';
 } catch (RuntimeException $e) {
-    echo $e->getMessage();
+    echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
     exit(1);
 }
 

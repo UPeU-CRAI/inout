@@ -6,7 +6,7 @@ try {
     require_vendor_autoload(__DIR__);
     require_once __DIR__ . '/functions/env_loader.php';
 } catch (RuntimeException $e) {
-    echo $e->getMessage();
+    echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
     exit(1);
 }
 

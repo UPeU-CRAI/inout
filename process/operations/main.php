@@ -7,8 +7,16 @@
 // --- INICIO DEL BLOQUE DE ARRANQUE ---
 // Carga el entorno de la aplicación, incluyendo Composer y helpers.
 require_once dirname(__DIR__, 2) . '/functions/autoload_helper.php';
-require_vendor_autoload(dirname(__DIR__, 2));
-require_once dirname(__DIR__, 2) . '/functions/general.php';
+
+try {
+    require_vendor_autoload(dirname(__DIR__, 2));
+    require_once dirname(__DIR__, 2) . '/functions/general.php';
+} catch (RuntimeException $e) {
+    header('Content-Type: application/json');
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    exit(1);
+}
 
 // Habilitar que MySQLi lance excepciones en lugar de solo advertencias.
 // Esto permite que nuestro bloque try-catch atrape errores de conexión.

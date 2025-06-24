@@ -3,8 +3,9 @@ function require_vendor_autoload(string $baseDir): void
 {
     $autoload = rtrim($baseDir, '/').'/vendor/autoload.php';
     if (!file_exists($autoload)) {
-        echo 'Vendor autoload not found. Please run "composer install".';
-        exit;
+        throw new RuntimeException(
+            'Vendor autoload not found. Please run "composer install".'
+        );
     }
     require_once $autoload;
 }

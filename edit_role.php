@@ -328,11 +328,12 @@
 	    </div>
 	  </div>              
 	</div>
-	<?php
-		if($_GET['msg']==1){
-			echo "<script type='text/javascript'>showNotification('top','right','Please select atleast one section', 'warning');</script>";
-		}
-	?>
+        <?php
+                $msg = $_GET['msg'] ?? null;
+                if ($msg === '1') {
+                        echo "<script type='text/javascript'>showNotification('top','right','Please select atleast one section', 'warning');</script>";
+                }
+        ?>
 </div>
 <!-- MAIN CONTENT ENDS -->
 <?php

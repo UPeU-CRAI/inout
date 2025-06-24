@@ -279,35 +279,36 @@
 			</div>   
 		</div>              
 	</div>
-	<?php
-		if($_GET['msg']==1){
-			echo "<script type='text/javascript'>showNotification('top','right','Please select atleast one section!', 'warning');</script>";
-		}
-		if($_GET['msg']==2){
-			echo "<script type='text/javascript'>showNotification('top','right','Role Added Successfully', 'success');</script>";
-		}
-		if($_GET['msg']==3){
-			echo "<script type='text/javascript'>showNotification('top','right','Role Deleted Successfully', 'danger');</script>";
-		}
-		if($_GET['msg']==4){
-			echo "<script type='text/javascript'>showNotification('top','right','Role Updated Successfully', 'info');</script>";
-		}
-		if($_GET['msg']==5){
-			echo "<script type='text/javascript'>showNotification('top','right','User Added Successfully', 'success');</script>";
-		}
-		if($_GET['msg']==6){
-			echo "<script type='text/javascript'>showNotification('top','right','User Updated Successfully', 'info');</script>";
-		}
-		if($_GET['msg']==7){
-			echo "<script type='text/javascript'>showNotification('top','right','User Deleted Successfully', 'danger');</script>";
-		}
-		if($_GET['msg']==8){
-			echo "<script type='text/javascript'>showNotification('top','right','Duplicate Username!', 'warning');</script>";
-		}
-		if($_GET['msg']==9){
-			echo "<script type='text/javascript'>showNotification('top','right','Duplicate Role Name!', 'warning');</script>";
-		}
-	?>
+        <?php
+                $msg = $_GET['msg'] ?? null;
+                if ($msg === '1') {
+                        echo "<script type='text/javascript'>showNotification('top','right','Please select atleast one section!', 'warning');</script>";
+                }
+                if ($msg === '2') {
+                        echo "<script type='text/javascript'>showNotification('top','right','Role Added Successfully', 'success');</script>";
+                }
+                if ($msg === '3') {
+                        echo "<script type='text/javascript'>showNotification('top','right','Role Deleted Successfully', 'danger');</script>";
+                }
+                if ($msg === '4') {
+                        echo "<script type='text/javascript'>showNotification('top','right','Role Updated Successfully', 'info');</script>";
+                }
+                if ($msg === '5') {
+                        echo "<script type='text/javascript'>showNotification('top','right','User Added Successfully', 'success');</script>";
+                }
+                if ($msg === '6') {
+                        echo "<script type='text/javascript'>showNotification('top','right','User Updated Successfully', 'info');</script>";
+                }
+                if ($msg === '7') {
+                        echo "<script type='text/javascript'>showNotification('top','right','User Deleted Successfully', 'danger');</script>";
+                }
+                if ($msg === '8') {
+                        echo "<script type='text/javascript'>showNotification('top','right','Duplicate Username!', 'warning');</script>";
+                }
+                if ($msg === '9') {
+                        echo "<script type='text/javascript'>showNotification('top','right','Duplicate Role Name!', 'warning');</script>";
+                }
+        ?>
 </div>
 <!-- MAIN CONTENT ENDS -->
 <?php

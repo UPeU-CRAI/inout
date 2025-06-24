@@ -2,12 +2,7 @@
 
 require_once __DIR__ . '/functions/autoload_helper.php';
 require_vendor_autoload(__DIR__);
-
-use Dotenv\Dotenv;
-
-// Cargar variables de entorno antes de revisar el modo DEBUG
-$dotenv = Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+require_once __DIR__ . '/functions/env_loader.php';
 
 // --- LÍNEAS DE DEPURACIÓN ---
 $debug = $_ENV['DEBUG'] ?? getenv('DEBUG');

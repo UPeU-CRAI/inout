@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/functions/autoload_helper.php';
 require_vendor_autoload(__DIR__);
+require_once __DIR__ . '/functions/env_loader.php';
 require_once __DIR__ . '/functions/dbconn.php';
 
 // Mostrar errores si DEBUG está activo

@@ -1,11 +1,5 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
-
-use Dotenv\Dotenv;
-
-// Cargar el archivo .env de la raíz del proyecto
-$dotenv = Dotenv::createImmutable(dirname(__DIR__));
-$dotenv->load();
+require_once __DIR__ . '/env_loader.php';
 
 $required = [
     'INOUT_DB_HOST', 'INOUT_DB_USER', 'INOUT_DB_PASS', 'INOUT_DB_NAME',

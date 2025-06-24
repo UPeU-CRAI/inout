@@ -1,8 +1,14 @@
 <?php
 
 require_once __DIR__ . '/functions/autoload_helper.php';
-require_vendor_autoload(__DIR__);
-require_once __DIR__ . '/functions/env_loader.php';
+
+try {
+    require_vendor_autoload(__DIR__);
+    require_once __DIR__ . '/functions/env_loader.php';
+} catch (RuntimeException $e) {
+    echo $e->getMessage();
+    exit(1);
+}
 
 // --- LÍNEAS DE DEPURACIÓN ---
 $debug = $_ENV['DEBUG'] ?? getenv('DEBUG');

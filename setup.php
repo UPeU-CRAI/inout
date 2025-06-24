@@ -1,6 +1,5 @@
 <?php
 	session_start();
-	// ob_start(ob_gzhandler);
 	$title = "Setup";
 	// $acc_code = "S01";
 	$acc_code = "S01";

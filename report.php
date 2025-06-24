@@ -1,6 +1,5 @@
 <?php
 	session_start();
-	// ob_start(ob_gzhandler);
 	$title = "Report";
 	$acc_code = "R01";
 	$table = true;

@@ -1,6 +1,5 @@
 <?php
 	session_start();
-	// ob_start(ob_gzhandler);
 	$title = "Reports";
 	$acc_code = "";
 	// $acc_code = "R01";

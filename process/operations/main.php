@@ -112,13 +112,16 @@ try {
     // Registrar el error técnico detallado en el log del servidor para el desarrollador.
     error_log("Error en API de asistencia (main.php): " . $e->getMessage());
 
-    // Preparar un mensaje amigable para el usuario.
+    // Preparar un mensaje amigable y seguro para el usuario en la respuesta JSON.
     if ($e instanceof InvalidArgumentException) {
+        // Los errores de validación (ej. "ID no proporcionado") son seguros de mostrar al usuario.
         $response['message'] = $e->getMessage();
-    } elseif ($e instanceof RuntimeException) {
-        $response['message'] = 'Ocurri\xC3\xB3 un problema en el servidor. Intente m\xC3\xA1s tarde.';
     } else {
-        $response['message'] = 'Error: ' . $e->getMessage();
+        // Para cualquier otro error (RuntimeException, errores de BD, de Google, etc.),
+        // mostramos un mensaje diferente dependiendo de si estamos en modo de depuración.
+        $response['message'] = !empty($_ENV['DEBUG'])
+            ? 'Error Interno: ' . $e->getMessage() // Mensaje técnico para el desarrollador
+            : 'Ocurrió un problema en el servidor. Por favor, intente más tarde.'; // Mensaje genérico para el usuario
     }
     
     // Establecer el código de estado HTTP a 500 para indicar un error de servidor.

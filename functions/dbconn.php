@@ -8,7 +8,7 @@ $db          = $_ENV['INOUT_DB_NAME'] ?? '';
 
 $conn = mysqli_connect($servername, $username, $password, $db);
 if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error($conn));
+    die("Connection failed: " . mysqli_connect_error());
 }
 
 $kohaServername = $_ENV['KOHA_DB_HOST'] ?? 'localhost';
@@ -17,7 +17,7 @@ $kohaPassword   = $_ENV['KOHA_DB_PASS'] ?? '';
 $kohaDb         = $_ENV['KOHA_DB_NAME'] ?? '';
 $koha = mysqli_connect($kohaServername, $kohaUsername, $kohaPassword, $kohaDb);
 if (!$koha) {
-    die("Connection failed: " . mysqli_connect_error($koha));
+    die("Connection failed: " . mysqli_connect_error());
 }
 
 function sanitize($conn, $str){

@@ -7,7 +7,19 @@ try {
     require_once __DIR__ . '/functions/env_loader.php';
 require_once __DIR__ . '/functions/dbconn.php';
 } catch (RuntimeException $e) {
-    echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
+    // Establecer el código de estado HTTP 500 para indicar un error de servidor.
+    http_response_code(500);
+
+    // Comprobar si estamos en modo de depuración (usando una variable de entorno).
+    if (!empty($_ENV['DEBUG'])) {
+        // En modo depuración, muestra el error técnico detallado para que puedas arreglarlo.
+        echo '<p>Error de Depuración: ' . htmlspecialchars($e->getMessage()) . '</p>';
+    } else {
+        // En modo producción, muestra un mensaje genérico y seguro para el usuario.
+        echo '<p>Ocurrió un error al iniciar la aplicación. Por favor, intente más tarde.</p>';
+    }
+    
+    // Terminar la ejecución del script.
     exit(1);
 }
 

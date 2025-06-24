@@ -1,37 +1,44 @@
 <?php
-        session_start();
-        // ob_start(ob_gzhandler);
-        $title = "Dashboard";
-        $acc_code = "INDEX";
-        require "./functions/access.php";
-        $msg = $_GET['msg'] ?? null;
-	require_once "./template/header.php";
-	require_once "./template/sidebar.php";
-?>
-<!-- MAIN CONTENT START -->
-<div class="content" style="min-height: calc(100vh - 160px);">
-	<div class="container-fluid">
-	  <div class="row">
-	    <div class="col-md-12">
-	       Welcome <?php echo $_SESSION['user_name']; ?>.. 
-	    </div>
-	  </div>              
-	</div>
-</div>
-<script type="text/javascript">
 
-</script>
-<!-- MAIN CONTENT ENDS -->
+// --- LÍNEAS DE DEPURACIÓN ---
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+// ---------------------------
+
+session_start();
+// La función ob_start() está comentada, por lo que ob_end_flush() al final causaba un error fatal.
+// ob_start(ob_gzhandler);
+
+$title = "Dashboard";
+$acc_code = "INDEX";
+require "./functions/access.php";
+$msg = $_GET['msg'] ?? null;
+require_once "./template/header.php";
+require_once "./template/sidebar.php";
+?>
+
+<div class="content" style="min-height: calc(100vh - 160px);">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h3>Bienvenido <?php echo htmlspecialchars($_SESSION['user_name']); ?>..</h3>
+            </div>
+        </div>
+    </div>
+</div>
 <?php
-    if ($msg === 'Evening') {
-      echo "<script type='text/javascript'>showNotification('top','right','Good Evening ".$_SESSION['user_name']."', 'info');</script>";
-    }
-    if ($msg === 'Morning') {
-      echo "<script type='text/javascript'>showNotification('top','right','Good Morning ".$_SESSION['user_name']."', 'info');</script>";
-    }
-    if ($msg === 'Noon') {
-      echo "<script type='text/javascript'>showNotification('top','right','Good After Noon ".$_SESSION['user_name']."', 'info');</script>";
-    }
-	require_once "./template/footer.php";
-	ob_end_flush();
+// Se restaura la funcionalidad de las notificaciones que se había perdido.
+if ($msg === 'Evening') {
+    echo "<script type='text/javascript'>showNotification('top','right','Good Evening " . htmlspecialchars($_SESSION['user_name']) . "', 'info');</script>";
+}
+if ($msg === 'Morning') {
+    echo "<script type='text/javascript'>showNotification('top','right','Good Morning " . htmlspecialchars($_SESSION['user_name']) . "', 'info');</script>";
+}
+if ($msg === 'Noon') {
+    echo "<script type='text/javascript'>showNotification('top','right','Good After Noon " . htmlspecialchars($_SESSION['user_name']) . "', 'info');</script>";
+}
+
+require_once "./template/footer.php";
+// Se elimina la llamada a ob_end_flush() para prevenir el error fatal.
+// ob_end_flush();
 ?>

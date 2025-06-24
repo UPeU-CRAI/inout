@@ -1,4 +1,10 @@
 <?php
+// --- AÑADE ESTAS LÍNEAS PARA VER EL ERROR ---
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+// -------------------------------------------
+
 require_once __DIR__ . '/functions/autoload_helper.php';
 require_vendor_autoload(__DIR__);
 
@@ -15,67 +21,75 @@ if (!isset($_SESSION['id'])) {
     exit();
 }
 
-require './functions/access.php';
+// ==================================================================
+// SOLUCIÓN: Definir TODAS las variables ANTES de incluir otros archivos
+// ==================================================================
+$acc_code = "U02"; // Se define ANTES de llamar a access.php
+require './functions/access.php'; // Ahora access.php puede usar $acc_code
+
 require 'functions/dbfunc.php';
 include './process/operations/main.php';
 include './process/operations/stats.php';
-require './template/header.php';
+
+$title = "Gate Register"; // Se define ANTES de llamar a header.php
+$table = false;           // Se define ANTES de llamar a footer.php
+require './template/header.php'; // Ahora el header puede usar $title
+
 require_once 'functions/PersonalizedGreeting.php';
 
+// Intenta crear el objeto para los saludos de voz
 try {
     $greeter = new PersonalizedGreeting();
 } catch (Throwable $e) {
     $greeter = null;
     if (getenv('DEBUG')) {
-        echo '<p style="color:red">' . htmlspecialchars($e->getMessage()) . '</p>';
+        echo '<p style="color:red; text-align:center;">Error al iniciar el Saludo Personalizado: ' . htmlspecialchars($e->getMessage()) . '</p>';
     }
 }
 
-$title = "Gate Register";
-$acc_code = "U02";
-  $loc = $_SESSION['loc'] ?? '';
-  $new_arrivals = false;
-  $quote = false;
-  $clock = false;
-  $banner = false;
-  $banner = $_SESSION['banner'] ?? null;
-  $activedash = $_SESSION['activedash'] ?? null;
-  if($banner == "true"){
-  	$banner = true;
-  }elseif($banner == "false"){
-  	$banner = false;
-  }
-  if($activedash == 'clock'){
-  	$clock = true;
-  }elseif($activedash == 'quote'){
-  	$quote = true;
-  }elseif($activedash == 'newarrivals'){
-  	$new_arrivals = true;
-  }else{
-  	$new_arrivals = false;
-	  $quote = false;
-	  $clock = false;
-  }
-	$data = checknews($conn, $loc);
-	if($data){
-		$news = true;
-		$new_arrivals = false;
-	  $quote = false;
-	  $clock = false;
-	  $banner = false;
-	}else{
-		$news = false;
-	}
- $img_flag = true;
-	if(!$e_img){
-		$img_flag = false;
-	}
-	$jsonfile = file_get_contents("assets/quotes.json");
-  $quotes = json_decode($jsonfile, true);
-  $onequote = $quotes[rand(0, count($quotes) - 1)];
+// --- Lógica para configurar la vista del dashboard ---
+$loc = $_SESSION['loc'] ?? '';
+$new_arrivals = false;
+$quote = false;
+$clock = false;
+$banner = false;
+$banner = $_SESSION['banner'] ?? null;
+$activedash = $_SESSION['activedash'] ?? null;
+if ($banner == "true") {
+    $banner = true;
+} elseif ($banner == "false") {
+    $banner = false;
+}
+if ($activedash == 'clock') {
+    $clock = true;
+} elseif ($activedash == 'quote') {
+    $quote = true;
+} elseif ($activedash == 'newarrivals') {
+    $new_arrivals = true;
+} else {
+    $new_arrivals = false;
+    $quote = false;
+    $clock = false;
+}
+$data = checknews($conn, $loc);
+if ($data) {
+    $news = true;
+    $new_arrivals = false;
+    $quote = false;
+    $clock = false;
+    $banner = false;
+} else {
+    $news = false;
+}
+$img_flag = true;
+if (!$e_img) {
+    $img_flag = false;
+}
+$jsonfile = file_get_contents("assets/quotes.json");
+$quotes = json_decode($jsonfile, true);
+$onequote = $quotes[rand(0, count($quotes) - 1)];
 ?>
 <body style="background-color: #003865;"> 
-<!-- MAIN CONTENT START -->
 <div class="content" style="min-height: calc(100vh - 90px);">
 	<div class="container-fluid">
 	  <div class="row">
@@ -85,7 +99,7 @@ $acc_code = "U02";
 	        	<?php if($banner) { ?>
 							<img class="img-responsive" src="assets/img/banner.png">
 						<?php }else{ ?>
-                                                        <h3 class="text-center"><?php echo $_SESSION['lib'] ?? ''; ?></h3>
+              <h3 class="text-center"><?php echo $_SESSION['lib'] ?? ''; ?></h3>
 	        	<?php } ?>
 	        <?php if($news) { ?>
 	        	<div class="card-block">
@@ -162,8 +176,7 @@ $acc_code = "U02";
 			<div class="elementor-divider"> 
 				<span class="elementor-divider-separator"> </span>
 			</div>
-		    	<!-- <h3><?php echo $_SESSION['locname']; ?></h3> -->
-		    	<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="GET">
+		    	<form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="GET">
 		        <input type="text" name="id" id="usn" class="form_imput_id_card" value="" autofocus="true">
 					</form>
 		    </div>
@@ -171,148 +184,94 @@ $acc_code = "U02";
 			<script>
 				document.addEventListener('DOMContentLoaded', function () {
 					var usnInput = document.getElementById('usn');
-
-					// Escucha el clic en cualquier lugar del documento
 					document.addEventListener('click', function (event) {
-						// Verifica si el clic no fue dentro del input
 						if (event.target !== usnInput) {
-							// Enfoca nuevamente el input
 							usnInput.focus();
 						}
 					});
 				});
 			</script>
 
-	    	<?php
-	    		if(isset($d_status)){
-	    	?>
+	    	<?php if(isset($d_status)): ?>
 	    	<div class="card-body text-center">
-	    		<?php if($img_flag) { ?>
-	    			<img src="data:image/jpg/png/jpeg;base64,<?php echo base64_encode($e_img); ?>"  class="rounded-circle mb-4" alt="...">
-		    	<?php } else { ?>
-		    		<img src="assets/img/placeholder.png" class="rounded-circle mb-4" alt="...">
-		    	<?php } ?>
-                                        <h4 class="mb-0" style="font-weight: 800;"><?php echo $e_name; ?></h4>
-                                        <p class="mb-2"><?php echo $usn; ?></p>
-                                        <?php if(isset($_SESSION['categorycode'])) { ?>
-                                                <p class="mb-1">Categoría: <?php echo $_SESSION['categorycode']; ?></p>
-                                        <?php }
-                                              if(isset($_SESSION['dateofbirth']) && isset($_SESSION['country'])) { ?>
-                                                <p class="mb-1">Nacimiento: <?php echo $_SESSION['dateofbirth']; ?> | País: <?php echo $_SESSION['country']; ?></p>
-                                        <?php } ?>
-                                </div>
-				<?php
-					}
-				?>
+	    		<?php if($img_flag): ?>
+	    			<img src="data:image/jpeg;base64,<?php echo base64_encode($e_img); ?>"  class="rounded-circle mb-4" alt="User Image">
+		    	<?php else: ?>
+		    		<img src="assets/img/placeholder.png" class="rounded-circle mb-4" alt="Placeholder Image">
+		    	<?php endif; ?>
+          <h4 class="mb-0" style="font-weight: 800;"><?php echo htmlspecialchars($e_name); ?></h4>
+          <p class="mb-2"><?php echo htmlspecialchars($usn); ?></p>
+          <?php if(isset($_SESSION['categorycode'])): ?>
+              <p class="mb-1">Categoría: <?php echo htmlspecialchars($_SESSION['categorycode']); ?></p>
+          <?php endif; ?>
+          <?php if(isset($_SESSION['dateofbirth']) && isset($_SESSION['country'])): ?>
+              <p class="mb-1">Nacimiento: <?php echo htmlspecialchars($_SESSION['dateofbirth']); ?> | País: <?php echo htmlspecialchars($_SESSION['country']); ?></p>
+          <?php endif; ?>
+        </div>
+				<?php endif; ?>
+
 		    <div class="h1 t-shadow">
 					<?php
-                                                if (isset($d_status) && ($d_status === 'OUT' || $d_status === 'IN') && $greeter) {
-                                                        $g = $greeter;
-                                                        $timeOfDay = (int)date('G');
-                                                        if ($timeOfDay < 12) {
-                                                                $timeOfDay = 'morning';
-                                                        } elseif ($timeOfDay < 18) {
-                                                                $timeOfDay = 'afternoon';
-                                                        } else {
-                                                                $timeOfDay = 'evening';
-                                                        }
-                                                        $text = $g->buildGreeting(
-                                                                $e_name ?? '',
-                                                                $timeOfDay,
-                                                                $_SESSION['categorycode'] ?? '',
-                                                                $_SESSION['dateofbirth'] ?? null,
-                                                                $_SESSION['country'] ?? null
-                                                        );
-                                                        $css = $d_status == "IN" ? 'text-success' : 'text-danger';
-                                                        echo "<span class='status-inout {$css} animated flash'>" . $text . "</span>";
-                                                        //echo $g->synthesizeGreeting($text);
-							try {
-							    //echo $g->synthesizeGreeting($text);
-							    $greeting = $g->synthesizeGreeting($text);
-							    echo $greeting;
-							    file_put_contents('/tmp/audio_tag.html', $greeting);
+            if (isset($d_status) && ($d_status === 'OUT' || $d_status === 'IN') && $greeter) {
+                $timeOfDay = match(true) {
+                    (int)date('G') < 12 => 'morning',
+                    (int)date('G') < 18 => 'afternoon',
+                    default => 'evening',
+                };
 
-							} catch (Throwable $e) {
-							    echo "<pre>Error en síntesis: " . $e->getMessage() . "</pre>";
-							}	
-                                                }
+                $text = $greeter->buildGreeting(
+                        $e_name ?? '',
+                        $timeOfDay,
+                        $_SESSION['categorycode'] ?? '',
+                        $_SESSION['dateofbirth'] ?? null,
+                        $_SESSION['country'] ?? null
+                );
+                
+                $css = $d_status == "IN" ? 'text-success' : 'text-danger';
+                echo "<span class='status-inout {$css} animated flash'>" . htmlspecialchars($text) . "</span>";
+                
+                try {
+                    $audioTag = $greeter->synthesizeGreeting($text);
+                    echo $audioTag;
+                } catch (Throwable $e) {
+                    echo "<p style='color:red;'>Error en síntesis: " . htmlspecialchars($e->getMessage()) . "</p>";
+                }	
+            }
 					?>
 				</div>
 				<div class="h2 t-shadow">
-                                        <?php
-                                            if (!empty($msg)) {
-                                                echo "<span class='animated flash'>" . htmlspecialchars($msg) . "</span>";
-                                            } else { ?>
-							<div class="idle">
-							<!--	<div class="animated pulse infinite"> 
-							    <span class='text-info'>SCAN YOUR ID CARD</span>
-							  </div> -->
-							  <div class="row">
-									<div class="col-md-3">
-				            <div class="card card-stats">
-				              <div class="card-header card-header-info card-header-icon">
-				                <div class="card-icon">
-				                </div>
-				                <p class="card-category">Hombres</p>
-				                <h3 class="card-title"><?php echo $male[0]; ?></h3>
-				              </div>
-				              <div class="card-footer">
-				                <div class="stats">
-				                  <i class="material-icons">update</i> Just Updated
-				                </div>
-				              </div>
-				            </div>
-				          </div>
-				          <div class="col-md-3">
-				            <div class="card card-stats">
-				              <div class="card-header card-header-rose card-header-icon">
-				                <div class="card-icon">
-				                </div>
-				                <p class="card-category">Mujeres</p>
-				                <h3 class="card-title"><?php echo $female[0]; ?></h3>
-				              </div>
-				              <div class="card-footer">
-				                <div class="stats">
-				                  <i class="material-icons">update</i> Just Updated
-				                </div>
-				              </div>
-				            </div>
-				          </div>
-				          <div class="col-md-3">
-				            <div class="card card-stats">
-				              <div class="card-header card-header-success card-header-icon">
-				                <div class="card-icon">
-				                </div>
-				                <p class="card-category">Somos</p>
-				                <h3 class="card-title"><?php echo $tin[0]; ?></h3>
-				              </div>
-				              <div class="card-footer">
-				                <div class="stats">
-				                  <i class="material-icons">update</i> Just Updated
-				                </div>
-				              </div>
-				            </div>
-				          </div>
-				          <div class="col-md-3">
-				            <div class="card card-stats">
-				              <div class="card-header card-header-warning card-header-icon">
-				                <div class="card-icon">
-				                </div>
-				                <p class="card-category">Hoy</p>
-				                <h3 class="card-title"><?php echo $visit[0]; ?></h3>
-				              </div>
-				              <div class="card-footer">
-				                <div class="stats">
-				                  <i class="material-icons">update</i> Just Updated
-				                </div>
-				              </div>
-				            </div>
-				          </div>
+          <?php if (!empty($msg)): ?>
+              <?php echo "<span class='animated flash'>" . htmlspecialchars($msg) . "</span>"; ?>
+          <?php else: ?>
+						<div class="idle">
+							<div class="row">
+								<div class="col-md-3">
+									<div class="card card-stats">
+										<div class="card-header card-header-info card-header-icon"><p class="card-category">Hombres</p><h3 class="card-title"><?php echo $male[0]; ?></h3></div>
+										<div class="card-footer"><div class="stats"><i class="material-icons">update</i> Just Updated</div></div>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="card card-stats">
+										<div class="card-header card-header-rose card-header-icon"><p class="card-category">Mujeres</p><h3 class="card-title"><?php echo $female[0]; ?></h3></div>
+										<div class="card-footer"><div class="stats"><i class="material-icons">update</i> Just Updated</div></div>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="card card-stats">
+										<div class="card-header card-header-success card-header-icon"><p class="card-category">Somos</p><h3 class="card-title"><?php echo $tin[0]; ?></h3></div>
+										<div class="card-footer"><div class="stats"><i class="material-icons">update</i> Just Updated</div></div>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="card card-stats">
+										<div class="card-header card-header-warning card-header-icon"><p class="card-category">Hoy</p><h3 class="card-title"><?php echo $visit[0]; ?></h3></div>
+										<div class="card-footer"><div class="stats"><i class="material-icons">update</i> Just Updated</div></div>
+									</div>
 								</div>
 							</div>
-					<?php
-						}
-					?>
+						</div>
+					<?php endif; ?>
 				</div>
 	    </div>
 	  </div>              
@@ -326,12 +285,8 @@ $acc_code = "U02";
 		}, 5200);
 	});
 	document.getElementById("usn").focus();
-	setTimeout(function(){
-		// window.location.replace("/inout/dash.php");
-	}, 9800);
 </script>
 
-<!-- MAIN CONTENT ENDS -->
 <?php
 	require_once "./template/footer.php";
 ?>

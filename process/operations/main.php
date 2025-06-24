@@ -1,5 +1,5 @@
 <?php
-session_start();
+// session_start() fue eliminado de aquí porque ya se inicia en dash.php
 
 require_once './functions/dbconn.php';
 require_once './functions/general.php';
@@ -8,9 +8,10 @@ $loc  = $_SESSION['loc'] ?? null;
 $date = date('Y-m-d');
 $time = date('H:i:s');
 
-// Eliminar registros antiguos de tmp2
+// Eliminar registros antiguos de tmp2 (si aún se usa esta tabla temporal)
 $conn->query("DELETE FROM `tmp2` WHERE `time` < DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
 
+// Si no se proporciona una ID, no hay nada que hacer.
 if (!isset($_GET['id']) || empty(trim($_GET['id']))) {
     setDefaults();
     return;
@@ -18,7 +19,7 @@ if (!isset($_GET['id']) || empty(trim($_GET['id']))) {
 
 $usn = strtoupper(sanitize($conn, $_GET['id']));
 
-// Obtener datos del usuario
+// --- Obtención de Datos del Usuario desde Koha ---
 $stmt = $koha->prepare("
     SELECT CONCAT(title,' ',firstname,' ',surname) AS fullname,
            borrowernumber, sex, categorycode, branchcode,
@@ -32,13 +33,14 @@ $userResult = $stmt->get_result();
 $user = $userResult->fetch_assoc();
 $stmt->close();
 
+// Si no se encuentra el usuario, establece un mensaje y termina.
 if (!$user) {
-    $msg = "3";
+    $msg = "Usuario no encontrado o tarjeta expirada."; // Mensaje más claro
     setDefaults();
     return;
 }
 
-// Obtener imagen
+// --- Obtener datos adicionales (Imagen, Categoría, Sede) ---
 $e_img = null;
 $stmt = $koha->prepare("SELECT imagefile FROM patronimage WHERE borrowernumber = ?");
 $stmt->bind_param('i', $user['borrowernumber']);
@@ -49,7 +51,6 @@ if ($img = $imgResult->fetch_row()) {
 }
 $stmt->close();
 
-// Obtener categoría
 $category = '';
 $stmt = $koha->prepare("SELECT description FROM categories WHERE categorycode = ?");
 $stmt->bind_param('s', $user['categorycode']);
@@ -60,7 +61,6 @@ if ($cat = $categoryResult->fetch_row()) {
 }
 $stmt->close();
 
-// Obtener nombre de la sede
 $branch = '';
 $stmt = $koha->prepare("SELECT branchname FROM branches WHERE branchcode = ?");
 $stmt->bind_param('s', $user['branchcode']);
@@ -71,33 +71,86 @@ if ($br = $branchResult->fetch_row()) {
 }
 $stmt->close();
 
-// Guardar en sesión
+// --- Guardar datos en la sesión para usarlos en la vista ---
 $_SESSION['categorycode'] = $user['categorycode'];
 $_SESSION['dateofbirth']  = $user['dateofbirth'];
 $_SESSION['country']      = $user['country'];
 
-// Registrar asistencia en la nueva tabla de log
+// --- Registrar la asistencia usando la nueva función ---
 $attendance = handleAttendance($usn, $conn);
 $d_status   = $attendance['status'];
 $msg        = $attendance['message'];
 $time       = $attendance['timestamp'];
 
+// Variables para mostrar en la interfaz
 $e_name = $user['fullname'] ?? '';
-$time1 = date('g:i A', strtotime($time));
+$time1  = date('g:i A', strtotime($time));
 
 
 // ===================== FUNCIONES AUXILIARES =====================
 
+/**
+ * Resetea las variables globales a sus valores por defecto.
+ */
 function setDefaults() {
     global $e_name, $d_status, $e_img, $msg, $date, $time1;
-    $e_name = null;
+    $e_name   = null;
     $d_status = null;
-    $e_img = null;
-    $msg = null;
-    $date = null;
-    $time1 = "-";
+    $e_img    = null;
+    $msg      = null;
+    $date     = null;
+    $time1    = "-";
     unset($_SESSION['categorycode'], $_SESSION['dateofbirth'], $_SESSION['country']);
 }
+
+/**
+ * Función de registro de asistencia principal.
+ * Determina si es una entrada o salida y la guarda en `inout_log`.
+ */
+function handleAttendance(string $id, mysqli $conn): array {
+    $id = strtoupper(sanitize($conn, $id));
+    $timestamp = date('Y-m-d H:i:s');
+
+    // Buscar el último registro de este ID
+    $stmt = $conn->prepare("SELECT status, timestamp FROM inout_log WHERE id = ? ORDER BY timestamp DESC LIMIT 1");
+    $stmt->bind_param('s', $id);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $last = $res->fetch_assoc();
+    $stmt->close();
+
+    $status = 'IN'; // Por defecto, es una entrada
+    // Si hay un registro previo y fue de ENTRADA
+    if ($last && $last['status'] === 'IN') {
+        $diff = strtotime($timestamp) - strtotime($last['timestamp']);
+        // Si han pasado al menos 10 segundos, se permite registrar una SALIDA
+        if ($diff >= 10) {
+            $status = 'OUT';
+        } else {
+            // Si no han pasado 10 segundos, se ignora para evitar duplicados.
+            // Opcional: podrías devolver un mensaje de "Espere un momento".
+        }
+    }
+
+    $message = $status === 'IN'
+        ? "Entrada registrada a las " . date('g:i A', strtotime($timestamp))
+        : "Salida registrada a las " . date('g:i A', strtotime($timestamp));
+
+    // Insertar el nuevo registro de entrada o salida
+    $stmt = $conn->prepare("INSERT INTO inout_log (id, timestamp, status) VALUES (?, ?, ?)");
+    $stmt->bind_param('sss', $id, $timestamp, $status);
+    $stmt->execute();
+    $stmt->close();
+
+    return [
+        'status' => $status,
+        'message' => $message,
+        'timestamp' => $timestamp,
+    ];
+}
+
+
+// ===================== FUNCIONES ANTIGUAS (Conservadas por si se usan en otro lugar) =====================
 
 function inTmp2($conn, $usn) {
     $stmt = $conn->prepare("SELECT usn FROM tmp2 WHERE usn = ?");
@@ -130,64 +183,14 @@ function registerEntry($conn, $usn, $user, $category, $branch, $date, $entryTime
             `loc`, `cc`, `branch`, `sort1`, `sort2`, `email`, `mob`
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
-    // 'i' indicates the first parameter ($sl) is an integer and the
-    // remaining 14 placeholders expect strings. Building the type string
-    // dynamically improves readability.
     $typeString = 'i' . str_repeat('s', 14);
     $stmt->bind_param(
         $typeString,
-        $sl,
-        $usn,
-        $user['fullname'],
-        $user['sex'],
-        $date,
-        $entryTime,
-        $exitTime,
-        $status,
-        $loc,
-        $category,
-        $branch,
-        $user['sort1'],
-        $user['sort2'],
-        $user['email'],
-        $user['mobile']
+        $sl, $usn, $user['fullname'], $user['sex'], $date, $entryTime, $exitTime, $status,
+        $loc, $category, $branch, $user['sort1'], $user['sort2'], $user['email'], $user['mobile']
     );
     $stmt->execute();
     $stmt->close();
 }
 
-function handleAttendance(string $id, mysqli $conn): array {
-    $id = strtoupper(sanitize($conn, $id));
-    $timestamp = date('Y-m-d H:i:s');
-
-    $stmt = $conn->prepare("SELECT status, timestamp FROM inout_log WHERE id = ? ORDER BY timestamp DESC LIMIT 1");
-    $stmt->bind_param('s', $id);
-    $stmt->execute();
-    $res = $stmt->get_result();
-    $last = $res->fetch_assoc();
-    $stmt->close();
-
-    $status = 'IN';
-    if ($last && $last['status'] === 'IN') {
-        $diff = strtotime($timestamp) - strtotime($last['timestamp']);
-        if ($diff >= 10) {
-            $status = 'OUT';
-        }
-    }
-
-    $message = $status === 'IN'
-        ? "Entrada registrada a las " . date('g:i A', strtotime($timestamp))
-        : "Salida registrada a las " . date('g:i A', strtotime($timestamp));
-
-    $stmt = $conn->prepare("INSERT INTO inout_log (id, timestamp, status) VALUES (?, ?, ?)");
-    $stmt->bind_param('sss', $id, $timestamp, $status);
-    $stmt->execute();
-    $stmt->close();
-
-    return [
-        'status' => $status,
-        'message' => $message,
-        'timestamp' => $timestamp,
-    ];
-}
 ?>

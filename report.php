@@ -15,56 +15,70 @@
 ?>
 <!-- MAIN CONTENT START -->
 <?php
-	if (isset($_POST['datewiseRep'])) {
-		$title = "Date wise Reports";
-		$ftime = $_POST['ftime'];
-	  $ttime = $_POST['ttime'];
-	  $fdate = $_POST['fdate'];
-	  $fdate = str_replace('/', '-', $fdate);
-	  $fdate = date("Y-m-d", strtotime($fdate));
-	  $tdate = $_POST['tdate'];
-	  $tdate = str_replace('/', '-', $tdate);
-	  $tdate = date("Y-m-d", strtotime($tdate));
-	  if ($ftime == NULL) {
-	      $ftime = "00:00:00";
-	  }else{
-	  	$ftime = date("H:i:s", strtotime($ftime));
-	  }
-	  if ($ttime == NULL) {
-	      $ttime = "23:59:59";
-	  }else{
-	  	$ttime = date("H:i:s", strtotime($ttime));
-	  }
+        if (isset($_POST['datewiseRep'])) {
+                $title = "Date wise Reports";
+                $ftime = $_POST['ftime'];
+          $ttime = $_POST['ttime'];
+          $fdate = $_POST['fdate'];
+          $fdate = str_replace('/', '-', $fdate);
+          $fdate = date("Y-m-d", strtotime($fdate));
+          $tdate = $_POST['tdate'];
+          $tdate = str_replace('/', '-', $tdate);
+          $tdate = date("Y-m-d", strtotime($tdate));
+          if ($ftime == NULL) {
+              $ftime = "00:00:00";
+          }else{
+                $ftime = date("H:i:s", strtotime($ftime));
+          }
+          if ($ttime == NULL) {
+              $ttime = "23:59:59";
+          }else{
+                $ttime = date("H:i:s", strtotime($ttime));
+          }
 
-	  if($slib == "Master"){
-      $sql = "SELECT count(sl)  FROM `inout` where (entry between '$ftime' and '$ttime') and (date between '$fdate' and '$tdate') and gender='M'";
-    }else{
-      $sql = "SELECT count(sl)  FROM `inout` where (entry between '$ftime' and '$ttime') and (date between '$fdate' and '$tdate') and gender='M' and `loc`='$slib'";
-    }
-    $result = mysqli_query($conn, $sql) or die("Invalid query: " . mysqli_error($conn));
-    $male = mysqli_fetch_row($result);
-    if($slib == "Master"){
-      $sql = "SELECT count(sl)  FROM `inout` where (entry between '$ftime' and '$ttime') and (date between '$fdate' and '$tdate') and gender='F'";
-    }else{
-      $sql = "SELECT count(sl)  FROM `inout` where (entry between '$ftime' and '$ttime') and (date between '$fdate' and '$tdate') and gender='F' and `loc`='$slib'";
-    }
-    $result = mysqli_query($conn, $sql) or die("Invalid query: " . mysqli_error($conn));
-    $female = mysqli_fetch_row($result);
-    if($slib == "Master"){
-      $sql = "SELECT count(sl)  FROM `inout` where (entry between '$ftime' and '$ttime') and (date between '$fdate' and '$tdate')";
-    }else{
-      $sql = "SELECT count(sl)  FROM `inout` where (entry between '$ftime' and '$ttime') and (date between '$fdate' and '$tdate') and `loc`='$slib'";
-    }
-    $result = mysqli_query($conn, $sql) or die("Invalid query: " . mysqli_error($conn));
-    $visit = mysqli_fetch_row($result);
+          if($slib == "Master"){
+            $stmt = $conn->prepare('SELECT count(sl) FROM `inout` WHERE entry BETWEEN ? AND ? AND date BETWEEN ? AND ? AND gender="M"');
+            $stmt->bind_param('ssss', $ftime, $ttime, $fdate, $tdate);
+          }else{
+            $stmt = $conn->prepare('SELECT count(sl) FROM `inout` WHERE entry BETWEEN ? AND ? AND date BETWEEN ? AND ? AND gender="M" AND `loc`=?');
+            $stmt->bind_param('sssss', $ftime, $ttime, $fdate, $tdate, $slib);
+          }
+          $stmt->execute();
+          $male = $stmt->get_result()->fetch_row();
+          $stmt->close();
 
-	  if($slib == "Master"){
-	    $sql = "SELECT *  FROM `inout` where (entry between '$ftime' and '$ttime') and (date between '$fdate' and '$tdate')";
-	  }else{
-	    $sql = "SELECT *  FROM `inout` where (entry between '$ftime' and '$ttime') and (date between '$fdate' and '$tdate') and `loc`='$slib'";
-	  }
-	  $result = mysqli_query($conn, $sql) or die("Invalid query: " . mysqli_error($conn));
-	}
+          if($slib == "Master"){
+            $stmt = $conn->prepare('SELECT count(sl) FROM `inout` WHERE entry BETWEEN ? AND ? AND date BETWEEN ? AND ? AND gender="F"');
+            $stmt->bind_param('ssss', $ftime, $ttime, $fdate, $tdate);
+          }else{
+            $stmt = $conn->prepare('SELECT count(sl) FROM `inout` WHERE entry BETWEEN ? AND ? AND date BETWEEN ? AND ? AND gender="F" AND `loc`=?');
+            $stmt->bind_param('sssss', $ftime, $ttime, $fdate, $tdate, $slib);
+          }
+          $stmt->execute();
+          $female = $stmt->get_result()->fetch_row();
+          $stmt->close();
+
+          if($slib == "Master"){
+            $stmt = $conn->prepare('SELECT count(sl) FROM `inout` WHERE entry BETWEEN ? AND ? AND date BETWEEN ? AND ?');
+            $stmt->bind_param('ssss', $ftime, $ttime, $fdate, $tdate);
+          }else{
+            $stmt = $conn->prepare('SELECT count(sl) FROM `inout` WHERE entry BETWEEN ? AND ? AND date BETWEEN ? AND ? AND `loc`=?');
+            $stmt->bind_param('sssss', $ftime, $ttime, $fdate, $tdate, $slib);
+          }
+          $stmt->execute();
+          $visit = $stmt->get_result()->fetch_row();
+          $stmt->close();
+
+          if($slib == "Master"){
+            $stmt = $conn->prepare('SELECT * FROM `inout` WHERE entry BETWEEN ? AND ? AND date BETWEEN ? AND ?');
+            $stmt->bind_param('ssss', $ftime, $ttime, $fdate, $tdate);
+          }else{
+            $stmt = $conn->prepare('SELECT * FROM `inout` WHERE entry BETWEEN ? AND ? AND date BETWEEN ? AND ? AND `loc`=?');
+            $stmt->bind_param('sssss', $ftime, $ttime, $fdate, $tdate, $slib);
+          }
+          $stmt->execute();
+          $result = $stmt->get_result();
+        }
 
 	if (isset($_POST['studentRep'])) {
     $usn = strtoupper($_POST['usn']);
@@ -87,11 +101,13 @@
       }
       $stmt->execute();
       $result = $stmt->get_result();
+      $insertStmt = $conn->prepare('INSERT INTO `tmp1` (`date`, `secs`) VALUES (?, ?)');
       while ($row = mysqli_fetch_array($result)) {
         $secs = strtotime($row[1]) - strtotime("00:00:00");
-        $query = "INSERT INTO `tmp1` (`date`, `secs`) VALUES ('".$row[0]."', '".$secs."');";
-        $res = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error($conn));
+        $insertStmt->bind_param('si', $row[0], $secs);
+        $insertStmt->execute();
       }
+      $insertStmt->close();
       $stmt->close();
       $sql = "SELECT date, DAYNAME(`DATE`), SUM(`secs`) FROM `tmp1` GROUP BY date";
       $result = mysqli_query($conn, $sql) or die("Invalid query: " . mysqli_error($conn));
@@ -330,70 +346,99 @@
 				        	<?php
 				        		echo "<script type='text/javascript'>var printMsg = '".$_SESSION['lib']." Statistical Inout System Report From ".$fdate." To ".$tdate."';</script>";
 
-				        		if($slib=="Master"){
+                    if($slib=="Master"){
                       $query = "SELECT * FROM `loc`";
                       $res = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error($conn));
-                      while($row=mysqli_fetch_array($res)){
-                        do{
-                          $sql = "SELECT count(sl), DAYNAME('$idate') FROM `inout` WHERE `date` = '$idate' AND `gender`='M' AND `loc`='$row[1]'";
-                          $result = mysqli_query($conn, $sql) or die("Invalid query1: " . mysqli_error($conn));
-                          $male = mysqli_fetch_row($result);
-                          $sql = "SELECT count(sl)  FROM `inout` WHERE `date` = '$idate' AND `gender`='F' AND `loc`='$row[1]'";
-                          $result = mysqli_query($conn, $sql) or die("Invalid query2: " . mysqli_error($conn));
-                          $female = mysqli_fetch_row($result);
-                          $sql = "SELECT count(sl)  FROM `inout` WHERE `date` = '$idate' AND `loc`='$row[1]'";
-                          $result = mysqli_query($conn, $sql) or die("Invalid query3: " . mysqli_error($conn));
-                          $visit = mysqli_fetch_row($result);
-                          if($visit[0] != '0'){
-                          	echo "<tr><td>".$idate."</td><td> ".$male[1]."</td><td>".$male[0]." </td><td>".$female['0']."</td><td> ".$visit['0']."</td><td>".$row[1]."</td></tr>"; 
-                          }
-                          $idate=date_create("$idate");
-                          date_add($idate,date_interval_create_from_date_string("1 days"));
-                          $idate = date_format($idate,"Y-m-d");
-                        }while ($idate<=$tdate);
-                        $idate=$fdate;
-	                    }
-	                  }else{
-	                    do{
-	                      $sql = "SELECT count(sl), DAYNAME('$idate') FROM `inout` WHERE `date` = '$idate' AND `gender`='M' AND `loc`='$slib'";
-	                      $result = mysqli_query($conn, $sql) or die("Invalid query1: " . mysqli_error($conn));
-	                      $male = mysqli_fetch_row($result);
-	                      $sql = "SELECT count(sl)  FROM `inout` WHERE `date` = '$idate' AND `gender`='F' AND `loc`='$slib'";
-	                      $result = mysqli_query($conn, $sql) or die("Invalid query2: " . mysqli_error($conn));
-	                      $female = mysqli_fetch_row($result);
-	                      $sql = "SELECT count(sl)  FROM `inout` WHERE `date` = '$idate' AND `loc`='$slib'";
-	                      $result = mysqli_query($conn, $sql) or die("Invalid query3: " . mysqli_error($conn));
-	                      $visit = mysqli_fetch_row($result);
-	                      if($visit[0] != '0'){
-	                      	echo "<tr><td>".$idate."</td><td> ".$male[1]."</td><td>".$male[0]." </td><td>".$female['0']."</td><td> ".$visit['0']."</td><td>".$_SESSION['loc']."</td></tr>"; 
-	                    	}
-	                      $idate=date_create("$idate");
-	                      date_add($idate,date_interval_create_from_date_string("1 days"));
-	                      $idate = date_format($idate,"Y-m-d");
-	                    }while ($idate<=$tdate);
-	                  }
 
-	                  if($slib=="Master"){
-                      $sql = "SELECT count(sl)  FROM `inout` where (date between '$fdate' and '$tdate') and gender='M'";
+                      $genderStmt = $conn->prepare('SELECT COUNT(sl), DAYNAME(date) FROM `inout` WHERE `date` = ? AND `gender` = ? AND `loc` = ?');
+                      $visitStmt  = $conn->prepare('SELECT COUNT(sl) FROM `inout` WHERE `date` = ? AND `loc` = ?');
+
+                      while($row = mysqli_fetch_array($res)){
+                        do{
+                          $gender = 'M';
+                          $genderStmt->bind_param('sss', $idate, $gender, $row[1]);
+                          $genderStmt->execute();
+                          $male = $genderStmt->get_result()->fetch_row();
+
+                          $gender = 'F';
+                          $genderStmt->bind_param('sss', $idate, $gender, $row[1]);
+                          $genderStmt->execute();
+                          $female = $genderStmt->get_result()->fetch_row();
+
+                          $visitStmt->bind_param('ss', $idate, $row[1]);
+                          $visitStmt->execute();
+                          $visit = $visitStmt->get_result()->fetch_row();
+
+                          if($visit[0] != '0'){
+                                echo "<tr><td>".$idate."</td><td> ".$male[1]."</td><td>".$male[0]." </td><td>".$female[0]."</td><td> ".$visit[0]."</td><td>".$row[1]."</td></tr>";
+                          }
+                          $idate = date('Y-m-d', strtotime($idate . ' +1 day'));
+                        }while ($idate <= $tdate);
+                        $idate = $fdate;
+                      }
+
+                      $genderStmt->close();
+                      $visitStmt->close();
                     }else{
-                      $sql = "SELECT count(sl)  FROM `inout` where (date between '$fdate' and '$tdate') and gender='M' and `loc`='$slib'";
+                      $genderStmt = $conn->prepare('SELECT COUNT(sl), DAYNAME(date) FROM `inout` WHERE `date` = ? AND `gender` = ? AND `loc` = ?');
+                      $visitStmt  = $conn->prepare('SELECT COUNT(sl) FROM `inout` WHERE `date` = ? AND `loc` = ?');
+                      do{
+                        $gender = 'M';
+                        $genderStmt->bind_param('sss', $idate, $gender, $slib);
+                        $genderStmt->execute();
+                        $male = $genderStmt->get_result()->fetch_row();
+
+                        $gender = 'F';
+                        $genderStmt->bind_param('sss', $idate, $gender, $slib);
+                        $genderStmt->execute();
+                        $female = $genderStmt->get_result()->fetch_row();
+
+                        $visitStmt->bind_param('ss', $idate, $slib);
+                        $visitStmt->execute();
+                        $visit = $visitStmt->get_result()->fetch_row();
+
+                        if($visit[0] != '0'){
+                          echo "<tr><td>".$idate."</td><td> ".$male[1]."</td><td>".$male[0]." </td><td>".$female[0]."</td><td> ".$visit[0]."</td><td>".$_SESSION['loc']."</td></tr>";
+                        }
+                        $idate = date('Y-m-d', strtotime($idate . ' +1 day'));
+                      }while ($idate <= $tdate);
+
+                      $genderStmt->close();
+                      $visitStmt->close();
                     }
-                    $result = mysqli_query($conn, $sql) or die("Invalid query: " . mysqli_error($conn));
-                    $male = mysqli_fetch_row($result);
+
                     if($slib=="Master"){
-                      $sql = "SELECT count(sl)  FROM `inout` where (date between '$fdate' and '$tdate') and gender='F'";
+                      $stmt = $conn->prepare('SELECT count(sl) FROM `inout` WHERE date BETWEEN ? AND ? AND gender="M"');
+                      $stmt->bind_param('ss', $fdate, $tdate);
                     }else{
-                      $sql = "SELECT count(sl)  FROM `inout` where (date between '$fdate' and '$tdate') and gender='F' and `loc`='$slib'";
+                      $stmt = $conn->prepare('SELECT count(sl) FROM `inout` WHERE date BETWEEN ? AND ? AND gender="M" AND `loc`=?');
+                      $stmt->bind_param('sss', $fdate, $tdate, $slib);
                     }
-                    $result = mysqli_query($conn, $sql) or die("Invalid query: " . mysqli_error($conn));
-                    $female = mysqli_fetch_row($result);
+                    $stmt->execute();
+                    $male = $stmt->get_result()->fetch_row();
+                    $stmt->close();
+
                     if($slib=="Master"){
-                      $sql = "SELECT count(sl)  FROM `inout` where (date between '$fdate' and '$tdate')";
+                      $stmt = $conn->prepare('SELECT count(sl) FROM `inout` WHERE date BETWEEN ? AND ? AND gender="F"');
+                      $stmt->bind_param('ss', $fdate, $tdate);
                     }else{
-                      $sql = "SELECT count(sl)  FROM `inout` where (date between '$fdate' and '$tdate') and `loc`='$slib'";
+                      $stmt = $conn->prepare('SELECT count(sl) FROM `inout` WHERE date BETWEEN ? AND ? AND gender="F" AND `loc`=?');
+                      $stmt->bind_param('sss', $fdate, $tdate, $slib);
                     }
-                    $result = mysqli_query($conn, $sql) or die("Invalid query: " . mysqli_error($conn));
-                    $visit = mysqli_fetch_row($result);
+                    $stmt->execute();
+                    $female = $stmt->get_result()->fetch_row();
+                    $stmt->close();
+
+                    if($slib=="Master"){
+                      $stmt = $conn->prepare('SELECT count(sl) FROM `inout` WHERE date BETWEEN ? AND ?');
+                      $stmt->bind_param('ss', $fdate, $tdate);
+                    }else{
+                      $stmt = $conn->prepare('SELECT count(sl) FROM `inout` WHERE date BETWEEN ? AND ? AND `loc`=?');
+                      $stmt->bind_param('sss', $fdate, $tdate, $slib);
+                    }
+                    $stmt->execute();
+                    $visit = $stmt->get_result()->fetch_row();
+                    $stmt->close();
                     echo "<tr><td> Total </td><td> - </td><td> " . $male[0] . " </td><td> " . $female[0] . "</td><td> " . $visit[0] . "</td><td> - </td></tr>";
 		              ?>
 				        </tbody>

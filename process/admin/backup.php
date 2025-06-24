@@ -1,5 +1,5 @@
 <?php
-  session_start();
+  require '../../functions/session.php';
   require '../../functions/dbconn.php';
   require '../../functions/dbfunc.php';
   require '../../functions/general.php';

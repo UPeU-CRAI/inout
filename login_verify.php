@@ -1,5 +1,5 @@
 <?php
-	session_start();
+require_once "./functions/session.php";
 	if(!isset($_POST['submit'])){
 		header('location:login.php');
 		exit;
@@ -49,7 +49,8 @@
 			$_SESSION['user_id'] = $user['id'];
 			$_SESSION['user_role'] = $role['rname'];
 			$_SESSION['user_name'] = $user['fname'];
-			$_SESSION['user_access'] = explode(';', $role['acc_code']);
+        $_SESSION['user_access'] = explode(';', $role['acc_code']);
+        session_regenerate_id(true);
 
 			if($loc != "Master"){
         if($role['rname'] == "Admin"){

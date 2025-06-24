@@ -1,5 +1,5 @@
 <?php
-    session_start();
+    require '../../functions/session.php';
     $loc = $_SESSION['loc'];
     include './functions/dbconn.php';
     include './functions/general.php';

@@ -1,5 +1,4 @@
 .DS_Store
-blank.php
 vendor/
 .phpunit.result.cache
 logs/*

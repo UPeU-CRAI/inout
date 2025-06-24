@@ -19,6 +19,10 @@ foreach ($required as $key) {
     }
 }
 
+if (!isset($_ENV['GOOGLE_APPLICATION_CREDENTIALS']) || trim($_ENV['GOOGLE_APPLICATION_CREDENTIALS']) === '') {
+    throw new RuntimeException('❌ Falta la variable de entorno: GOOGLE_APPLICATION_CREDENTIALS');
+}
+
 // Configuración de logs y depuración
 $debug = isset($_ENV['DEBUG']) && $_ENV['DEBUG'] == 1;
 $logFile = dirname(__DIR__) . '/logs/error.log';

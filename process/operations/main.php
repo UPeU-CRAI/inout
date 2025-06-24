@@ -1,196 +1,150 @@
 <?php
-// session_start() fue eliminado de aquí porque ya se inicia en dash.php
-
-require_once './functions/dbconn.php';
-require_once './functions/general.php';
-
-$loc  = $_SESSION['loc'] ?? null;
-$date = date('Y-m-d');
-$time = date('H:i:s');
-
-// Eliminar registros antiguos de tmp2 (si aún se usa esta tabla temporal)
-$conn->query("DELETE FROM `tmp2` WHERE `time` < DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
-
-// Si no se proporciona una ID, no hay nada que hacer.
-if (!isset($_GET['id']) || empty(trim($_GET['id']))) {
-    setDefaults();
-    return;
-}
-
-$usn = strtoupper(sanitize($conn, $_GET['id']));
-
-// --- Obtención de Datos del Usuario desde Koha ---
-$stmt = $koha->prepare("
-    SELECT CONCAT(title,' ',firstname,' ',surname) AS fullname,
-           borrowernumber, sex, categorycode, branchcode,
-           sort1, sort2, mobile, email, dateofbirth, country
-    FROM borrowers
-    WHERE cardnumber = ? AND dateexpiry > ?
-");
-$stmt->bind_param('ss', $usn, $date);
-$stmt->execute();
-$userResult = $stmt->get_result();
-$user = $userResult->fetch_assoc();
-$stmt->close();
-
-// Si no se encuentra el usuario, establece un mensaje y termina.
-if (!$user) {
-    $msg = "Usuario no encontrado o tarjeta expirada."; // Mensaje más claro
-    setDefaults();
-    return;
-}
-
-// --- Obtener datos adicionales (Imagen, Categoría, Sede) ---
-$e_img = null;
-$stmt = $koha->prepare("SELECT imagefile FROM patronimage WHERE borrowernumber = ?");
-$stmt->bind_param('i', $user['borrowernumber']);
-$stmt->execute();
-$imgResult = $stmt->get_result();
-if ($img = $imgResult->fetch_row()) {
-    $e_img = $img[0];
-}
-$stmt->close();
-
-$category = '';
-$stmt = $koha->prepare("SELECT description FROM categories WHERE categorycode = ?");
-$stmt->bind_param('s', $user['categorycode']);
-$stmt->execute();
-$categoryResult = $stmt->get_result();
-if ($cat = $categoryResult->fetch_row()) {
-    $category = $cat[0];
-}
-$stmt->close();
-
-$branch = '';
-$stmt = $koha->prepare("SELECT branchname FROM branches WHERE branchcode = ?");
-$stmt->bind_param('s', $user['branchcode']);
-$stmt->execute();
-$branchResult = $stmt->get_result();
-if ($br = $branchResult->fetch_row()) {
-    $branch = $br[0];
-}
-$stmt->close();
-
-// --- Guardar datos en la sesión para usarlos en la vista ---
-$_SESSION['categorycode'] = $user['categorycode'];
-$_SESSION['dateofbirth']  = $user['dateofbirth'];
-$_SESSION['country']      = $user['country'];
-
-// --- Registrar la asistencia usando la nueva función ---
-$attendance = handleAttendance($usn, $conn);
-$d_status   = $attendance['status'];
-$msg        = $attendance['message'];
-$time       = $attendance['timestamp'];
-
-// Variables para mostrar en la interfaz
-$e_name = $user['fullname'] ?? '';
-$time1  = date('g:i A', strtotime($time));
-
-
-// ===================== FUNCIONES AUXILIARES =====================
-
 /**
- * Resetea las variables globales a sus valores por defecto.
+ * API Endpoint para registrar la asistencia de un usuario y devolver una respuesta JSON.
  */
-function setDefaults() {
-    global $e_name, $d_status, $e_img, $msg, $date, $time1;
-    $e_name   = null;
-    $d_status = null;
-    $e_img    = null;
-    $msg      = null;
-    $date     = null;
-    $time1    = "-";
-    unset($_SESSION['categorycode'], $_SESSION['dateofbirth'], $_SESSION['country']);
+
+// Iniciar la sesión si no está activa. Es fundamental para los mensajes de estado.
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
+
+// Establecer la cabecera para indicar que la respuesta será en formato JSON.
+header('Content-Type: application/json');
+
+// Requerir archivos necesarios usando rutas relativas seguras.
+// Se asume que koha_conn.php define la conexión $koha
+require_once dirname(__DIR__, 2) . '/functions/dbconn.php'; 
+require_once dirname(__DIR__, 2) . '/functions/general.php';
+require_once dirname(__DIR__, 2) . '/functions/PersonalizedGreeting.php'; // Nuestra clase de saludos
 
 /**
  * Función de registro de asistencia principal.
  * Determina si es una entrada o salida y la guarda en `inout_log`.
+ * NOTA: Esta es tu función, integrada en este nuevo flujo.
  */
-function handleAttendance(string $id, mysqli $conn): array {
+function handleAttendance(string $id, mysqli $conn): array
+{
     $id = strtoupper(sanitize($conn, $id));
     $timestamp = date('Y-m-d H:i:s');
-
-    // Buscar el último registro de este ID
-    $stmt = $conn->prepare("SELECT status, timestamp FROM inout_log WHERE id = ? ORDER BY timestamp DESC LIMIT 1");
+    
+    // Buscar el último registro de este ID para determinar si es entrada o salida.
+    $stmt = $conn->prepare("SELECT status FROM inout_log WHERE id = ? ORDER BY timestamp DESC LIMIT 1");
     $stmt->bind_param('s', $id);
     $stmt->execute();
-    $res = $stmt->get_result();
-    $last = $res->fetch_assoc();
+    $lastRecord = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 
-    $status = 'IN'; // Por defecto, es una entrada
-    // Si hay un registro previo y fue de ENTRADA
-    if ($last && $last['status'] === 'IN') {
-        $diff = strtotime($timestamp) - strtotime($last['timestamp']);
-        // Si han pasado al menos 10 segundos, se permite registrar una SALIDA
-        if ($diff >= 10) {
-            $status = 'OUT';
-        } else {
-            // Si no han pasado 10 segundos, se ignora para evitar duplicados.
-            // Opcional: podrías devolver un mensaje de "Espere un momento".
-        }
+    $status = 'IN'; // Por defecto, es una entrada.
+    // Si hay un registro previo y fue de ENTRADA, el siguiente es de SALIDA.
+    if ($lastRecord && $lastRecord['status'] === 'IN') {
+        $status = 'OUT';
     }
 
     $message = $status === 'IN'
         ? "Entrada registrada a las " . date('g:i A', strtotime($timestamp))
         : "Salida registrada a las " . date('g:i A', strtotime($timestamp));
 
-    // Insertar el nuevo registro de entrada o salida
+    // Insertar el nuevo registro.
     $stmt = $conn->prepare("INSERT INTO inout_log (id, timestamp, status) VALUES (?, ?, ?)");
     $stmt->bind_param('sss', $id, $timestamp, $status);
     $stmt->execute();
     $stmt->close();
 
     return [
+        'success' => true,
         'status' => $status,
         'message' => $message,
-        'timestamp' => $timestamp,
     ];
 }
 
+// --- Inicio del Flujo Principal de la API ---
 
-// ===================== FUNCIONES ANTIGUAS (Conservadas por si se usan en otro lugar) =====================
+// 1. Inicializar la respuesta JSON por defecto.
+$response = [
+    'success' => false,
+    'message' => 'Solicitud no válida o ID de usuario no proporcionado.',
+    'greetingText' => '',
+    'audioPlayer' => ''
+];
 
-function inTmp2($conn, $usn) {
-    $stmt = $conn->prepare("SELECT usn FROM tmp2 WHERE usn = ?");
-    $stmt->bind_param('s', $usn);
-    $stmt->execute();
-    $res = $stmt->get_result();
-    $stmt->close();
-    return $res->num_rows > 0;
+// 2. Validar que la solicitud sea POST y que contenga el ID del usuario.
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST['user_id'])) {
+    echo json_encode($response);
+    exit();
 }
 
-function addToTmp2($conn, $usn) {
-    $stmt = $conn->prepare("INSERT INTO tmp2 (usn, time) VALUES (?, CURRENT_TIMESTAMP)");
-    $stmt->bind_param('s', $usn);
-    $stmt->execute();
-    $stmt->close();
+// 3. Obtener conexiones a la base de datos (se asume que dbconn.php las define).
+$conn = get_db_connection(); // Conexión local
+// Se asume que $koha se define en dbconn.php o un archivo similar
+if (!isset($koha) || !$koha instanceof mysqli) {
+    $response['message'] = 'Error: La conexión a la base de datos de Koha no está disponible.';
+    echo json_encode($response);
+    exit();
 }
 
-function checkOut($conn, $sl, $time) {
-    $stmt = $conn->prepare("UPDATE `inout` SET `exit` = ?, `status` = 'OUT' WHERE `sl` = ?");
-    $stmt->bind_param('si', $time, $sl);
-    $stmt->execute();
-    $stmt->close();
-}
+$userId = strtoupper(sanitize($conn, $_POST['user_id']));
+$currentDate = date('Y-m-d');
 
-function registerEntry($conn, $usn, $user, $category, $branch, $date, $entryTime, $exitTime, $status, $loc) {
-    $sl = getsl($conn, "sl", "inout");
-    $stmt = $conn->prepare("
-        INSERT INTO `inout` (
-            `sl`, `cardnumber`, `name`, `gender`, `date`, `entry`, `exit`, `status`,
-            `loc`, `cc`, `branch`, `sort1`, `sort2`, `email`, `mob`
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ");
-    $typeString = 'i' . str_repeat('s', 14);
-    $stmt->bind_param(
-        $typeString,
-        $sl, $usn, $user['fullname'], $user['sex'], $date, $entryTime, $exitTime, $status,
-        $loc, $category, $branch, $user['sort1'], $user['sort2'], $user['email'], $user['mobile']
-    );
+try {
+    // 4. Obtener datos del usuario desde Koha.
+    $stmt = $koha->prepare("SELECT CONCAT(firstname,' ',surname) AS fullname, borrowernumber, categorycode, dateofbirth, country FROM borrowers WHERE cardnumber = ? AND dateexpiry > ?");
+    $stmt->bind_param('ss', $userId, $currentDate);
     $stmt->execute();
+    $user = $stmt->get_result()->fetch_assoc();
     $stmt->close();
-}
 
-?>
+    if (!$user) {
+        $response['message'] = 'Usuario no encontrado, inactivo o la tarjeta ha expirado.';
+        throw new Exception($response['message']);
+    }
+
+    // 5. Registrar la asistencia (ENTRADA/SALIDA).
+    $attendanceResult = handleAttendance($userId, $conn);
+    
+    if (!$attendanceResult['success']) {
+        throw new Exception($attendanceResult['message']);
+    }
+    
+    $response['success'] = true;
+    $response['message'] = $attendanceResult['message'];
+
+    // 6. Generar saludo con voz SOLO si es una ENTRADA.
+    if ($attendanceResult['status'] === 'IN') {
+        $greetingService = new PersonalizedGreeting();
+        
+        $timeOfDay = strtolower(get_time_of_day()); // Función de general.php
+        
+        $greetingText = $greetingService->buildGreeting(
+            $user['fullname'],
+            $timeOfDay,
+            $user['categorycode'],
+            $user['dateofbirth'],
+            $user['country']
+        );
+        
+        $audioPlayer = $greetingService->synthesizeGreeting($greetingText);
+
+        $response['greetingText'] = $greetingText;
+        $response['audioPlayer'] = $audioPlayer;
+        $_SESSION['success'] = "{$greetingText} <br> {$response['message']}";
+    } else {
+        // Si es una salida, el saludo es más simple y sin voz.
+        $response['greetingText'] = "Hasta luego, " . $user['fullname'] . ".";
+        $_SESSION['success'] = "{$response['greetingText']} <br> {$response['message']}";
+    }
+
+} catch (Exception $e) {
+    // 7. Manejar cualquier error que haya ocurrido en el proceso.
+    error_log("Error en process/operations/main.php: " . $e->getMessage());
+    // El mensaje de la respuesta ya fue establecido en el punto del error.
+    if (empty($response['message']) || $response['message'] === 'Solicitud no válida o ID de usuario no proporcionado.') {
+        $response['message'] = 'Error del servidor: ' . htmlspecialchars($e->getMessage());
+    }
+    $_SESSION['error'] = $response['message'];
+
+} finally {
+    // 8. Cerrar conexiones y enviar la respuesta.
+    $conn->close();
+    $koha->close();
+    echo json_encode($response);
+}

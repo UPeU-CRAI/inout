@@ -9,7 +9,8 @@ $dotenv->load();
 
 $required = [
     'INOUT_DB_HOST', 'INOUT_DB_USER', 'INOUT_DB_PASS', 'INOUT_DB_NAME',
-    'KOHA_DB_HOST', 'KOHA_DB_USER', 'KOHA_DB_PASS', 'KOHA_DB_NAME'
+    'KOHA_DB_HOST', 'KOHA_DB_USER', 'KOHA_DB_PASS', 'KOHA_DB_NAME',
+    'GOOGLE_APPLICATION_CREDENTIALS'
 ];
 
 foreach ($required as $key) {

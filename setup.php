@@ -222,11 +222,12 @@
 </div>
 <!-- MAIN CONTENT ENDS -->
 <?php
-	if($_GET['msg']=="1"){
+        $msg = $_GET['msg'] ?? null;
+        if ($msg === '1') {
     echo "<script type='text/javascript'>showNotification('top','right','Basic Informtion Updated Successfully', 'success');</script>";
   }
-  if($_GET['msg']=="2"){
+  if ($msg === '2') {
     echo "<script type='text/javascript'>showNotification('top','right','Location Added Successfully', 'success');</script>";
   }
-	require_once "./template/footer.php";
+        require_once "./template/footer.php";
 ?>

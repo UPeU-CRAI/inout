@@ -1,92 +1,62 @@
 <?php
 /**
  * API Endpoint para registrar la asistencia de un usuario y devolver una respuesta JSON.
+ * Versión optimizada y robusta.
  */
 
-// Iniciar la sesión si no está activa. Es fundamental para los mensajes de estado.
+// --- INICIO DEL BLOQUE DE ARRANQUE ---
+// Carga el entorno de la aplicación, incluyendo Composer y helpers.
+require_once dirname(__DIR__, 2) . '/functions/autoload_helper.php';
+require_vendor_autoload(dirname(__DIR__, 2));
+
+// Habilitar que MySQLi lance excepciones en lugar de solo advertencias.
+// Esto permite que nuestro bloque try-catch atrape errores de conexión.
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+// Iniciar la sesión si no está activa.
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+// --- FIN DEL BLOQUE DE ARRANQUE ---
 
 // Establecer la cabecera para indicar que la respuesta será en formato JSON.
 header('Content-Type: application/json');
 
-// Requerir archivos necesarios usando rutas relativas seguras.
-// Se asume que koha_conn.php define la conexión $koha
-require_once dirname(__DIR__, 2) . '/functions/dbconn.php'; 
-require_once dirname(__DIR__, 2) . '/functions/general.php';
-require_once dirname(__DIR__, 2) . '/functions/PersonalizedGreeting.php'; // Nuestra clase de saludos
-
-/**
- * Función de registro de asistencia principal.
- * Determina si es una entrada o salida y la guarda en `inout_log`.
- * NOTA: Esta es tu función, integrada en este nuevo flujo.
- */
-function handleAttendance(string $id, mysqli $conn): array
-{
-    $id = strtoupper(sanitize($conn, $id));
-    $timestamp = date('Y-m-d H:i:s');
-    
-    // Buscar el último registro de este ID para determinar si es entrada o salida.
-    $stmt = $conn->prepare("SELECT status FROM inout_log WHERE id = ? ORDER BY timestamp DESC LIMIT 1");
-    $stmt->bind_param('s', $id);
-    $stmt->execute();
-    $lastRecord = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
-
-    $status = 'IN'; // Por defecto, es una entrada.
-    // Si hay un registro previo y fue de ENTRADA, el siguiente es de SALIDA.
-    if ($lastRecord && $lastRecord['status'] === 'IN') {
-        $status = 'OUT';
-    }
-
-    $message = $status === 'IN'
-        ? "Entrada registrada a las " . date('g:i A', strtotime($timestamp))
-        : "Salida registrada a las " . date('g:i A', strtotime($timestamp));
-
-    // Insertar el nuevo registro.
-    $stmt = $conn->prepare("INSERT INTO inout_log (id, timestamp, status) VALUES (?, ?, ?)");
-    $stmt->bind_param('sss', $id, $timestamp, $status);
-    $stmt->execute();
-    $stmt->close();
-
-    return [
-        'success' => true,
-        'status' => $status,
-        'message' => $message,
-    ];
-}
-
-// --- Inicio del Flujo Principal de la API ---
-
-// 1. Inicializar la respuesta JSON por defecto.
+// Inicializar la respuesta por defecto.
 $response = [
     'success' => false,
-    'message' => 'Solicitud no válida o ID de usuario no proporcionado.',
+    'message' => 'Ocurrió un error inesperado en el servidor.',
     'greetingText' => '',
     'audioPlayer' => ''
 ];
 
-// 2. Validar que la solicitud sea POST y que contenga el ID del usuario.
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST['user_id'])) {
-    echo json_encode($response);
-    exit();
-}
-
-// 3. Obtener conexiones a la base de datos (se asume que dbconn.php las define).
-$conn = get_db_connection(); // Conexión local
-// Se asume que $koha se define en dbconn.php o un archivo similar
-if (!isset($koha) || !$koha instanceof mysqli) {
-    $response['message'] = 'Error: La conexión a la base de datos de Koha no está disponible.';
-    echo json_encode($response);
-    exit();
-}
-
-$userId = strtoupper(sanitize($conn, $_POST['user_id']));
-$currentDate = date('Y-m-d');
+// Variables de conexión que se usarán en el bloque principal.
+$conn = null;
+$koha = null;
 
 try {
-    // 4. Obtener datos del usuario desde Koha.
+    // --- PASO 1: VALIDAR LA SOLICITUD ---
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST['user_id'])) {
+        throw new InvalidArgumentException('Solicitud no válida o ID de usuario no proporcionado.');
+    }
+
+    // --- PASO 2: ESTABLECER Y VERIFICAR CONEXIONES A LA BASE DE DATOS ---
+    require_once dirname(__DIR__, 2) . '/functions/dbconn.php';
+    
+    $conn = get_db_connection(); // Conexión local
+    if (!$conn || $conn->connect_error) {
+        throw new RuntimeException("Error al conectar con la base de datos local: " . ($conn->connect_error ?? 'Error desconocido'));
+    }
+
+    if (!isset($koha) || !$koha instanceof mysqli || $koha->connect_error) {
+        throw new RuntimeException("Error al conectar con la base de datos de Koha: " . ($koha->connect_error ?? 'Variable no instanciada'));
+    }
+
+    // --- PASO 3: PROCESAR LOS DATOS DEL USUARIO ---
+    require_once dirname(__DIR__, 2) . '/functions/general.php';
+    $userId = strtoupper(sanitize($conn, $_POST['user_id']));
+    $currentDate = date('Y-m-d');
+
     $stmt = $koha->prepare("SELECT CONCAT(firstname,' ',surname) AS fullname, borrowernumber, categorycode, dateofbirth, country FROM borrowers WHERE cardnumber = ? AND dateexpiry > ?");
     $stmt->bind_param('ss', $userId, $currentDate);
     $stmt->execute();
@@ -94,57 +64,91 @@ try {
     $stmt->close();
 
     if (!$user) {
-        $response['message'] = 'Usuario no encontrado, inactivo o la tarjeta ha expirado.';
-        throw new Exception($response['message']);
+        throw new Exception('Usuario no encontrado, inactivo o la tarjeta ha expirado.');
     }
 
-    // 5. Registrar la asistencia (ENTRADA/SALIDA).
-    $attendanceResult = handleAttendance($userId, $conn);
-    
-    if (!$attendanceResult['success']) {
-        throw new Exception($attendanceResult['message']);
+    // --- PASO 4: REGISTRAR ASISTENCIA ---
+    $attendance = handleAttendance($userId, $conn);
+    if (!$attendance['success']) {
+        throw new Exception($attendance['message']);
     }
-    
+
+    // --- PASO 5: CONSTRUIR LA RESPUESTA DE ÉXITO ---
     $response['success'] = true;
-    $response['message'] = $attendanceResult['message'];
-
-    // 6. Generar saludo con voz SOLO si es una ENTRADA.
-    if ($attendanceResult['status'] === 'IN') {
+    $response['message'] = $attendance['message'];
+    
+    // Si es una entrada, generar saludo con voz.
+    if ($attendance['status'] === 'IN') {
+        require_once dirname(__DIR__, 2) . '/functions/PersonalizedGreeting.php';
         $greetingService = new PersonalizedGreeting();
-        
-        $timeOfDay = strtolower(get_time_of_day()); // Función de general.php
-        
-        $greetingText = $greetingService->buildGreeting(
-            $user['fullname'],
-            $timeOfDay,
-            $user['categorycode'],
-            $user['dateofbirth'],
-            $user['country']
-        );
-        
-        $audioPlayer = $greetingService->synthesizeGreeting($greetingText);
+        $timeOfDay = strtolower(get_time_of_day());
 
+        $greetingText = $greetingService->buildGreeting($user['fullname'], $timeOfDay, $user['categorycode'], $user['dateofbirth'], $user['country']);
+        $audioPlayer = $greetingService->synthesizeGreeting($greetingText);
+        
         $response['greetingText'] = $greetingText;
         $response['audioPlayer'] = $audioPlayer;
-        $_SESSION['success'] = "{$greetingText} <br> {$response['message']}";
     } else {
         // Si es una salida, el saludo es más simple y sin voz.
-        $response['greetingText'] = "Hasta luego, " . $user['fullname'] . ".";
-        $_SESSION['success'] = "{$response['greetingText']} <br> {$response['message']}";
+        $response['greetingText'] = "Hasta luego, " . htmlspecialchars($user['fullname']) . ".";
     }
 
-} catch (Exception $e) {
-    // 7. Manejar cualquier error que haya ocurrido en el proceso.
-    error_log("Error en process/operations/main.php: " . $e->getMessage());
-    // El mensaje de la respuesta ya fue establecido en el punto del error.
-    if (empty($response['message']) || $response['message'] === 'Solicitud no válida o ID de usuario no proporcionado.') {
-        $response['message'] = 'Error del servidor: ' . htmlspecialchars($e->getMessage());
-    }
-    $_SESSION['error'] = $response['message'];
+} catch (Throwable $e) {
+    // --- MANEJO CENTRALIZADO DE ERRORES ---
+    // Cualquier error (de BD, de lógica, de la API de Google) será atrapado aquí.
+    
+    // Registrar el error técnico detallado en el log del servidor para el desarrollador.
+    error_log("Error en API de asistencia (main.php): " . $e->getMessage());
+
+    // Preparar un mensaje amigable para el usuario.
+    $response['message'] = $e instanceof InvalidArgumentException ? $e->getMessage() : 'Error: ' . $e->getMessage();
+    
+    // Establecer el código de estado HTTP a 500 para indicar un error de servidor.
+    http_response_code(500);
 
 } finally {
-    // 8. Cerrar conexiones y enviar la respuesta.
-    $conn->close();
-    $koha->close();
-    echo json_encode($response);
+    // --- CIERRE DE CONEXIONES ---
+    // Cerrar las conexiones si fueron abiertas exitosamente.
+    if ($conn instanceof mysqli) {
+        $conn->close();
+    }
+    if ($koha instanceof mysqli) {
+        $koha->close();
+    }
+}
+
+// --- PASO FINAL: ENVIAR RESPUESTA ---
+// Enviar siempre una respuesta JSON, ya sea de éxito o de error.
+echo json_encode($response);
+
+
+/**
+ * Función de registro de asistencia principal.
+ * Determina si es una entrada o salida y la guarda en `inout_log`.
+ */
+function handleAttendance(string $id, mysqli $conn): array
+{
+    $timestamp = date('Y-m-d H:i:s');
+    $status = 'IN';
+
+    $stmt = $conn->prepare("SELECT status FROM inout_log WHERE id = ? ORDER BY timestamp DESC LIMIT 1");
+    $stmt->bind_param('s', $id);
+    $stmt->execute();
+    $lastRecord = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if ($lastRecord && $lastRecord['status'] === 'IN') {
+        $status = 'OUT';
+    }
+
+    $stmt = $conn->prepare("INSERT INTO inout_log (id, timestamp, status) VALUES (?, ?, ?)");
+    $stmt->bind_param('sss', $id, $timestamp, $status);
+    $stmt->execute();
+    $stmt->close();
+
+    $message = $status === 'IN'
+        ? "Entrada registrada a las " . date('g:i A', strtotime($timestamp))
+        : "Salida registrada a las " . date('g:i A', strtotime($timestamp));
+
+    return ['success' => true, 'status' => $status, 'message' => $message];
 }

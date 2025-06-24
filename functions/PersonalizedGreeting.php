@@ -12,8 +12,6 @@ use Google\Cloud\TextToSpeech\V1\SynthesisInput;
 use Google\Cloud\TextToSpeech\V1\TextToSpeechClient;
 use Google\Cloud\TextToSpeech\V1\VoiceSelectionParams;
 use Dotenv\Dotenv;
-use RuntimeException;
-use Throwable;
 
 /**
  * Gestiona la creación y síntesis de saludos de voz personalizados

@@ -37,3 +37,19 @@ CREATE TABLE `inout_log` (
   `status` varchar(10) NOT NULL,
   PRIMARY KEY (`log_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+# Create table for users
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user` varchar(50) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `pass` varchar(255) NOT NULL,
+  `role` int(11) NOT NULL,
+  `loc` varchar(100) NOT NULL DEFAULT '',
+  `active` tinyint(1) NOT NULL DEFAULT '1',
+  `llogin` varchar(30) DEFAULT NULL,
+  `lib_name` varchar(100) DEFAULT NULL,
+  `banner` varchar(20) DEFAULT 'false',
+  `dashboard` varchar(50) DEFAULT 'quote',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -8,6 +8,7 @@
 // Carga el entorno de la aplicación, incluyendo Composer y helpers.
 require_once dirname(__DIR__, 2) . '/functions/autoload_helper.php';
 require_vendor_autoload(dirname(__DIR__, 2));
+require_once dirname(__DIR__, 2) . '/functions/general.php';
 
 // Habilitar que MySQLi lance excepciones en lugar de solo advertencias.
 // Esto permite que nuestro bloque try-catch atrape errores de conexión.
@@ -53,7 +54,6 @@ try {
     }
 
     // --- PASO 3: PROCESAR LOS DATOS DEL USUARIO ---
-    require_once dirname(__DIR__, 2) . '/functions/general.php';
     $userId = strtoupper(sanitize($conn, $_POST['user_id']));
     $currentDate = date('Y-m-d');
 

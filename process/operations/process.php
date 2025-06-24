@@ -6,7 +6,7 @@
 	if(isset($_POST['updateDash'])){
     $activedash = $_POST['activedash'];
     $query = "UPDATE `setup` SET `value` = '$activedash' WHERE `setup`.`var` = 'activedash'";
-    $result = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error());
+    $result = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error($conn));
 
     if($_POST['banner'] == "name"){
       $banner = "false";
@@ -15,7 +15,7 @@
     }
 
     $query = "UPDATE `setup` SET `value` = '$banner' WHERE `setup`.`var` = 'banner'";
-    $result = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error());
+    $result = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error($conn));
 
     if($result){
     	header("location:../../setup.php?msg=1");
@@ -25,15 +25,15 @@
   if(isset($_POST['basic'])){
     $ccname = sanitize($conn, $_POST['cname']);
     $query = "UPDATE `setup` SET `value` = '$ccname' WHERE `setup`.`var` = 'cname'";
-    $result = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error());
+    $result = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error($conn));
 
     $libtime = $_POST['libtime'];
     $query = "UPDATE `setup` SET `value` = '$libtime' WHERE `setup`.`var` = 'libtime'";
-    $result = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error());
+    $result = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error($conn));
 
     $noname = $_POST['noname'];
     $query = "UPDATE `setup` SET `value` = '$noname' WHERE `setup`.`var` = 'noname'";
-    $result = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error());
+    $result = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error($conn));
 
     if($result){
       header("location:../../setup.php?msg=1");
@@ -45,7 +45,7 @@
     $loc = sanitize($conn, $loc);
     $sl = getsl($conn, "id", "loc");
     $query = "INSERT INTO `loc` VALUES('".$sl."', '".$loc."');";
-    $result = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error());
+    $result = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error($conn));
 
     if($result){
     	header("location:../../setup.php?msg=2");

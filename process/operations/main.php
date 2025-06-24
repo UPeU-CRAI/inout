@@ -4,7 +4,7 @@
     include './functions/dbconn.php';
     include './functions/general.php';
     $sql = "DELETE FROM `tmp2` WHERE `time` < DATE_SUB(NOW(),INTERVAL '00:10' MINUTE_SECOND)";
-    $result = mysqli_query($conn, $sql) or die("Invalid query: 1" . mysqli_error());
+    $result = mysqli_query($conn, $sql) or die("Invalid query: 1" . mysqli_error($conn));
     if (isset($_GET['id'])) {
         $usn = strtoupper($_GET['id']);
         $date = date('Y-m-d');

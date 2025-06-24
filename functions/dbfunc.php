@@ -86,19 +86,19 @@
 
 	function setupStats($conn){
 	  $query = "SELECT value FROM `setup` where var='cname'";
-	  $result = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error());
+          $result = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error($conn));
 	  $cc = mysqli_fetch_row($result);
 	  $query = "SELECT value FROM `setup` where var='libtime'";
-	  $result = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error());
+          $result = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error($conn));
 	  $libtime = mysqli_fetch_row($result);
 	  $query = "SELECT value FROM `setup` where var='noname'";
-	  $result = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error());
+          $result = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error($conn));
 	  $noname = mysqli_fetch_row($result);
 	  $query = "SELECT value FROM `setup` where var='banner'";
-	  $result = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error());
+          $result = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error($conn));
 	  $banner = mysqli_fetch_row($result);
 	  $query = "SELECT value FROM `setup` where var='activedash'";
-	  $result = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error());
+          $result = mysqli_query($conn, $query) or die("Invalid query: " . mysqli_error($conn));
 	  $activedash = mysqli_fetch_row($result);
 
 	  return $res = array($cc[0], $libtime[0], $noname[0], $banner[0], $activedash[0]);

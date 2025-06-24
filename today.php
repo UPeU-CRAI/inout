@@ -45,7 +45,7 @@
 			        		echo "<script type='text/javascript'>var printMsg = '".$_SESSION['lib']." Today (".$date.") Inout System Data';</script>";
 			        		$date = date('Y-m-d');
                   $sql = "SELECT * FROM `inout` WHERE date = '$date' and `loc` = '$slib'";
-                  $result = mysqli_query($conn, $sql) or die("Invalid query: " . mysqli_error());
+                  $result = mysqli_query($conn, $sql) or die("Invalid query: " . mysqli_error($conn));
                   while ($row = mysqli_fetch_array($result)) {
                 ?>
                 	<tr>

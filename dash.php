@@ -1,18 +1,13 @@
 <?php
-// --- AÑADE ESTAS LÍNEAS PARA VER EL ERROR ---
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-// -------------------------------------------
-
-require_once __DIR__ . '/functions/autoload_helper.php';
-require_vendor_autoload(__DIR__);
-
-if (getenv('DEBUG')) {
+// Mostrar errores solo si la variable de entorno DEBUG está activa
+if (!empty($_ENV['DEBUG'])) {
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
 }
+
+require_once __DIR__ . '/functions/autoload_helper.php';
+require_vendor_autoload(__DIR__);
 
 session_start();
 
@@ -42,7 +37,7 @@ try {
     $greeter = new PersonalizedGreeting();
 } catch (Throwable $e) {
     $greeter = null;
-    if (getenv('DEBUG')) {
+    if (!empty($_ENV['DEBUG'])) {
         echo '<p style="color:red; text-align:center;">Error al iniciar el Saludo Personalizado: ' . htmlspecialchars($e->getMessage()) . '</p>';
     }
 }

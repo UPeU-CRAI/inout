@@ -16,8 +16,8 @@ $conn = get_db_connection();
 try {
     $user = sanitize($conn, $_POST['user']);
     $stmt = $conn->prepare(
-        "SELECT id, user, name, pass, role, loc, lib_name, banner, dashboard
-         FROM users WHERE user = ?"
+        "SELECT id, username, fname, pass, role, loc, lib_name, banner, dashboard
+         FROM users WHERE username = ?"
     );
     $stmt->bind_param('s', $user);
     $stmt->execute();
@@ -28,7 +28,7 @@ try {
     if ($udata && password_verify($_POST['pass'], $udata['pass'])) {
         // Éxito: Guardar datos en la sesión y redirigir.
         $_SESSION['id'] = $udata['id'];
-        $_SESSION['user_name'] = $udata['name'];
+        $_SESSION['user_name'] = $udata['fname'];
         $_SESSION['role'] = $udata['role'];
         $_SESSION['loc'] = $udata['loc'];
         $_SESSION['lib_name'] = $udata['lib_name'];

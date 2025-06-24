@@ -29,13 +29,16 @@
 	$pass = sha1($pass);
 
 	// get from db
-	$query = "SELECT * from users where username = '".$name."' and pass = '".$pass."'";
-	$result = mysqli_query($conn, $query);
-	if(!$result){
-		echo "Empty data " . mysqli_error($conn);
-		exit;
-	}
-	$user = mysqli_fetch_assoc($result);
+        $stmt = $conn->prepare("SELECT * from users where username = ? and pass = ?");
+        $stmt->bind_param("ss", $name, $pass);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if(!$result){
+                echo "Empty data " . mysqli_error($conn);
+                exit;
+        }
+        $user = mysqli_fetch_assoc($result);
+        $stmt->close();
 
 	if($name == $user['username'] && $pass == $user['pass'] ){
 		if($user['active']==1){

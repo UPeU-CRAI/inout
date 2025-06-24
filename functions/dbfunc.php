@@ -160,13 +160,15 @@
                 return $row;
         }
 
-	 function getBackupData($conn, $table){
-    $sql = "SELECT * FROM $table ORDER BY id DESC LIMIT 10";
-    $result = mysqli_query($conn, $sql);
-    if(!$result){
-      echo "Can't retrieve data " . mysqli_error($conn);
-      exit;
+        function getBackupData($conn, $table){
+    $allowed = ['log'];
+    if(!in_array($table, $allowed, true)){
+      return false;
     }
+    $stmt = $conn->prepare("SELECT * FROM `$table` ORDER BY id DESC LIMIT 10");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
     return $result;
   }
 

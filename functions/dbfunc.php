@@ -141,16 +141,24 @@
 		return $result;
 	}
 
-	function checknews($conn, $loc){
-		$sql = "SELECT * From news WHERE loc = '".$loc."' AND status = 'Yes' ORDER BY id DESC";
-		$result = mysqli_query($conn, $sql);
-		if(!$result){
-			echo "Can't retrieve data " . mysqli_error($conn);
-			exit;
-		}
-		$result = mysqli_fetch_array($result);
-		return $result;
-	}
+        function checknews($conn, $loc){
+                $sql = "SELECT * FROM news WHERE loc = ? AND status = 'Yes' ORDER BY id DESC";
+                $stmt = mysqli_prepare($conn, $sql);
+                if(!$stmt){
+                        echo "Can't prepare statement " . mysqli_error($conn);
+                        exit;
+                }
+                mysqli_stmt_bind_param($stmt, 's', $loc);
+                mysqli_stmt_execute($stmt);
+                $res = mysqli_stmt_get_result($stmt);
+                if(!$res){
+                        echo "Can't retrieve data " . mysqli_error($conn);
+                        exit;
+                }
+                $row = mysqli_fetch_array($res);
+                mysqli_stmt_close($stmt);
+                return $row;
+        }
 
 	 function getBackupData($conn, $table){
     $sql = "SELECT * FROM $table ORDER BY id DESC LIMIT 10";

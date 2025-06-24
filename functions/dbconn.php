@@ -1,63 +1,50 @@
 <?php
-require_once __DIR__ . '/env_loader.php';
-
-$required = [
-    'INOUT_DB_HOST', 'INOUT_DB_USER', 'INOUT_DB_PASS', 'INOUT_DB_NAME',
-    'KOHA_DB_HOST', 'KOHA_DB_USER', 'KOHA_DB_PASS', 'KOHA_DB_NAME',
-    'GOOGLE_APPLICATION_CREDENTIALS'
-];
-
-foreach ($required as $key) {
-    if (!isset($_ENV[$key]) || trim($_ENV[$key]) === '') {
-        throw new RuntimeException("❌ Falta la variable de entorno: {$key}");
-    }
-}
-
-// Configuración de logs y depuración
-$debug = isset($_ENV['DEBUG']) && $_ENV['DEBUG'] == 1;
-$logFile = dirname(__DIR__) . '/logs/error.log';
-if (!is_dir(dirname($logFile))) {
-    mkdir(dirname($logFile), 0775, true);
-}
-
-function handleConnectionError(string $message, string $logFile): void
-{
-    $date = date('c');
-    file_put_contents($logFile, "[$date] $message\n", FILE_APPEND);
-
-    // Siempre lanzar una excepción para que los llamadores manejen el error.
-    throw new RuntimeException($message);
-}
+/**
+ * dbconn.php
+ * Establece las conexiones a las bases de datos utilizando las variables
+ * de entorno que ya han sido cargadas por bootstrap.php.
+ */
 
 // Conexión a la base de datos InOut
-$conn = mysqli_connect($_ENV['INOUT_DB_HOST'], $_ENV['INOUT_DB_USER'], $_ENV['INOUT_DB_PASS'], $_ENV['INOUT_DB_NAME']);
-if (!$conn) {
-    handleConnectionError('❌ Falló la conexión a la DB InOut: ' . mysqli_connect_error(), $logFile);
-}
-
-if (!mysqli_set_charset($conn, 'utf8mb4')) {
-    handleConnectionError(
-        '❌ No se pudo establecer el conjunto de caracteres utf8mb4 en la DB InOut: ' . mysqli_error($conn),
-        $logFile
-    );
-}
+$conn = new mysqli(
+    $_ENV['INOUT_DB_HOST'],
+    $_ENV['INOUT_DB_USER'],
+    $_ENV['INOUT_DB_PASS'],
+    $_ENV['INOUT_DB_NAME']
+);
+$conn->set_charset('utf8mb4');
 
 // Conexión a la base de datos Koha
-$koha = mysqli_connect($_ENV['KOHA_DB_HOST'], $_ENV['KOHA_DB_USER'], $_ENV['KOHA_DB_PASS'], $_ENV['KOHA_DB_NAME']);
-if (!$koha) {
-    handleConnectionError('❌ Falló la conexión a la DB Koha: ' . mysqli_connect_error(), $logFile);
-}
+$koha = new mysqli(
+    $_ENV['KOHA_DB_HOST'],
+    $_ENV['KOHA_DB_USER'],
+    $_ENV['KOHA_DB_PASS'],
+    $_ENV['KOHA_DB_NAME']
+);
+$koha->set_charset('utf8mb4');
 
-if (!mysqli_set_charset($koha, 'utf8mb4')) {
-    handleConnectionError(
-        '❌ No se pudo establecer el conjunto de caracteres utf8mb4 en la DB Koha: ' . mysqli_error($koha),
-        $logFile
-    );
-}
 
-function sanitize($conn, $str)
+// --- FUNCIONES AUXILIARES ---
+
+/**
+ * Devuelve la conexión principal a la base de datos.
+ * La variable $conn es global dentro del scope de los archivos incluidos.
+ * @return mysqli
+ */
+function get_db_connection(): mysqli
 {
-    return mysqli_real_escape_string($conn, $str);
+    global $conn;
+    return $conn;
 }
 
-date_default_timezone_set('America/Lima');
+/**
+ * Sanitiza una cadena de texto para evitar inyección SQL.
+ * @param mysqli $connection
+ * @param string $str
+ * @return string
+ */
+function sanitize(mysqli $connection, string $str): string
+{
+    return $connection->real_escape_string($str);
+}
+

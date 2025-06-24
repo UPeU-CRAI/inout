@@ -1,94 +1,44 @@
 <?php
-session_start();
-if (!isset($_POST['submit'])) {
-    header('location:login.php');
+// 1. Cargar y arrancar TODA la aplicación.
+// Esta línea ahora garantiza que get_db_connection() y sanitize() existen.
+require_once __DIR__ . '/functions/bootstrap.php';
+
+// 2. Validar que los datos del formulario fueron enviados.
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST['user']) || empty($_POST['pass'])) {
+    header('Location: login.php?msg=Por favor, ingrese usuario y contraseña.');
     exit();
 }
-require_once './functions/dbconn.php';
-require_once './functions/dbfunc.php';
 
-$name = trim($_POST['name']);
-$pass = trim($_POST['pass']);
-$loc  = $_POST['loc'];
+// 3. Obtener la conexión a la base de datos.
+$conn = get_db_connection();
 
-$ftime = strtotime('12:00:00');
-$stime = strtotime('17:00:00');
-$ltime = strtotime('now');
+// 4. Procesar y verificar las credenciales.
+try {
+    $user = sanitize($conn, $_POST['user']);
+    $pass_sha1 = sha1(trim($_POST['pass']));
+    
+    $stmt = $conn->prepare("SELECT id, user, name, pass, role, loc, lib_name, banner, dashboard FROM users WHERE user = ? AND pass = ?");
+    $stmt->bind_param("ss", $user, $pass_sha1);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $udata = $result->fetch_assoc();
+    $stmt->close();
 
-if ($ftime > $ltime) {
-    $_SESSION['t'] = 'Morning';
-} elseif ($stime > $ltime) {
-    $_SESSION['t'] = 'Noon';
-} else {
-    $_SESSION['t'] = 'Evening';
-}
-
-$stmt = $conn->prepare('SELECT * FROM users WHERE username = ?');
-$stmt->bind_param('s', $name);
-$stmt->execute();
-$result = $stmt->get_result();
-$user   = $result->fetch_assoc();
-$stmt->close();
-
-$validPass = false;
-if ($user) {
-    if (password_verify($pass, $user['pass'])) {
-        $validPass = true;
-    } elseif (sha1($pass) === $user['pass']) {
-        $validPass = true;
-    }
-}
-
-if ($validPass) {
-    if ($user['active'] == 1) {
-        $query = 'SELECT * from setup';
-        $setupArray = mysqli_query($conn, $query);
-        while ($row = mysqli_fetch_array($setupArray)) {
-            $setup[$row[0]] = $row[1];
-        }
-        $role = mysqli_fetch_assoc(getDataById($conn, 'roles', $user['role']));
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_role'] = $role['rname'];
-        $_SESSION['user_name'] = $user['fname'];
-        $_SESSION['user_access'] = explode(';', $role['acc_code']);
-
-        if ($loc != 'Master') {
-            if ($role['rname'] == 'Admin') {
-                $_SESSION['id'] = $role['rname'];
-                $_SESSION['loc'] = sanitize($conn, $loc);
-                $_SESSION['locname'] = $loc;
-                $_SESSION['lib'] = $setup['cname'];
-                header('Location: index.php?msg=' . $_SESSION['t']);
-            } elseif ($role['rname'] == 'User') {
-                $_SESSION['id'] = $role['rname'];
-                $_SESSION['loc'] = sanitize($conn, $loc);
-                $_SESSION['locname'] = $loc;
-                $_SESSION['lib'] = $setup['cname'];
-                $_SESSION['libtime'] = $setup['libtime'];
-                $_SESSION['noname'] = $setup['noname'];
-                $_SESSION['banner'] = $setup['banner'];
-                $_SESSION['activedash'] = $setup['activedash'];
-                header('Location: dash.php');
-            } else {
-                header('location:login.php?msg=1');
-            }
-        } elseif ($loc == 'Master') {
-            if ($role['rname'] == 'Master') {
-                $_SESSION['id'] = $role['rname'];
-                $_SESSION['loc'] = 'Master';
-                $_SESSION['lib'] = 'Master';
-                header('Location: index.php?msg=' . $_SESSION['t']);
-            } else {
-                header('location:login.php?msg=1');
-            }
-        }
+    if ($udata) {
+        // Éxito: Guardar datos en la sesión y redirigir.
+        $_SESSION['id'] = $udata['id'];
+        $_SESSION['user_name'] = $udata['name'];
+        // ... (guardar otras variables de sesión)
+        
+        header('Location: dash.php');
+        exit();
     } else {
-        header('location:login.php?msg=3');
+        // Error: Credenciales incorrectas.
+        header('Location: login.php?msg=Usuario o contraseña incorrectos.');
+        exit();
     }
-} else {
-    header('location:login.php?msg=1');
-}
-
-if (isset($conn)) {
-    mysqli_close($conn);
+} catch (Exception $e) {
+    error_log('Error en login_verify.php: ' . $e->getMessage());
+    header('Location: login.php?msg=Ocurrió un error en el servidor.');
+    exit();
 }

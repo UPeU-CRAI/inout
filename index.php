@@ -4,7 +4,7 @@ require_once __DIR__ . '/functions/autoload_helper.php';
 
 try {
     require_vendor_autoload(__DIR__);
-    require_once __DIR__ . '/functions/env_loader.php';
+require_once __DIR__ . '/functions/env_loader.php';
 } catch (RuntimeException $e) {
     // Establecer el código de estado HTTP 500 para indicar un error de servidor.
     http_response_code(500);

@@ -7,7 +7,7 @@ To deploy the InOut system on a new server:
 3. Copy `.env.example` to `.env` and set **all** required variables:
    - `INOUT_DB_HOST`, `INOUT_DB_USER`, `INOUT_DB_PASS`, `INOUT_DB_NAME`
    - `KOHA_DB_HOST`, `KOHA_DB_USER`, `KOHA_DB_PASS`, `KOHA_DB_NAME`
-   - `TTS_CREDENTIALS_PATH`, `TTS_LANGUAGE_CODE`, `TTS_VOICE`
+   - `GOOGLE_APPLICATION_CREDENTIALS`, `TTS_CREDENTIALS_PATH`, `TTS_LANGUAGE_CODE`, `TTS_VOICE`
    Ensure the web server user can read this file by running `ls -l .env`.
 4. Make sure the web server user can read the application files and write to any directories that require write access (such as `logs/`).
 

@@ -56,7 +56,8 @@ Sigue estos pasos para configurar el proyecto en tu entorno local:
         ```bash
         cp .env.example .env
         # Edita el archivo .env con los datos de tu base de datos
-        # y la ruta de tus credenciales de Google Cloud TTS
+        # y establece GOOGLE_APPLICATION_CREDENTIALS con la ruta de tus
+        # credenciales de Google Cloud TTS
         # puedes definir el idioma por defecto con TTS_LANGUAGE_CODE
 ```
 
@@ -70,14 +71,14 @@ Sigue estos pasos para configurar el proyecto en tu entorno local:
     -   El sistema te redirigirá a la página de inicio de sesión (`login.php`).
 6.  **Configurar Google Cloud Text-to-Speech:**
     -   Crea un proyecto en Google Cloud y genera una clave de servicio (archivo JSON).
-    -   Define las variables `TTS_CREDENTIALS_PATH`, `TTS_LANGUAGE_CODE` y `TTS_VOICE` en tu archivo `.env`:
+    -   Define las variables `GOOGLE_APPLICATION_CREDENTIALS`, `TTS_CREDENTIALS_PATH`, `TTS_LANGUAGE_CODE` y `TTS_VOICE` en tu archivo `.env`:
 
         ```env
         TTS_CREDENTIALS_PATH=/u01/vhosts/inout.upeu.edu.pe/credentials/inout-tts.json
         TTS_LANGUAGE_CODE=es-ES
         TTS_VOICE=es-ES-Standard-A
         ```
-    -   No es necesario establecer `GOOGLE_APPLICATION_CREDENTIALS`; la clase de saludo pasa la ruta de las credenciales directamente a la biblioteca de Google.
+    -   Asegúrate de que `GOOGLE_APPLICATION_CREDENTIALS` apunte al archivo JSON de tu cuenta de servicio de Google.
     -   Como verificación rápida, ejecuta `php tests/tts_test.php` después de definir las variables TTS. Este script creará `tests/tts_test.mp3` si las credenciales y dependencias de Google TTS están instaladas correctamente.
 -   Si deseas ver los mensajes de error de PHP durante el desarrollo, establece `DEBUG=1` en tu archivo `.env`.
 

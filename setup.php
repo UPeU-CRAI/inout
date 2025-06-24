@@ -1,5 +1,5 @@
 <?php
-	session_start();
+        require_once "./functions/session.php";
 	// ob_start(ob_gzhandler);
 	$title = "Setup";
 	// $acc_code = "S01";

@@ -1,112 +1,318 @@
 <?php
 
 class MessageHandler {
-    // Banco centralizado de plantillas de mensajes, organizadas por evento y categoría
+    // Banco centralizado de plantillas de mensajes, organizadas por evento, categoría, género y franja horaria
     private array $templates;
 
     public function __construct() {
         $this->templates = [
             'entry' => [
+                'time_based' => [ // Nuevo nivel para saludos basados en la hora del día
+                    'morning' => [
+                        'M' => [
+                            "¡Buenos días, {nombre}! Tu USN es: {usn}. Hora de entrada: {time}.",
+                            "¡Hola, {nombre}! Bienvenido. Ingreso registrado a las: {time}.",
+                            "Que tengas un excelente día, {nombre}. Tu USN: {usn}. Entrada: {time}."
+                        ],
+                        'F' => [
+                            "¡Buenos días, {nombre}! Tu USN es: {usn}. Hora de entrada: {time}.",
+                            "¡Hola, {nombre}! Bienvenida. Ingreso registrado a las: {time}.",
+                            "Que tengas un excelente día, {nombre}. Tu USN: {usn}. Entrada: {time}."
+                        ],
+                        'DEFAULT' => [
+                            "¡Buenos días, {nombre}! Bienvenido/a. Entrada a las: {time}.",
+                            "Hola, {nombre}. Ingreso registrado a las: {time}.",
+                            "Excelente mañana, {nombre}. Tu USN: {usn}. Entrada: {time}."
+                        ]
+                    ],
+                    'afternoon' => [
+                        'M' => [
+                            "¡Buenas tardes, {nombre}! Tu USN es: {usn}. Hora de entrada: {time}.",
+                            "¡Hola, {nombre}! Bienvenido. Ingreso registrado a las: {time}.",
+                            "Que tengas una excelente tarde, {nombre}. Tu USN: {usn}. Entrada: {time}."
+                        ],
+                        'F' => [
+                            "¡Buenas tardes, {nombre}! Tu USN es: {usn}. Hora de entrada: {time}.",
+                            "¡Hola, {nombre}! Bienvenida. Ingreso registrado a las: {time}.",
+                            "Que tengas una excelente tarde, {nombre}. Tu USN: {usn}. Entrada: {time}."
+                        ],
+                        'DEFAULT' => [
+                            "¡Buenas tardes, {nombre}! Bienvenido/a. Entrada a las: {time}.",
+                            "Hola, {nombre}. Ingreso registrado a las: {time}.",
+                            "Excelente tarde, {nombre}. Tu USN: {usn}. Entrada: {time}."
+                        ]
+                    ],
+                    'night' => [
+                        'M' => [
+                            "¡Buenas noches, {nombre}! Tu USN es: {usn}. Hora de entrada: {time}.",
+                            "¡Hola, {nombre}! Bienvenido. Ingreso registrado a las: {time}.",
+                            "Que tengas una buena noche, {nombre}. Tu USN: {usn}. Entrada: {time}."
+                        ],
+                        'F' => [
+                            "¡Buenas noches, {nombre}! Tu USN es: {usn}. Hora de entrada: {time}.",
+                            "¡Hola, {nombre}! Bienvenida. Ingreso registrado a las: {time}.",
+                            "Que tengas una buena noche, {nombre}. Tu USN: {usn}. Entrada: {time}."
+                        ],
+                        'DEFAULT' => [
+                            "¡Buenas noches, {nombre}! Bienvenido/a. Entrada a las: {time}.",
+                            "Hola, {nombre}. Ingreso registrado a las: {time}.",
+                            "Excelente noche, {nombre}. Tu USN: {usn}. Entrada: {time}."
+                        ]
+                    ],
+                ],
+                // Plantillas por categoría (se usarán si no se activa el saludo por hora, o como fallback)
                 'ESTUDI' => [
-                    "¡Qué tal, {nombre}! Tu código USN es: {usn}. Hora de entrada: {time}.",
-                    "¡Hola, {nombre}! Bienvenido/a de vuelta. Entrada registrada a las: {time}.",
-                    "¡Bienvenido/a, {nombre}! Tu USN es: {usn}. Hora de ingreso: {time}."
+                    'M' => [
+                        "¡Qué tal, {nombre}! Tu USN es: {usn}. Hora de entrada: {time}. Disfruta tu estadía.",
+                        "¡Bienvenido, {nombre}! Ingreso a las: {time}. Es un gusto verte.",
+                    ],
+                    'F' => [
+                        "¡Qué tal, {nombre}! Tu USN es: {usn}. Hora de entrada: {time}. Disfruta tu estadía.",
+                        "¡Bienvenida, {nombre}! Ingreso a las: {time}. Es un gusto verte.",
+                    ],
+                    'DEFAULT' => [
+                        "¡Hola, {nombre}! Bienvenido/a. Entrada registrada a las: {time}.",
+                        "¡Bienvenido/a, {nombre}! Tu USN es: {usn}. Hora de ingreso: {time}.",
+                    ]
                 ],
                 'DOCEN' => [
-                    "Estimado/a {titulo} {apellido}, un placer recibirle. Entrada registrada a las: {time}.",
-                    "Bienvenido/a, {titulo} {apellido}. Su código USN es: {usn}. Hora de entrada: {time}.",
-                    "Saludos, {titulo} {apellido}. Ingreso verificado a las: {time}."
+                    'M' => [
+                        "Estimado {titulo} {apellido}, un placer recibirle. Su entrada es a las: {time}.",
+                        "Bienvenido, {titulo} {apellido}. Ingreso: {time}. A su disposición.",
+                    ],
+                    'F' => [
+                        "Estimada {titulo} {apellido}, un placer recibirle. Su entrada es a las: {time}.",
+                        "Bienvenida, {titulo} {apellido}. Ingreso: {time}. A su disposición.",
+                    ],
+                    'DEFAULT' => [
+                        "Estimado/a {titulo} {apellido}, bienvenido/a. Entrada: {time}.",
+                        "Un placer recibirle, {titulo} {apellido}. Ingreso a las: {time}.",
+                    ]
                 ],
                 'INVESTI' => [
-                    "Estimado/a Investigador/a {apellido}, bienvenido/a. Entrada: {time}.",
-                    "Bienvenido/a, {nombre} {apellido}. Su USN es: {usn}. Hora de entrada: {time}.",
-                    "Registro de ingreso para el/la Investigador/a {apellido}: {time}."
+                    'M' => [
+                        "Estimado Investigador {apellido}, bienvenido. Entrada: {time}. Su USN: {usn}.",
+                        "Bienvenido, {nombre} {apellido}. Ingreso: {time}. Éxito en su investigación.",
+                    ],
+                    'F' => [
+                        "Estimada Investigadora {apellido}, bienvenida. Entrada: {time}. Su USN: {usn}.",
+                        "Bienvenida, {nombre} {apellido}. Ingreso: {time}. Éxito en su investigación.",
+                    ],
+                    'DEFAULT' => [
+                        "Estimado/a Investigador/a {apellido}, bienvenido/a. Entrada: {time}.",
+                        "Bienvenido/a, {nombre} {apellido}. Hora de entrada: {time}.",
+                    ]
                 ],
                 'STAFF' => [
-                    "¡Hola, colega {nombre}! Qué bueno verte. Entrada registrada: {time}.",
-                    "¡Qué bueno verte, {nombre}! Tu USN es: {usn}. Ingreso a las: {time}.",
-                    "Saludos, {nombre}. Tu entrada ha sido registrada: {time}."
+                    'M' => [
+                        "¡Hola, colega {nombre}! Qué gusto verte. Entrada: {time}.",
+                        "¡Bienvenido, {nombre}! Ingreso a las: {time}. Que tengas un buen turno.",
+                    ],
+                    'F' => [
+                        "¡Hola, colega {nombre}! Qué gusto verte. Entrada: {time}.",
+                        "¡Bienvenida, {nombre}! Ingreso a las: {time}. Que tengas un buen turno.",
+                    ],
+                    'DEFAULT' => [
+                        "¡Hola, colega {nombre}! Qué bueno verte. Entrada: {time}.",
+                        "¡Qué bueno verte, {nombre}! Ingreso a las: {time}.",
+                    ]
                 ],
                 'ADMIN' => [
-                    "Saludos, creador {nombre}. Entrada registrada: {time}.",
-                    "Bienvenido, Super-Usuario {nombre}. Tu USN es: {usn}. Hora de ingreso: {time}.",
-                    "Acceso concedido, {nombre}. Registro de entrada: {time}."
+                    'M' => [
+                        "Saludos, creador {nombre}. Entrada: {time}. El sistema a tu servicio.",
+                        "Bienvenido, Super-Usuario {nombre}. Ingreso a las: {time}.",
+                    ],
+                    'F' => [
+                        "Saludos, creadora {nombre}. Entrada: {time}. El sistema a tu servicio.",
+                        "Bienvenida, Super-Usuaria {nombre}. Ingreso a las: {time}.",
+                    ],
+                    'DEFAULT' => [
+                        "Saludos, creador/a {nombre}. Entrada: {time}.",
+                        "Bienvenido/a, Super-Usuario/a {nombre}. Hora de ingreso: {time}.",
+                    ]
                 ],
                 'VISITA' => [
-                    "Le damos una cordial bienvenida. Su código USN es: {usn}. Hora de entrada: {time}.",
-                    "Bienvenido/a a nuestra biblioteca. Ingreso registrado a las: {time}.",
-                    "Gracias por visitarnos. Su hora de entrada es: {time}."
+                    'M' => [
+                        "Le damos una cordial bienvenida. Su USN es: {usn}. Hora de entrada: {time}.",
+                        "Bienvenido a nuestra biblioteca. Ingreso registrado a las: {time}.",
+                    ],
+                    'F' => [
+                        "Le damos una cordial bienvenida. Su USN es: {usn}. Hora de entrada: {time}.",
+                        "Bienvenida a nuestra biblioteca. Ingreso registrado a las: {time}.",
+                    ],
+                    'DEFAULT' => [
+                        "Le damos una cordial bienvenida. Su USN es: {usn}. Hora de entrada: {time}.",
+                        "Bienvenido/a a nuestra biblioteca. Ingreso registrado a las: {time}.",
+                    ]
                 ],
                 'DEFAULT' => [
-                    "¡Hola, {nombre}! Bienvenido/a. Entrada registrada a las: {time}.",
-                    "Bienvenido/a, {nombre}. Tu USN es: {usn}. Hora de ingreso: {time}.",
-                    "Acceso registrado. Hora de entrada: {time}."
+                    'M' => [
+                        "¡Hola, {nombre}! Bienvenido. Entrada: {time}. Tu USN: {usn}.",
+                        "Bienvenido, {nombre}. Ingreso: {time}.",
+                    ],
+                    'F' => [
+                        "¡Hola, {nombre}! Bienvenida. Entrada: {time}. Tu USN: {usn}.",
+                        "Bienvenida, {nombre}. Ingreso: {time}.",
+                    ],
+                    'DEFAULT' => [
+                        "¡Hola, {nombre}! Bienvenido/a. Entrada: {time}.",
+                        "Bienvenido/a, {nombre}. Tu USN es: {usn}. Hora de ingreso: {time}.",
+                    ]
                 ]
             ],
             'exit' => [
                 'ESTUDI' => [
-                    "¡Hasta pronto, {nombre}! Duración total: {duration}.",
-                    "Gracias por tu visita, {nombre}. Has estado con nosotros por: {duration}.",
-                    "¡Vuelve pronto, {nombre}! Tiempo en el edificio: {duration}."
+                    'M' => [
+                        "¡Hasta pronto, {nombre}! Tu duración total fue de: {duration}.",
+                        "Gracias por tu visita, {nombre}. Has estado con nosotros por: {duration}.",
+                    ],
+                    'F' => [
+                        "¡Hasta pronto, {nombre}! Tu duración total fue de: {duration}.",
+                        "Gracias por tu visita, {nombre}. Has estado con nosotros por: {duration}.",
+                    ],
+                    'DEFAULT' => [
+                        "¡Hasta pronto, {nombre}! Duración total: {duration}.",
+                        "Gracias por tu visita, {nombre}. Has estado con nosotros por: {duration}.",
+                    ]
                 ],
                 'DOCEN' => [
-                    "Despedida, {titulo} {apellido}. Su duración total fue de: {duration}.",
-                    "Gracias por su visita, {titulo} {apellido}. Permaneció por: {duration}.",
-                    "Hasta la próxima, {titulo} {apellido}. Su tiempo de permanencia: {duration}."
+                    'M' => [
+                        "Hasta pronto, {titulo} {apellido}. Su duración total fue de: {duration}.",
+                        "Gracias por su visita, {titulo} {apellido}. Permaneció por: {duration}.",
+                    ],
+                    'F' => [
+                        "Hasta pronto, {titulo} {apellido}. Su duración total fue de: {duration}.",
+                        "Gracias por su visita, {titulo} {apellido}. Permaneció por: {duration}.",
+                    ],
+                    'DEFAULT' => [
+                        "Hasta pronto, {titulo} {apellido}. Su duración total fue de: {duration}.",
+                        "Gracias por su visita, {titulo} {apellido}. Permaneció por: {duration}.",
+                    ]
                 ],
                 'INVESTI' => [
-                    "Despedida, Investigador/a {apellido}. Duración: {duration}.",
-                    "Gracias, Investigador/a {apellido}. Su tiempo fue de: {duration}.",
-                    "Hasta la próxima, Investigador/a {apellido}. Permaneció por: {duration}."
+                    'M' => [
+                        "Despedida, Investigador {apellido}. Duración: {duration}.",
+                        "Gracias, Investigador {apellido}. Su tiempo fue de: {duration}.",
+                    ],
+                    'F' => [
+                        "Despedida, Investigadora {apellido}. Duración: {duration}.",
+                        "Gracias, Investigadora {apellido}. Su tiempo fue de: {duration}.",
+                    ],
+                    'DEFAULT' => [
+                        "Despedida, Investigador/a {apellido}. Duración: {duration}.",
+                        "Gracias, Investigador/a {apellido}. Su tiempo fue de: {duration}.",
+                    ]
                 ],
                 'STAFF' => [
-                    "¡Hasta luego, {nombre}! Que tengas un buen día. Duración: {duration}.",
-                    "Gracias por tu jornada, {nombre}. Tiempo registrado: {duration}.",
-                    "Nos vemos, {nombre}. Tu tiempo de permanencia fue de: {duration}."
+                    'M' => [
+                        "¡Hasta luego, {nombre}! Que tengas un buen día. Duración: {duration}.",
+                        "Gracias por tu jornada, {nombre}. Tiempo registrado: {duration}.",
+                    ],
+                    'F' => [
+                        "¡Hasta luego, {nombre}! Que tengas un buen día. Duración: {duration}.",
+                        "Gracias por tu jornada, {nombre}. Tiempo registrado: {duration}.",
+                    ],
+                    'DEFAULT' => [
+                        "¡Hasta luego, {nombre}! Que tengas un buen día. Duración: {duration}.",
+                        "Gracias por tu jornada, {nombre}. Tiempo registrado: {duration}.",
+                    ]
                 ],
                 'ADMIN' => [
-                    "Despedida, creador {nombre}. Duración: {duration}.",
-                    "Registro de salida para {nombre}. Tiempo total: {duration}.",
-                    "Hasta la próxima, {nombre}. Tu permanencia fue de: {duration}."
+                    'M' => [
+                        "Hasta pronto, creador {nombre}. Duración: {duration}.",
+                        "Registro de salida para {nombre}. Tiempo total: {duration}.",
+                    ],
+                    'F' => [
+                        "Hasta pronto, creadora {nombre}. Duración: {duration}.",
+                        "Registro de salida para {nombre}. Tiempo total: {duration}.",
+                    ],
+                    'DEFAULT' => [
+                        "Hasta pronto, creador/a {nombre}. Duración: {duration}.",
+                        "Registro de salida para {nombre}. Tiempo total: {duration}.",
+                    ]
                 ],
                 'VISITA' => [
-                    "Gracias por visitarnos. Vuelva pronto. Duración total: {duration}.",
-                    "Esperamos verte de nuevo. Tu visita duró: {duration}.",
-                    "Despedida. Su tiempo de permanencia fue de: {duration}."
+                    'M' => [
+                        "Gracias por visitarnos. Vuelva pronto. Duración total: {duration}.",
+                        "Esperamos verte de nuevo. Tu visita duró: {duration}.",
+                    ],
+                    'F' => [
+                        "Gracias por visitarnos. Vuelva pronto. Duración total: {duration}.",
+                        "Esperamos verte de nuevo. Tu visita duró: {duration}.",
+                    ],
+                    'DEFAULT' => [
+                        "Gracias por visitarnos. Vuelva pronto. Duración total: {duration}.",
+                        "Esperamos verte de nuevo. Tu visita duró: {duration}.",
+                    ]
                 ],
                 'DEFAULT' => [
-                    "¡Hasta pronto, {nombre}! Duración total: {duration}.",
-                    "Gracias por tu visita, {nombre}. Has estado con nosotros por: {duration}.",
-                    "¡Vuelve pronto! Tiempo en el edificio: {duration}."
+                    'M' => [
+                        "¡Hasta pronto, {nombre}! Duración total: {duration}.",
+                        "Gracias por tu visita, {nombre}. Has estado con nosotros por: {duration}.",
+                    ],
+                    'F' => [
+                        "¡Hasta pronto, {nombre}! Duración total: {duration}.",
+                        "Gracias por tu visita, {nombre}. Has estado con nosotros por: {duration}.",
+                    ],
+                    'DEFAULT' => [
+                        "¡Hasta pronto, {nombre}! Duración total: {duration}.",
+                        "Gracias por tu visita, {nombre}. Has estado con nosotros por: {duration}.",
+                    ]
                 ]
             ],
-            'expired' => [
-                "Hola, {nombre}. Tu membresía ha expirado. Te hemos registrado como visita. Por favor, acércate al mostrador para renovarla.",
-                "Atención, {nombre}. Tu cuenta parece estar inactiva o expirada. Para continuar disfrutando de nuestros servicios, por favor, renueva tu membresía en recepción.",
-                "Estimado/a {nombre}, tu membresía ha caducado. Has sido registrado/a temporalmente como visita. Te invitamos a pasar por el mostrador para regularizar tu situación."
+            'expired' => [ // Mensaje específico para usuarios con membresía expirada (ingresan como VISITA)
+                'M' => [
+                    "Atención, {nombre}. Tu membresía ha expirado. Has ingresado como VISITA. Por favor, acércate al mostrador para renovarla.",
+                    "Hola, {nombre}. Tu cuenta está inactiva. Se ha registrado tu ingreso como VISITA. Te invitamos a renovar tu membresía.",
+                    "Estimado {nombre}, tu membresía ha caducado. Tu acceso se ha registrado como VISITA. Favor regularizar tu situación en recepción."
+                ],
+                'F' => [
+                    "Atención, {nombre}. Tu membresía ha expirado. Has ingresado como VISITA. Por favor, acércate al mostrador para renovarla.",
+                    "Hola, {nombre}. Tu cuenta está inactiva. Se ha registrado tu ingreso como VISITA. Te invitamos a renovar tu membresía.",
+                    "Estimada {nombre}, tu membresía ha caducado. Tu acceso se ha registrado como VISITA. Favor regularizar tu situación en recepción."
+                ],
+                'DEFAULT' => [
+                    "Atención, {nombre}. Tu membresía ha expirado. Has ingresado como VISITA. Por favor, acércate al mostrador para renovarla.",
+                    "Hola, {nombre}. Tu cuenta está inactiva. Se ha registrado tu ingreso como VISITA. Te invitamos a renovar tu membresía.",
+                    "Estimado/a {nombre}, tu membresía ha caducado. Tu acceso se ha registrado como VISITA. Favor regularizar tu situación en recepción."
+                ]
             ],
             'recent_entry' => [
                 "Acabas de registrar tu entrada. Por favor, espera unos segundos antes de intentar una nueva acción.",
                 "Ya te has registrado. Si deseas salir, por favor, espera un momento.",
-                "¡Entrada confirmada! Permanece unos segundos antes de registrar tu salida."
+                "¡Entrada confirmada! Permanece unos segundos antes de registrar tu salida.",
             ],
             'recent_exit' => [
                 "Acabas de registrar tu salida. Espera unos segundos antes de intentar una nueva entrada.",
                 "Salida confirmada. Si deseas volver a entrar, espera un breve momento.",
-                "¡Hasta pronto! Si necesitas volver a entrar, aguarda un poco."
+                "¡Hasta pronto! Si necesitas volver a entrar, aguarda un poco.",
             ],
             'birthday' => [
-                "¡Feliz cumpleaños, {nombre}! Todo el equipo de la biblioteca te desea un día maravilloso.",
-                "¡Un muy feliz cumpleaños, {nombre}! Que tengas un día lleno de alegría y muchas lecturas.",
-                "El personal de la biblioteca te envía un gran saludo de cumpleaños, {nombre}. ¡Que lo disfrutes mucho!"
+                'M' => [
+                    "¡Feliz cumpleaños, {nombre}! Todo el equipo de la biblioteca te desea un día maravilloso.",
+                    "¡Un muy feliz cumpleaños, {nombre}! Que tengas un día lleno de alegría y muchas lecturas. ¡Te esperamos!",
+                    "El personal de la biblioteca te envía un gran saludo de cumpleaños, {nombre}. ¡Que lo disfrutes mucho!",
+                ],
+                'F' => [
+                    "¡Feliz cumpleaños, {nombre}! Todo el equipo de la biblioteca te desea un día maravilloso.",
+                    "¡Un muy feliz cumpleaños, {nombre}! Que tengas un día lleno de alegría y muchas lecturas. ¡Te esperamos!",
+                    "El personal de la biblioteca te envía un gran saludo de cumpleaños, {nombre}. ¡Que lo disfrutes mucho!",
+                ],
+                'DEFAULT' => [
+                    "¡Feliz cumpleaños, {nombre}! Todo el equipo de la biblioteca te desea un día maravilloso.",
+                    "¡Un muy feliz cumpleaños, {nombre}! Que tengas un día lleno de alegría y muchas lecturas.",
+                    "El personal de la biblioteca te envía un gran saludo de cumpleaños, {nombre}. ¡Que lo disfrutes mucho!"
+                ]
             ],
             'not_found' => [
                 "Código de usuario no reconocido. Por favor, intente de nuevo o consulte con el personal.",
                 "Usuario no encontrado en nuestra base de datos. Verifique su código o contacte a un asistente.",
-                "El código escaneado no corresponde a ningún usuario registrado. ¿Necesita ayuda?"
+                "El código escaneado no corresponde a ningún usuario registrado. ¿Necesita ayuda?",
             ],
             'borrowernotes' => [
-                "{note}", // Placeholder para las notas del prestatario
+                "{note}",
+                "Un mensaje importante del personal: {note}",
+                "Para su atención, {nombre}: {note}"
             ]
         ];
     }
@@ -114,96 +320,162 @@ class MessageHandler {
     /**
      * Punto de entrada principal para generar un mensaje.
      * @param string $eventType - El evento que ocurre ('entry', 'exit', 'birthday', 'expired', 'not_found', etc.).
-     * @param array|null $userData - Array asociativo con datos del usuario.
-     * @param array $miscData - Array asociativo para datos adicionales como 'time', 'duration', etc.
+     * @param array|null $userData - Array asociativo con datos del usuario. Debe incluir 'gender' si se quiere distinguir.
+     * @param array $miscData - Array asociativo para datos adicionales como 'time', 'duration', 'current_hour' etc.
      * @return string
      */
     public function getMessage(string $eventType, ?array $userData = null, array $miscData = []): string {
+        // Unir userData y miscData para que todos los placeholders estén disponibles
+        $combinedData = array_merge($userData ?? [], $miscData);
+
         // Prioridad 1: Mostrar notas del prestatario si existen y el evento no es 'not_found'
         if ($userData && !empty($userData['borrowernotes']) && $eventType !== 'not_found') {
-            return $this->replacePlaceholders($this->getRandomTemplate('borrowernotes'), ['note' => $userData['borrowernotes']]);
+            return $this->replacePlaceholders($this->getGenderedTemplate('borrowernotes', $userData), $combinedData);
         }
 
-        // Prioridad 2: Mensaje de cumpleaños
+        // Prioridad 2: Mensaje de cumpleaños (siempre predomina sobre la expiración y entrada normal)
         if ($userData && isset($userData['dateofbirth']) && $this->isBirthday($userData['dateofbirth'])) {
-            return $this->replacePlaceholders($this->getRandomTemplate('birthday'), $userData);
+            return $this->replacePlaceholders($this->getGenderedTemplate('birthday', $userData), $combinedData);
         }
         
         // Prioridad 3: Mensaje de "no encontrado" (no depende de userData)
         if ($eventType === 'not_found') {
-            return $this->getRandomTemplate('not_found');
+            return $this->getRandomTemplate('not_found'); 
         }
 
-        // Si se espera userData pero no se proporciona
+        // Si se espera userData pero no se proporciona (para eventos que requieren un usuario)
         if ($userData === null) {
-            return "Error: Se esperaba información del usuario para este evento.";
+            return "Error interno: Se esperaba información del usuario para este evento.";
         }
         
-        // Seleccionar la plantilla adecuada para el evento y la categoría
-        $template = $this->getTemplate($eventType, $userData);
-        
-        // Unir userData y miscData para el reemplazo de placeholders
-        $combinedData = array_merge($userData, $miscData);
+        // Prioridad 4: Mensaje de usuario expirado (debe manejar la entrada como VISITA)
+        // Asegúrate que tu lógica en dash.php cambie la categoría a 'VISITA' en DB si expira.
+        if ($eventType === 'expired') { // Asumimos que 'expired' ya es detectado como un $eventType
+            // La plantilla de 'expired' ya está diseñada para indicar que ingresa como VISITA
+            return $this->replacePlaceholders($this->getGenderedTemplate('expired', $userData), $combinedData);
+        }
 
+        // Prioridad 5: Mensajes de 'entry' y 'exit' (normales)
+        if ($eventType === 'entry') {
+            // Intentar usar saludo por franja horaria para 'entry'
+            $currentHour = $miscData['current_hour'] ?? null;
+            if ($currentHour !== null) {
+                $timeOfDay = $this->getTimeOfDay($currentHour);
+                if (isset($this->templates['entry']['time_based'][$timeOfDay])) {
+                    return $this->replacePlaceholders($this->getGenderedTemplate('entry', $userData, $timeOfDay), $combinedData);
+                }
+            }
+        }
+        
+        // Si no se usa el saludo por hora, o para 'exit' y otros eventos
+        $template = $this->getGenderedTemplate($eventType, $userData);
+        
         return $this->replacePlaceholders($template, $combinedData);
     }
 
     /**
-     * Selecciona la plantilla de mensaje adecuada basada en el evento y la categoría del usuario.
-     * @return string
+     * Determina la franja horaria del día.
+     * @param int $hour La hora actual (0-23).
+     * @return string 'morning', 'afternoon', 'night' o 'default'.
      */
-    private function getTemplate(string $eventType, array $userData): string {
-        // Obtener la categoría del usuario o usar 'DEFAULT'
-        $category = $userData['categorycode'] ?? 'DEFAULT';
-
-        // Intentar obtener las plantillas para el evento específico
-        $eventTemplates = $this->templates[$eventType] ?? null;
-
-        // Si el evento no tiene plantillas o no es un array (ej. 'expired' o 'recent_entry/exit' que son strings directamente)
-        if (!is_array($eventTemplates)) {
-            return $eventTemplates ?? ''; // Retorna la plantilla directamente si no es un array, o cadena vacía
+    private function getTimeOfDay(int $hour): string {
+        if ($hour >= 5 && $hour < 12) {
+            return 'morning'; // 5 AM - 11:59 AM
+        } elseif ($hour >= 12 && $hour < 19) {
+            return 'afternoon'; // 12 PM - 6:59 PM
+        } elseif ($hour >= 19 || $hour < 5) {
+            return 'night'; // 7 PM - 4:59 AM
         }
-
-        // Si el evento tiene plantillas organizadas por categoría
-        // Intentar obtener las plantillas para la categoría específica dentro del evento
-        $categoryTemplates = $eventTemplates[$category] ?? null;
-
-        // Si no hay plantillas para la categoría específica, usar las plantillas 'DEFAULT' del evento
-        if ($categoryTemplates === null) {
-            $categoryTemplates = $eventTemplates['DEFAULT'] ?? [];
-        }
-        
-        // Si las plantillas de la categoría son un array, elige una al azar
-        if (is_array($categoryTemplates) && !empty($categoryTemplates)) {
-            return $categoryTemplates[array_rand($categoryTemplates)];
-        } elseif (is_string($categoryTemplates)) {
-            return $categoryTemplates; // Si es una sola plantilla de cadena
-        }
-
-        return ''; // Retornar cadena vacía si no se encuentra ninguna plantilla
+        return 'default'; // Fallback
     }
 
     /**
-     * Obtiene una plantilla aleatoria de un tipo específico de evento que no depende de la categoría.
-     * Se usa para cumpleaños, expiración y no encontrado, que tienen múltiples opciones pero son globales.
+     * Selecciona la plantilla de mensaje adecuada basada en el evento, la categoría del usuario y su género,
+     * o la franja horaria para el evento 'entry'.
+     * @param string $eventType
+     * @param array $userData
+     * @param string|null $timeOfDay Opcional, para la franja horaria específica.
+     * @return string
+     */
+    private function getGenderedTemplate(string $eventType, array $userData, ?string $timeOfDay = null): string {
+        $category = $userData['categorycode'] ?? 'DEFAULT';
+        $gender = strtoupper($userData['gender'] ?? 'DEFAULT'); 
+        
+        // Manejar el caso de 'entry' con saludo por franja horaria
+        if ($eventType === 'entry' && $timeOfDay !== null && isset($this->templates['entry']['time_based'][$timeOfDay])) {
+            $templatesForTime = $this->templates['entry']['time_based'][$timeOfDay];
+            // Intentar obtener por género, si no, usar DEFAULT
+            $genderTemplates = $templatesForTime[$gender] ?? $templatesForTime['DEFAULT'] ?? [];
+            if (is_array($genderTemplates) && !empty($genderTemplates)) {
+                return $genderTemplates[array_rand($genderTemplates)];
+            }
+        }
+
+        // Para otros eventos o si no se usa saludo por hora, seguir con la lógica de categoría y género
+        $eventSpecificTemplates = $this->templates[$eventType] ?? null;
+
+        if (!is_array($eventSpecificTemplates)) {
+            return is_string($eventSpecificTemplates) ? $eventSpecificTemplates : ''; 
+        }
+
+        // Si el evento tiene categorías anidadas (como 'entry' pero no para 'time_based' ya que se manejó arriba)
+        // O para 'exit', 'expired', 'birthday' que tienen categoría/género directamente
+        $categorySpecificTemplates = $eventSpecificTemplates[$category] ?? null;
+
+        if ($categorySpecificTemplates === null || (is_array($categorySpecificTemplates) && !isset($categorySpecificTemplates[$gender]) && !isset($categorySpecificTemplates['DEFAULT']))) {
+            // Fallback a 'DEFAULT' de evento si no hay categoría específica o si la categoría no tiene género/DEFAULT
+            $categorySpecificTemplates = $eventSpecificTemplates['DEFAULT'] ?? [];
+        }
+
+        $genderSpecificTemplates = $categorySpecificTemplates[$gender] ?? $categorySpecificTemplates['DEFAULT'] ?? [];
+        
+        if (is_array($genderSpecificTemplates) && !empty($genderSpecificTemplates)) {
+            return $genderSpecificTemplates[array_rand($genderSpecificTemplates)];
+        } elseif (is_string($genderSpecificTemplates)) {
+            return $genderSpecificTemplates; 
+        }
+
+        return ''; 
+    }
+    
+    /**
+     * Obtiene una plantilla aleatoria de un tipo de evento sin distinción de categoría o género.
+     * Utilizado para mensajes globales o cuando la especificidad no es necesaria/disponible.
      * @param string $eventType
      * @return string
      */
     private function getRandomTemplate(string $eventType): string {
         $templates = $this->templates[$eventType] ?? [];
-        if (is_array($templates) && !empty($templates)) {
+        
+        if (isset($templates[0]) && is_string($templates[0])) { // Es un array de strings directos
             return $templates[array_rand($templates)];
-        } elseif (is_string($templates)) {
+        } 
+        // Si las plantillas están anidadas (por género, o categoría y género), intenta obtener de 'DEFAULT'
+        elseif (isset($templates['DEFAULT'])) {
+            $defaultTemplates = $templates['DEFAULT'];
+            if (is_array($defaultTemplates) && !empty($defaultTemplates)) {
+                // Si el 'DEFAULT' en este nivel tiene sub-niveles de género
+                if (isset($defaultTemplates['DEFAULT']) && is_array($defaultTemplates['DEFAULT'])) {
+                    return $defaultTemplates['DEFAULT'][array_rand($defaultTemplates['DEFAULT'])];
+                }
+                // Si el 'DEFAULT' es directamente un array de opciones
+                return $defaultTemplates[array_rand($defaultTemplates)];
+            } elseif (is_string($defaultTemplates)) { // Si DEFAULT es un string
+                return $defaultTemplates;
+            }
+        }
+        // Si es una cadena simple directamente bajo el evento
+        elseif (is_string($templates)) {
             return $templates;
         }
-        return '';
+        return ''; 
     }
-    
+
     /**
      * Reemplaza los placeholders en la plantilla con los datos proporcionados.
-     * @param string $template
-     * @param array $data
-     * @return string
+     * @param string $template La plantilla de mensaje con placeholders.
+     * @param array $data Los datos para reemplazar los placeholders.
+     * @return string La plantilla con los placeholders reemplazados.
      */
     private function replacePlaceholders(string $template, array $data): string {
         $placeholders = [
@@ -215,23 +487,20 @@ class MessageHandler {
             '{title}'        => htmlspecialchars($data['title'] ?? '', ENT_QUOTES, 'UTF-8'),
             '{titulo}'       => htmlspecialchars($data['title'] ?? '', ENT_QUOTES, 'UTF-8'),
             '{usn}'          => htmlspecialchars($data['usn'] ?? '', ENT_QUOTES, 'UTF-8'),
-            '{label}'        => htmlspecialchars($data['label'] ?? '', ENT_QUOTES, 'UTF-8'), // Para compatibilidad con tu código anterior
+            '{label}'        => htmlspecialchars($data['label'] ?? '', ENT_QUOTES, 'UTF-8'), 
             '{time}'         => htmlspecialchars($data['time'] ?? '', ENT_QUOTES, 'UTF-8'),
             '{duration}'     => htmlspecialchars($data['duration'] ?? '', ENT_QUOTES, 'UTF-8'),
-            '{note}'         => htmlspecialchars($data['note'] ?? '', ENT_QUOTES, 'UTF-8'), // Para borrowernotes
+            '{note}'         => htmlspecialchars($data['note'] ?? '', ENT_QUOTES, 'UTF-8'),
         ];
 
-        // Reemplazar los placeholders
         $template = str_replace(array_keys($placeholders), array_values($placeholders), $template);
-
-        // Opcional: Eliminar cualquier placeholder que no haya sido reemplazado para evitar ver {unreplaced}
         return preg_replace('/{[^}]+}/', '', $template);
     }
 
     /**
      * Verifica si la fecha de nacimiento coincide con el día actual.
-     * @param string|null $dateOfBirth
-     * @return bool
+     * @param string|null $dateOfBirth La fecha de nacimiento del usuario.
+     * @return bool True si es el cumpleaños, false en caso contrario o si la fecha es inválida.
      */
     private function isBirthday(?string $dateOfBirth): bool {
         if (empty($dateOfBirth)) {
@@ -239,7 +508,7 @@ class MessageHandler {
         }
         $timestamp = strtotime($dateOfBirth);
         if ($timestamp === false) {
-            return false; // Manejar error de parseo de fecha
+            return false; 
         }
         return date('m-d') === date('m-d', $timestamp);
     }

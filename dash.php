@@ -96,8 +96,7 @@ if (isset($data1)) {
   $quotes = json_decode($jsonfile, true);
   $onequote = $quotes[rand(0, count($quotes) - 1)];
 ?>
-<body style="background-color: #F1EADE;"> 
-<!-- MAIN CONTENT START -->
+<body style="background-color: #F1EADE;">
 <div class="content" style="min-height: calc(100vh - 90px);">
 	<div class="container-fluid">
 	  <div class="row">
@@ -112,13 +111,13 @@ if (isset($data1)) {
 	        <?php if($news) { ?>
 	        	<div class="card-block">
 							<div class="card-title text-info h4 text-center">
-								 <?php echo "<br/>".$data['nhead']; ?> 
-							</div>		        
+								 <?php echo "<br/>".$data['nhead']; ?>
+							</div>
 							<div class="h4 text-center" style="text-align: justify !important;">
-								 <?php echo "<br/>".nl2br($data['nbody']); ?> 
+								 <?php echo "<br/>".nl2br($data['nbody']); ?>
 							</div>
 							<div class="h4 text-success text-center">
-						 		<?php echo "<br/>".$data['nfoot']; ?> 
+						 		<?php echo "<br/>".$data['nfoot']; ?>
 							</div>
 						</div>
 					<?php } ?>
@@ -132,7 +131,7 @@ if (isset($data1)) {
 						</div>
 						<div class="new-arrivals">
 							<img src="assets/books/5.png">
-							<img src="assets/books/6.png"> 
+							<img src="assets/books/6.png">
 							<img src="assets/books/7.png">
 							<img src="assets/books/8.png">
 						</div>
@@ -188,6 +187,30 @@ if (isset($data1)) {
       <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="GET">
         <input type="text" name="id" id="usn" class="" value="" autofocus="true">
       </form>
+
+    <?php
+        // --- INICIO DEL BLOQUE DE MENSAJE REUBICADO Y MEJORADO ---
+        // Se calcula el mensaje aquí, antes de su posible visualización.
+        $messageData = array_merge($userData, [
+                'label'    => $_SESSION['noname'],
+                'usn'      => $usn,
+                'time'     => date('g:i A', strtotime($time)),
+                'duration' => isset($otime[0]) ? $otime[0] : ''
+            ]);
+        $eventType = getEventType($msg);
+        $displayMessage = $messageHandler->getMessage($eventType, $messageData);
+
+        // Si hay un mensaje para mostrar, se muestra en una alerta Bootstrap
+        if ($displayMessage !== '') {
+    ?>
+            <div class="alert alert-info animated flash" role="alert" style="margin-top: 20px; font-size: 1.5em; font-weight: bold;">
+                <?php echo $displayMessage; ?>
+            </div>
+    <?php
+        }
+        // --- FIN DEL BLOQUE DE MENSAJE REUBICADO Y MEJORADO ---
+    ?>
+
 	    	<?php
 	    		if(isset($d_status)){
 	    	?>
@@ -214,19 +237,11 @@ if (isset($data1)) {
 				</div>
 				<div class="h2 t-shadow">
                                         <?php
-                                            $messageData = array_merge($userData, [
-                                                    'label'    => $_SESSION['noname'],
-                                                    'usn'      => $usn,
-                                                    'time'     => date('g:i A', strtotime($time)),
-                                                    'duration' => isset($otime[0]) ? $otime[0] : ''
-                                                ]);
-                                                $eventType = getEventType($msg);
-                                                $displayMessage = $messageHandler->getMessage($eventType, $messageData);
-                                                if ($displayMessage !== '') {
-                                                    echo "<span class=\"animated flash\">$displayMessage</span>";
-                                                } else { ?>
+                                            // Este bloque ahora solo muestra el contenido "idle" (SCAN YOUR ID CARD y estadísticas)
+                                            // si NO hay un displayMessage generado por MessageHandler.
+                                            if ($displayMessage == '') { ?>
 							<div class="idle">
-								<div class="animated pulse infinite"> 
+								<div class="animated pulse infinite">
 							    <span class='text-info'>SCAN YOUR ID CARD</span>
 							  </div>
 							  <div class="row">
@@ -297,7 +312,7 @@ if (isset($data1)) {
 					?>
 				</div>
 	    </div>
-	  </div>              
+	  </div>
 	</div>
 </div>
 <script src="assets/js/analogclock.js"></script>
@@ -312,7 +327,6 @@ if (isset($data1)) {
 		// window.location.replace("dash.php");
 	}, 9800);
 </script>
-<!-- MAIN CONTENT ENDS -->
 <?php
 	require_once "./template/footer.php";
-?>	
+?>

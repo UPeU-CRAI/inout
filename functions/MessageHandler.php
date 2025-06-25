@@ -328,34 +328,37 @@ class MessageHandler {
         // Unir userData y miscData para que todos los placeholders estén disponibles
         $combinedData = array_merge($userData ?? [], $miscData);
 
-        // Prioridad 1: Mostrar notas del prestatario si existen y el evento no es 'not_found'
-        if ($userData && !empty($userData['borrowernotes']) && $eventType !== 'not_found') {
-            return $this->replacePlaceholders($this->getGenderedTemplate('borrowernotes', $userData), $combinedData);
-        }
-
-        // Prioridad 2: Mensaje de cumpleaños (siempre predomina sobre la expiración y entrada normal)
+        // Prioridad 1: Mensaje de cumpleaños (siempre predomina sobre otros mensajes)
         if ($userData && isset($userData['dateofbirth']) && $this->isBirthday($userData['dateofbirth'])) {
             return $this->replacePlaceholders($this->getGenderedTemplate('birthday', $userData), $combinedData);
         }
         
-        // Prioridad 3: Mensaje de "no encontrado" (no depende de userData)
+        // Prioridad 2: Mensaje de "no encontrado" (no depende de userData, es un estado global)
         if ($eventType === 'not_found') {
             return $this->getRandomTemplate('not_found'); 
         }
 
-        // Si se espera userData pero no se proporciona (para eventos que requieren un usuario)
+        // Prioridad 3: Mensajes de acciones recientes (no dependen de categoría/género, son directos)
+        if (in_array($eventType, ['recent_entry', 'recent_exit'])) {
+            return $this->getRandomTemplate($eventType); // Usar getRandomTemplate para estas plantillas planas
+        }
+
+        // Si se espera userData pero no se proporciona (para eventos que requieren un usuario y no son los de arriba)
         if ($userData === null) {
             return "Error interno: Se esperaba información del usuario para este evento.";
         }
+
+        // Prioridad 4: Mostrar notas del prestatario si existen (ahora después de cumpleaños y mensajes directos)
+        if (!empty($userData['borrowernotes'])) {
+            return $this->replacePlaceholders($this->getGenderedTemplate('borrowernotes', $userData), $combinedData);
+        }
         
-        // Prioridad 4: Mensaje de usuario expirado (debe manejar la entrada como VISITA)
-        // Asegúrate que tu lógica en dash.php cambie la categoría a 'VISITA' en DB si expira.
-        if ($eventType === 'expired') { // Asumimos que 'expired' ya es detectado como un $eventType
-            // La plantilla de 'expired' ya está diseñada para indicar que ingresa como VISITA
+        // Prioridad 5: Mensaje de usuario expirado
+        if ($eventType === 'expired') {
             return $this->replacePlaceholders($this->getGenderedTemplate('expired', $userData), $combinedData);
         }
 
-        // Prioridad 5: Mensajes de 'entry' y 'exit' (normales)
+        // Prioridad 6: Mensajes de 'entry' y 'exit' (normales con lógica de franja horaria o categoría/género)
         if ($eventType === 'entry') {
             // Intentar usar saludo por franja horaria para 'entry'
             $currentHour = $miscData['current_hour'] ?? null;
@@ -367,7 +370,7 @@ class MessageHandler {
             }
         }
         
-        // Si no se usa el saludo por hora, o para 'exit' y otros eventos
+        // Si no se usó el saludo por hora (para 'entry'), o para 'exit' y otros eventos que usan categoría/género
         $template = $this->getGenderedTemplate($eventType, $userData);
         
         return $this->replacePlaceholders($template, $combinedData);
@@ -414,16 +417,17 @@ class MessageHandler {
         // Para otros eventos o si no se usa saludo por hora, seguir con la lógica de categoría y género
         $eventSpecificTemplates = $this->templates[$eventType] ?? null;
 
+        // Si la plantilla específica del evento no es un array o es una cadena directa, la devuelve.
+        // Esto es un fallback, pero para plantillas como 'recent_entry'/'recent_exit' es mejor usar getRandomTemplate directamente en getMessage.
         if (!is_array($eventSpecificTemplates)) {
             return is_string($eventSpecificTemplates) ? $eventSpecificTemplates : ''; 
         }
 
-        // Si el evento tiene categorías anidadas (como 'entry' pero no para 'time_based' ya que se manejó arriba)
-        // O para 'exit', 'expired', 'birthday' que tienen categoría/género directamente
+        // Si el evento tiene categorías anidadas (como 'entry' por categoría, 'exit', 'expired', 'birthday', 'borrowernotes')
         $categorySpecificTemplates = $eventSpecificTemplates[$category] ?? null;
 
+        // Fallback a 'DEFAULT' de evento si no hay categoría específica, o si la categoría es un array pero no tiene género/DEFAULT
         if ($categorySpecificTemplates === null || (is_array($categorySpecificTemplates) && !isset($categorySpecificTemplates[$gender]) && !isset($categorySpecificTemplates['DEFAULT']))) {
-            // Fallback a 'DEFAULT' de evento si no hay categoría específica o si la categoría no tiene género/DEFAULT
             $categorySpecificTemplates = $eventSpecificTemplates['DEFAULT'] ?? [];
         }
 
@@ -447,24 +451,24 @@ class MessageHandler {
     private function getRandomTemplate(string $eventType): string {
         $templates = $this->templates[$eventType] ?? [];
         
-        if (isset($templates[0]) && is_string($templates[0])) { // Es un array de strings directos
+        if (isset($templates[0]) && is_string($templates[0])) { // Es un array de strings directos (como 'not_found', 'recent_entry', 'recent_exit')
             return $templates[array_rand($templates)];
         } 
         // Si las plantillas están anidadas (por género, o categoría y género), intenta obtener de 'DEFAULT'
         elseif (isset($templates['DEFAULT'])) {
             $defaultTemplates = $templates['DEFAULT'];
             if (is_array($defaultTemplates) && !empty($defaultTemplates)) {
-                // Si el 'DEFAULT' en este nivel tiene sub-niveles de género
+                // Si el 'DEFAULT' en este nivel tiene sub-niveles de género (ej. para 'birthday' o 'borrowernotes' con un DEFAULT general)
                 if (isset($defaultTemplates['DEFAULT']) && is_array($defaultTemplates['DEFAULT'])) {
                     return $defaultTemplates['DEFAULT'][array_rand($defaultTemplates['DEFAULT'])];
                 }
-                // Si el 'DEFAULT' es directamente un array de opciones
+                // Si el 'DEFAULT' es directamente un array de opciones (ej. 'DEFAULT' de categoría es un array de mensajes)
                 return $defaultTemplates[array_rand($defaultTemplates)];
-            } elseif (is_string($defaultTemplates)) { // Si DEFAULT es un string
+            } elseif (is_string($defaultTemplates)) { // Si DEFAULT es un string simple
                 return $defaultTemplates;
             }
         }
-        // Si es una cadena simple directamente bajo el evento
+        // Si es una cadena simple directamente bajo el evento (caso menos común para estas plantillas, pero como fallback)
         elseif (is_string($templates)) {
             return $templates;
         }

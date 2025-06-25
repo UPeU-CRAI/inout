@@ -93,20 +93,30 @@ For first time, create a new account.
 
 ## Environment Setup
 
-Copy `.env.example` to `.env` and fill in your database credentials. The
-application will automatically load these values before establishing database
-connections.
+Before running the application you need to configure your environment
+variables. Start by copying the provided example file:
 
-Required variables:
+```bash
+cp .env.example .env
+```
 
-- `INOUT_DB_HOST`
-- `INOUT_DB_USER`
-- `INOUT_DB_PASS`
-- `INOUT_DB_NAME`
+Then edit `.env` and replace the placeholder values with your own database
+credentials. The application will automatically load these values before
+establishing any database connections.
+
+The `.env` file must define the following variables:
+
+- `DB_HOST`
+- `DB_USER`
+- `DB_PASS`
+- `DB_NAME`
 - `KOHA_DB_HOST`
 - `KOHA_DB_USER`
 - `KOHA_DB_PASS`
 - `KOHA_DB_NAME`
+
+Legacy variable names `INOUT_DB_HOST`, `INOUT_DB_USER`, `INOUT_DB_PASS` and
+`INOUT_DB_NAME` are still honored if the new variables are not present.
 
 
 

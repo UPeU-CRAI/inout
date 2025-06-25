@@ -85,8 +85,8 @@ class MessageHandler {
 
         switch ($category) {
             case 'DOCEN':
-                $title = $this->genderize('Estimado', $gender, 'Estimada', 'Estimado/a');
-                return "$greeting, $title {titulo} {apellido}. Su entrada es a las: {time}.";
+                $prof = $this->genderize('Profesor', $gender, 'Profesora', 'Profesor/a');
+                return "$greeting, $prof {nombre}. Su entrada es a las: {time}.";
             case 'INVESTI':
                 $title  = $this->genderize('Estimado', $gender, 'Estimada', 'Estimado/a');
                 $role   = $this->genderize('Investigador', $gender, 'Investigadora', 'Investigador/a');
@@ -117,7 +117,8 @@ class MessageHandler {
 
         switch ($category) {
             case 'DOCEN':
-                return "Hasta pronto, {titulo} {apellido}. Su duración total fue de: {duration}.";
+                $prof = $this->genderize('Profesor', $gender, 'Profesora', 'Profesor/a');
+                return "Hasta pronto, $prof {nombre}. Su duración total fue de: {duration}.";
             case 'INVESTI':
                 $role = $this->genderize('Investigador', $gender, 'Investigadora', 'Investigador/a');
                 return "Despedida, $role {apellido}. Duración: {duration}.";

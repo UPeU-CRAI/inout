@@ -98,7 +98,7 @@
                 }
             }
         } else {
-            $msg = "3";
+            $msg = "0";
             $e_name = NULL;
             $d_status = NULL;
             $e_img = NULL;

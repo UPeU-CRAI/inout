@@ -39,6 +39,7 @@ if (isset($data1)) {
     $userData = [
         'firstname'     => $nameParts[1] ?? '',
         'surname'       => $nameParts[2] ?? '',
+        'name'          => trim($nameParts[1] ?? ''),
         'dateofbirth'   => $data1[10] ?? '',
         'dateexpiry'    => $data1[11] ?? '',
         'categorycode'  => $data1[3] ?? '',

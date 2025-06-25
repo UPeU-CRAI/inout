@@ -396,36 +396,36 @@ class MessageHandler {
         $eventTemplates = $this->templates[$eventType] ?? [];
 
         // 1. Manejar el caso de 'entry' con saludo por franja horaria
+        // Si se encuentra una plantilla basada en la hora, se devuelve directamente.
         if ($eventType === 'entry' && $timeOfDay !== null && isset($eventTemplates['time_based'][$timeOfDay])) {
             $templatesForTime = $eventTemplates['time_based'][$timeOfDay];
             $genderTemplates = $templatesForTime[$gender] ?? $templatesForTime['DEFAULT'] ?? [];
             if (is_array($genderTemplates) && !empty($genderTemplates)) {
                 return $genderTemplates[array_rand($genderTemplates)];
             }
-            // Si la plantilla basada en la hora no se encuentra por género/DEFAULT, se continúa para buscar por categoría general de 'entry'.
+            // Si la plantilla basada en la hora no se encuentra por género/DEFAULT,
+            // se continúa para buscar por categoría general de 'entry' (comportamiento fallback).
         }
         
-        // 2. Manejar plantillas que son directamente anidadas por género (Ej: 'birthday', 'expired', 'borrowernotes')
-        // Estas no tienen un nivel de 'categoría' intermedio.
-        // Se verifica si las claves principales son 'M', 'F', 'DEFAULT' y no es un array plano ni una cadena simple.
-        $isDirectGenderedEvent = 
-            isset($eventTemplates['M']) || 
-            isset($eventTemplates['F']) || 
-            isset($eventTemplates['DEFAULT']);
-        
-        if ($isDirectGenderedEvent && !isset($eventTemplates[0]) && !is_string($eventTemplates)) {
+        // 2. Manejar plantillas que son directamente anidadas por género (NO por categoría).
+        // Estos son eventos específicos como 'birthday', 'expired', o 'borrowernotes'.
+        $directGenderedEvents = ['birthday', 'expired', 'borrowernotes'];
+        if (in_array($eventType, $directGenderedEvents)) {
              $genderSpecificTemplates = $eventTemplates[$gender] ?? $eventTemplates['DEFAULT'] ?? [];
              if (is_array($genderSpecificTemplates) && !empty($genderSpecificTemplates)) {
                  return $genderSpecificTemplates[array_rand($genderSpecificTemplates)];
              } elseif (is_string($genderSpecificTemplates)) { // Fallback para una plantilla DEFAULT de cadena única
                  return $genderSpecificTemplates;
              }
+             // Si no se encuentra una plantilla específica por género/DEFAULT para estos eventos, devuelve una cadena vacía.
+             return ''; 
         }
         
-        // 3. Para plantillas anidadas por categoría y luego por género (Ej: 'entry' por categoría, 'exit')
+        // 3. Para plantillas anidadas por categoría y luego por género (Ej: 'entry' por categoría, 'exit').
+        // Este bloque se ejecutará para 'entry' si no se activó la opción time_based, o para 'exit'.
         $categorySpecificTemplates = $eventTemplates[$category] ?? null;
 
-        // Fallback a 'DEFAULT' de evento si no hay categoría específica, o si la categoría es un array pero no tiene género/DEFAULT
+        // Fallback a 'DEFAULT' de evento si no hay categoría específica, o si la categoría no tiene género/DEFAULT
         if ($categorySpecificTemplates === null || (is_array($categorySpecificTemplates) && !isset($categorySpecificTemplates[$gender]) && !isset($categorySpecificTemplates['DEFAULT']))) {
             $categorySpecificTemplates = $eventTemplates['DEFAULT'] ?? [];
         }
@@ -438,7 +438,7 @@ class MessageHandler {
             return $genderSpecificTemplates; 
         }
 
-        // Si no se encuentra ninguna plantilla específica, devuelve una cadena vacía.
+        // Si no se encuentra ninguna plantilla específica en el flujo de categoría, devuelve una cadena vacía.
         return ''; 
     }
     

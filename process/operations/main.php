@@ -6,12 +6,14 @@
     $sql = "DELETE FROM `tmp2` WHERE `time` < DATE_SUB(NOW(),INTERVAL '00:10' MINUTE_SECOND)";
     $result = mysqli_query($conn, $sql) or die("Invalid query: 1" . mysqli_error());
     if (isset($_GET['id'])) {
-        $usn = strtoupper($_GET['id']);
+        $usn_raw = strtoupper($_GET['id']);
+        $usn = sanitize($conn, $usn_raw); // sanitize for local DB
+        $usn_koha = sanitize($koha, $usn_raw); // sanitize for Koha DB
         $date = date('Y-m-d');
         $time = date('H:i:s');
         error_reporting(E_ALL);
         //patron data fetching
-        $sql = "SELECT CONCAT(title,' ',firstname,' ',surname) AS surname,borrowernumber,sex,categorycode,branchcode,sort1,sort2,mobile,email,title,dateofbirth,dateexpiry,borrowernotes FROM borrowers WHERE cardnumber='$usn'";
+        $sql = "SELECT CONCAT(title,' ',firstname,' ',surname) AS surname,borrowernumber,sex,categorycode,branchcode,sort1,sort2,mobile,email,title,dateofbirth,dateexpiry,borrowernotes FROM borrowers WHERE cardnumber='$usn_koha'";
         $result = mysqli_query($koha, $sql) or die("Invalid query: 2" . mysqli_error());
         $data1 = mysqli_fetch_row($result);
 

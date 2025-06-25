@@ -269,7 +269,7 @@ class MessageHandler {
                 'F' => [
                     "Atención, {nombre}. Tu membresía ha expirado. Has ingresado como VISITA. Por favor, acércate al mostrador para renovarla.",
                     "Hola, {nombre}. Tu cuenta está inactiva. Se ha registrado tu ingreso como VISITA. Te invitamos a renovar tu membresía.",
-                    "Estimada {nombre}, tu membresía ha caducado. Tu acceso se ha registrado como VISITA. Favor regularizar tu situación en recepción."
+                    "Estimada {nombre}, tu membresía ha caducado. Tu acceso se ha registrado como VISITA. Te invitamos a renovar tu membresía.",
                 ],
                 'DEFAULT' => [
                     "Atención, {nombre}. Tu membresía ha expirado. Has ingresado como VISITA. Por favor, acércate al mostrador para renovarla.",
@@ -358,20 +358,9 @@ class MessageHandler {
             return $this->replacePlaceholders($this->getGenderedTemplate('expired', $userData), $combinedData);
         }
 
-        // Prioridad 6: Mensajes de 'entry' y 'exit' (normales con lógica de franja horaria o categoría/género)
-        if ($eventType === 'entry') {
-            // Intentar usar saludo por franja horaria para 'entry'
-            $currentHour = $miscData['current_hour'] ?? null;
-            if ($currentHour !== null) {
-                $timeOfDay = $this->getTimeOfDay($currentHour);
-                if (isset($this->templates['entry']['time_based'][$timeOfDay])) {
-                    return $this->replacePlaceholders($this->getGenderedTemplate('entry', $userData, $timeOfDay), $combinedData);
-                }
-            }
-        }
-        
-        // Si no se usó el saludo por hora (para 'entry'), o para 'exit' y otros eventos que usan categoría/género
-        $template = $this->getGenderedTemplate($eventType, $userData);
+        // Prioridad 6: Mensajes de 'entry' y 'exit' (normales)
+        // La lógica de franja horaria para 'entry' y la selección por categoría/género se manejan dentro de getGenderedTemplate
+        $template = $this->getGenderedTemplate($eventType, $userData, $miscData['current_hour'] ?? null);
         
         return $this->replacePlaceholders($template, $combinedData);
     }
@@ -401,34 +390,44 @@ class MessageHandler {
      * @return string
      */
     private function getGenderedTemplate(string $eventType, array $userData, ?string $timeOfDay = null): string {
-        $category = $userData['categorycode'] ?? 'DEFAULT';
         $gender = strtoupper($userData['gender'] ?? 'DEFAULT'); 
-        
-        // Manejar el caso de 'entry' con saludo por franja horaria
-        if ($eventType === 'entry' && $timeOfDay !== null && isset($this->templates['entry']['time_based'][$timeOfDay])) {
-            $templatesForTime = $this->templates['entry']['time_based'][$timeOfDay];
-            // Intentar obtener por género, si no, usar DEFAULT
+        $category = $userData['categorycode'] ?? 'DEFAULT'; // Se mantiene para eventos que sí usan categoría
+
+        $eventTemplates = $this->templates[$eventType] ?? [];
+
+        // 1. Manejar el caso de 'entry' con saludo por franja horaria
+        if ($eventType === 'entry' && $timeOfDay !== null && isset($eventTemplates['time_based'][$timeOfDay])) {
+            $templatesForTime = $eventTemplates['time_based'][$timeOfDay];
             $genderTemplates = $templatesForTime[$gender] ?? $templatesForTime['DEFAULT'] ?? [];
             if (is_array($genderTemplates) && !empty($genderTemplates)) {
                 return $genderTemplates[array_rand($genderTemplates)];
             }
+            // Si la plantilla basada en la hora no se encuentra por género/DEFAULT, se continúa para buscar por categoría general de 'entry'.
         }
-
-        // Para otros eventos o si no se usa saludo por hora, seguir con la lógica de categoría y género
-        $eventSpecificTemplates = $this->templates[$eventType] ?? null;
-
-        // Si la plantilla específica del evento no es un array o es una cadena directa, la devuelve.
-        // Esto es un fallback, pero para plantillas como 'recent_entry'/'recent_exit' es mejor usar getRandomTemplate directamente en getMessage.
-        if (!is_array($eventSpecificTemplates)) {
-            return is_string($eventSpecificTemplates) ? $eventSpecificTemplates : ''; 
+        
+        // 2. Manejar plantillas que son directamente anidadas por género (Ej: 'birthday', 'expired', 'borrowernotes')
+        // Estas no tienen un nivel de 'categoría' intermedio.
+        // Se verifica si las claves principales son 'M', 'F', 'DEFAULT' y no es un array plano ni una cadena simple.
+        $isDirectGenderedEvent = 
+            isset($eventTemplates['M']) || 
+            isset($eventTemplates['F']) || 
+            isset($eventTemplates['DEFAULT']);
+        
+        if ($isDirectGenderedEvent && !isset($eventTemplates[0]) && !is_string($eventTemplates)) {
+             $genderSpecificTemplates = $eventTemplates[$gender] ?? $eventTemplates['DEFAULT'] ?? [];
+             if (is_array($genderSpecificTemplates) && !empty($genderSpecificTemplates)) {
+                 return $genderSpecificTemplates[array_rand($genderSpecificTemplates)];
+             } elseif (is_string($genderSpecificTemplates)) { // Fallback para una plantilla DEFAULT de cadena única
+                 return $genderSpecificTemplates;
+             }
         }
-
-        // Si el evento tiene categorías anidadas (como 'entry' por categoría, 'exit', 'expired', 'birthday', 'borrowernotes')
-        $categorySpecificTemplates = $eventSpecificTemplates[$category] ?? null;
+        
+        // 3. Para plantillas anidadas por categoría y luego por género (Ej: 'entry' por categoría, 'exit')
+        $categorySpecificTemplates = $eventTemplates[$category] ?? null;
 
         // Fallback a 'DEFAULT' de evento si no hay categoría específica, o si la categoría es un array pero no tiene género/DEFAULT
         if ($categorySpecificTemplates === null || (is_array($categorySpecificTemplates) && !isset($categorySpecificTemplates[$gender]) && !isset($categorySpecificTemplates['DEFAULT']))) {
-            $categorySpecificTemplates = $eventSpecificTemplates['DEFAULT'] ?? [];
+            $categorySpecificTemplates = $eventTemplates['DEFAULT'] ?? [];
         }
 
         $genderSpecificTemplates = $categorySpecificTemplates[$gender] ?? $categorySpecificTemplates['DEFAULT'] ?? [];
@@ -439,6 +438,7 @@ class MessageHandler {
             return $genderSpecificTemplates; 
         }
 
+        // Si no se encuentra ninguna plantilla específica, devuelve una cadena vacía.
         return ''; 
     }
     

@@ -11,9 +11,14 @@
         $time = date('H:i:s');
         error_reporting(E_ALL);
         //patron data fetching
-        $sql = "SELECT CONCAT(title,' ',firstname,' ',surname) AS surname,borrowernumber,sex,categorycode,branchcode,sort1,sort2,mobile,email,title,dateofbirth,dateexpiry,borrowernotes FROM borrowers WHERE cardnumber='$usn' AND dateexpiry > '$date'";
+        $sql = "SELECT CONCAT(title,' ',firstname,' ',surname) AS surname,borrowernumber,sex,categorycode,branchcode,sort1,sort2,mobile,email,title,dateofbirth,dateexpiry,borrowernotes FROM borrowers WHERE cardnumber='$usn'";
         $result = mysqli_query($koha, $sql) or die("Invalid query: 2" . mysqli_error());
         $data1 = mysqli_fetch_row($result);
+
+        $isExpired = false;
+        if ($data1 && strtotime($data1[11]) <= strtotime($date)) {
+            $isExpired = true;
+        }
         //image fetching
         $sql = "SELECT imagefile FROM patronimage WHERE borrowernumber = '$data1[1]'";
         $result = mysqli_query($koha, $sql);
@@ -26,7 +31,7 @@
         $sql = "SELECT branchname FROM branches WHERE branchcode = '$data1[4]'";
         $result = mysqli_query($koha, $sql);
         $data4 = mysqli_fetch_row($result);
-        if ($data1) {
+        if ($data1 && !$isExpired) {
             $sql = "SELECT *  FROM `inout` WHERE `cardnumber` = '$usn' AND `date` = '$date' AND `status` = 'IN'";
             $result = mysqli_query($conn, $sql) or die("Invalid query: 3" . mysqli_error());
             $exit = mysqli_fetch_row($result);
@@ -84,7 +89,7 @@
                 $e_img = NULL;
                 $date = NULL;
                 $time1 = "-";
-              } elseif ($data1) {
+              } elseif ($data1 && !$isExpired) {
                     $sl = getsl($conn, "sl", "inout");
                     $sql = "INSERT INTO `inout` (`sl`, `cardnumber`, `name`, `gender`, `date`, `entry`, `exit`, `status`,`loc`,`cc`,`branch`,`sort1`,`sort2`,`email`,`mob`) VALUES ('$sl', '$usn', '$data1[0]', '$data1[2]', '$date', '$time', '".$_SESSION['libtime']."', 'IN','$loc','$data3[0]','$data4[0]','$data1[5]','$data1[6]','$data1[8]','$data1[7]');";
                     $result = mysqli_query($conn, $sql) or die("Invalid query: 11" . mysqli_error($conn));

@@ -25,6 +25,8 @@ function getEventType($msg)
             return 'exit';
         case '5':
             return 'recent_exit';
+        case '0':
+            return 'not_found';
         default:
             return '';
     }

@@ -4,11 +4,13 @@ class MessageHandler {
 
     public function __construct() {
         $this->templates = [
-            'entry'    => "<span class='text-primary'>Your {label} is: {usn}<br>Entry time is: {time}</span>",
-            'exit'     => "<span class='text-success'>Your Exit time is: {time}<br><span class='text-warning'>Total Time Duration : {duration}</span>",
-            'birthday' => "<span class='text-success'>Happy Birthday {name}!</span>",
-            'expired'  => "<span class='text-danger'>Invalid or Expired {label}<br>Contact Librarian for more details.</span>",
-            'not_found'=> "<span class='text-danger'>User not found</span>"
+            'entry'        => "<span class='text-primary'>Your {label} is: {usn}<br>Entry time is: {time}</span>",
+            'exit'         => "<span class='text-success'>Your Exit time is: {time}<br><span class='text-warning'>Total Time Duration : {duration}</span>",
+            'expired'      => "<span class='text-danger'>Invalid or Expired {label}<br> Contact Librarian for more details.</span>",
+            'recent_entry' => "<span class='text-warning'>You just Checked In.<br> Wait for 10 Seconds to Check Out.</span>",
+            'recent_exit'  => "<span class='text-info'>You just Checked Out.<br> Wait for 10 Seconds to Check In.</span>",
+            'birthday'     => "<span class='text-success'>Happy Birthday {name}!</span>",
+            'not_found'    => "<span class='text-danger'>User not found</span>"
         ];
     }
 

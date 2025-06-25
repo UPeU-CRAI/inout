@@ -6,9 +6,11 @@
 	if(!isset($_SESSION['id']) && empty($_SESSION['id'])) {
    header("location:login.php");
 	}
-	require "./functions/access.php";
-	require_once "./template/header.php";
-	require "functions/dbfunc.php";
+        require "./functions/access.php";
+        require_once "./template/header.php";
+        require "functions/dbfunc.php";
+        require_once "functions/MessageHandler.php";
+        $messageHandler = new MessageHandler();
 
   $loc = $_SESSION['loc'];
 
@@ -175,32 +177,17 @@
 					?>
 				</div>
 				<div class="h2 t-shadow">
-					<?php
-						if ($msg == "1") {
-							?> <span class="animated flash"> <?php 
-						    echo "<span class='text-primary'>Your ".$_SESSION['noname']." is: " . $usn . "<br>Entry time is: " . date('g:i A', strtotime($time))."</span>";
-						    ?> </span> <?php
-						} elseif ($msg == "2") {
-						    # code...
-						    ?> <span class="animated flash"> <?php 
-						    echo "<span class='text-warning'>You just Checked In.<br> Wait for 10 Seconds to Check Out.</span>";
-						    ?> </span> <?php
-						} elseif ($msg == "3") {
-						    # code...
-						    ?> <span class="animated flash"> <?php 
-						    echo "<span class='text-danger'>Invalid or Expired ".$_SESSION['noname']."<br> Contact Librarian for more details.</span>";
-						    ?> </span> <?php
-						} elseif ($msg == "4") {
-						    # code...
-						    ?> <span class="animated flash"> <?php 
-						    echo "<span class='text-success'>Your Exit time is: " . date('g:i A', strtotime($time)) . "<br><span class='text-warning'>Total Time Duration : ".$otime[0]."</span>";
-						    ?> </span> <?php
-						} elseif ($msg == "5") {
-						    # code...
-						    ?> <span class="animated flash"> <?php 
-						    echo "<span class='text-info'>You just Checked Out.<br> Wait for 10 Seconds to Check In.</span>";
-						    ?> </span> <?php
-						} else { ?> 
+                                        <?php
+                                                $messageData = [
+                                                    'label' => $_SESSION['noname'],
+                                                    'usn' => $usn,
+                                                    'time' => date('g:i A', strtotime($time)),
+                                                    'duration' => isset($otime[0]) ? $otime[0] : ''
+                                                ];
+                                                $displayMessage = $messageHandler->getMessage($msg, $messageData);
+                                                if ($displayMessage !== '') {
+                                                    echo "<span class=\"animated flash\">$displayMessage</span>";
+                                                } else { ?>
 							<div class="idle">
 								<div class="animated pulse infinite"> 
 							    <span class='text-info'>SCAN YOUR ID CARD</span>

@@ -11,7 +11,7 @@
         $time = date('H:i:s');
         error_reporting(E_ALL);
         //patron data fetching
-        $sql = "SELECT CONCAT(title,' ',firstname,' ',surname) AS surname,borrowernumber,sex,categorycode,branchcode,sort1,sort2,mobile,email FROM borrowers WHERE cardnumber='$usn' AND dateexpiry > '$date'";
+        $sql = "SELECT CONCAT(title,' ',firstname,' ',surname) AS surname,borrowernumber,sex,categorycode,branchcode,sort1,sort2,mobile,email,title,dateofbirth,dateexpiry,borrowernotes FROM borrowers WHERE cardnumber='$usn' AND dateexpiry > '$date'";
         $result = mysqli_query($koha, $sql) or die("Invalid query: 2" . mysqli_error());
         $data1 = mysqli_fetch_row($result);
         //image fetching

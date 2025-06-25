@@ -99,14 +99,17 @@ connections.
 
 Required variables:
 
-- `INOUT_DB_HOST`
-- `INOUT_DB_USER`
-- `INOUT_DB_PASS`
-- `INOUT_DB_NAME`
+- `DB_HOST`
+- `DB_USER`
+- `DB_PASS`
+- `DB_NAME`
 - `KOHA_DB_HOST`
 - `KOHA_DB_USER`
 - `KOHA_DB_PASS`
 - `KOHA_DB_NAME`
+
+Legacy variable names `INOUT_DB_HOST`, `INOUT_DB_USER`, `INOUT_DB_PASS` and
+`INOUT_DB_NAME` are still honored if the new variables are not present.
 
 
 

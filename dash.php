@@ -9,8 +9,41 @@
         require "./functions/access.php";
         require_once "./template/header.php";
         require "functions/dbfunc.php";
-        require_once "functions/MessageHandler.php";
-        $messageHandler = new MessageHandler();
+require_once "functions/MessageHandler.php";
+$messageHandler = new MessageHandler();
+
+function getEventType($msg)
+{
+    switch ($msg) {
+        case '1':
+            return 'entry';
+        case '2':
+            return 'recent_entry';
+        case '3':
+            return 'expired';
+        case '4':
+            return 'exit';
+        case '5':
+            return 'recent_exit';
+        default:
+            return '';
+    }
+}
+
+// Collect Koha user fields if available
+$userData = [];
+if (isset($data1)) {
+    $nameParts = preg_split('/\s+/', $data1[0], 3);
+    $userData = [
+        'firstname'     => $nameParts[1] ?? '',
+        'surname'       => $nameParts[2] ?? '',
+        'dateofbirth'   => $data1[10] ?? '',
+        'dateexpiry'    => $data1[11] ?? '',
+        'categorycode'  => $data1[3] ?? '',
+        'sex'           => $data1[2] ?? '',
+        'borrowernotes' => $data1[12] ?? '',
+    ];
+}
 
   $loc = $_SESSION['loc'];
 
@@ -178,13 +211,14 @@
 				</div>
 				<div class="h2 t-shadow">
                                         <?php
-                                                $messageData = [
-                                                    'label' => $_SESSION['noname'],
-                                                    'usn' => $usn,
-                                                    'time' => date('g:i A', strtotime($time)),
+                                            $messageData = array_merge($userData, [
+                                                    'label'    => $_SESSION['noname'],
+                                                    'usn'      => $usn,
+                                                    'time'     => date('g:i A', strtotime($time)),
                                                     'duration' => isset($otime[0]) ? $otime[0] : ''
-                                                ];
-                                                $displayMessage = $messageHandler->getMessage($msg, $messageData);
+                                                ]);
+                                                $eventType = getEventType($msg);
+                                                $displayMessage = $messageHandler->getMessage($eventType, $messageData);
                                                 if ($displayMessage !== '') {
                                                     echo "<span class=\"animated flash\">$displayMessage</span>";
                                                 } else { ?>

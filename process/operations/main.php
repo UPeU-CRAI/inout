@@ -89,7 +89,7 @@
                 $e_img = NULL;
                 $date = NULL;
                 $time1 = "-";
-              } elseif ($data1 && !$isExpired) {
+                } elseif ($data1 && !$isExpired) {
                     $sl = getsl($conn, "sl", "inout");
                     $sql = "INSERT INTO `inout` (`sl`, `cardnumber`, `name`, `gender`, `date`, `entry`, `exit`, `status`,`loc`,`cc`,`branch`,`sort1`,`sort2`,`email`,`mob`) VALUES ('$sl', '$usn', '$data1[0]', '$data1[2]', '$date', '$time', '".$_SESSION['libtime']."', 'IN','$loc','$data3[0]','$data4[0]','$data1[5]','$data1[6]','$data1[8]','$data1[7]');";
                     $result = mysqli_query($conn, $sql) or die("Invalid query: 11" . mysqli_error($conn));
@@ -102,6 +102,13 @@
                     $result = mysqli_query($conn, $sql) or die("Invalid query: 12" . mysqli_error());
                 }
             }
+        } elseif ($data1 && $isExpired) {
+            $msg = "3";
+            $e_name = NULL;
+            $d_status = NULL;
+            $e_img = NULL;
+            $date = NULL;
+            $time1 = "-";
         } else {
             $msg = "0";
             $e_name = NULL;

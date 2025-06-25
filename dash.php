@@ -40,10 +40,11 @@ if (isset($data1)) {
         'firstname'     => $nameParts[1] ?? '',
         'surname'       => $nameParts[2] ?? '',
         'name'          => trim($nameParts[1] ?? ''),
+        'title'         => $data1[9] ?? ($nameParts[0] ?? ''),
         'dateofbirth'   => $data1[10] ?? '',
         'dateexpiry'    => $data1[11] ?? '',
         'categorycode'  => $data1[3] ?? '',
-        'sex'           => $data1[2] ?? '',
+        'gender'        => $data1[2] ?? '',
         'borrowernotes' => $data1[12] ?? '',
     ];
 }
@@ -215,13 +216,17 @@ if (isset($data1)) {
 				<div class="h2 t-shadow">
                                         <?php
                                             $messageData = array_merge($userData, [
-                                                    'label'    => $_SESSION['noname'],
-                                                    'usn'      => $usn,
-                                                    'time'     => date('g:i A', strtotime($time)),
-                                                    'duration' => isset($otime[0]) ? $otime[0] : ''
+                                                    'label'        => $_SESSION['noname'],
+                                                    'usn'          => $usn,
+                                                    'time'         => date('g:i A', strtotime($time)),
+                                                    'duration'     => isset($otime[0]) ? $otime[0] : '',
+                                                    'note'         => $userData['borrowernotes'] ?? '',
                                                 ]);
-                                                $eventType = getEventType($msg);
-                                                $displayMessage = $messageHandler->getMessage($eventType, $messageData);
+                                            $miscData = [
+                                                    'current_hour' => (int)date('H')
+                                            ];
+                                            $eventType = getEventType($msg);
+                                            $displayMessage = $messageHandler->getMessage($eventType, $messageData, $miscData);
                                                 if ($displayMessage !== '') {
                                                     echo "<span class=\"animated flash\">$displayMessage</span>";
                                                 } else { ?>

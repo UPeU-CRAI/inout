@@ -280,12 +280,12 @@
 <script type="text/javascript">
 	$('span').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
 	  	setTimeout(function(){
-			window.location.replace("/inout/dash.php");
+			window.location.replace("dash.php");
 		}, 5200);
 	});
 	document.getElementById("usn").focus();
 	setTimeout(function(){
-		// window.location.replace("/inout/dash.php");
+		// window.location.replace("dash.php");
 	}, 9800);
 </script>
 <!-- MAIN CONTENT ENDS -->

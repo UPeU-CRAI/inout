@@ -1,15 +1,65 @@
 <?php
-        require_once "./functions/session.php";
-	// ob_start(ob_gzhandler);
-	$title = "Setup";
-	// $acc_code = "S01";
-	$acc_code = "S01";
-	require "./functions/access.php";
-	require_once "./template/header.php";
-	require_once "./template/sidebar.php";
-	require "functions/dbconn.php";
-	require "functions/dbfunc.php";
-	require "functions/general.php";	
+require_once "./functions/session.php";
+
+// When the environment file is missing prompt for credentials
+if (!file_exists(__DIR__ . '/.env')) {
+    $title = "Environment Setup";
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['env_setup'])) {
+        $vars = [
+            'INOUT_DB_HOST',
+            'INOUT_DB_USER',
+            'INOUT_DB_PASS',
+            'INOUT_DB_NAME',
+            'KOHA_DB_HOST',
+            'KOHA_DB_USER',
+            'KOHA_DB_PASS',
+            'KOHA_DB_NAME',
+        ];
+        $env = "";
+        foreach ($vars as $var) {
+            $env .= $var . '=' . trim($_POST[$var] ?? '') . PHP_EOL;
+        }
+        file_put_contents(__DIR__ . '/.env', $env);
+        header('Location: login.php');
+        exit;
+    }
+
+    require_once "./template/header.php";
+    echo '<div class="content" style="min-height: calc(100vh - 160px);">';
+    echo '<div class="container"><h3>Database Configuration</h3>';
+    echo '<form method="POST">';
+    $fields = [
+        'INOUT_DB_HOST' => 'InOut DB Host',
+        'INOUT_DB_USER' => 'InOut DB User',
+        'INOUT_DB_PASS' => 'InOut DB Password',
+        'INOUT_DB_NAME' => 'InOut DB Name',
+        'KOHA_DB_HOST'  => 'Koha DB Host',
+        'KOHA_DB_USER'  => 'Koha DB User',
+        'KOHA_DB_PASS'  => 'Koha DB Password',
+        'KOHA_DB_NAME'  => 'Koha DB Name',
+    ];
+    foreach ($fields as $name => $label) {
+        echo '<div class="form-group"><label>' . $label . '</label>';
+        echo '<input class="form-control" name="' . $name . '" required></div>';
+    }
+    echo '<input type="hidden" name="env_setup" value="1">';
+    echo '<button type="submit" class="btn btn-success">Save</button>';
+    echo '</form></div></div>';
+    require_once "./template/footer.php";
+    exit;
+}
+
+// Normal setup page when environment already exists
+$title = "Setup";
+// $acc_code = "S01";
+$acc_code = "S01";
+require "./functions/access.php";
+require_once "./template/header.php";
+require_once "./template/sidebar.php";
+require "functions/dbconn.php";
+require "functions/dbfunc.php";
+require "functions/general.php";
 ?>
 <!-- MAIN CONTENT START -->
 <div class="content" style="min-height: calc(100vh - 160px);">

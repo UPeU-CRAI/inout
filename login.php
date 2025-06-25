@@ -1,8 +1,11 @@
+<?php
+require_once './functions/session.php';
+?>
 <!DOCTYPE html>
 <html lang="en" class="perfect-scrollbar-off">
   <head>
     <?php
-      include './functions/dbconn.php';
+      require_once './functions/dbconn.php';
     ?>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">

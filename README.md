@@ -93,11 +93,18 @@ For first time, create a new account.
 
 ## Environment Setup
 
-Copy `.env.example` to `.env` and fill in your database credentials. The
-application will automatically load these values before establishing database
-connections.
+Before running the application you need to configure your environment
+variables. Start by copying the provided example file:
 
-Required variables:
+```bash
+cp .env.example .env
+```
+
+Then edit `.env` and replace the placeholder values with your own database
+credentials. The application will automatically load these values before
+establishing any database connections.
+
+The `.env` file must define the following variables:
 
 - `INOUT_DB_HOST`
 - `INOUT_DB_USER`

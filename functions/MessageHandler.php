@@ -2,11 +2,27 @@
 
 class MessageHandler {
     /**
-     * Plantillas genéricas para mensajes que no dependen de datos
-     * personalizados del usuario (por ejemplo, cuando el código no
-     * coincide o el usuario intenta registrar dos veces la misma acción).
+     * Gestor de mensajes mostrados en pantalla y/o reproducidos por TTS.
+     *
+     * Valores esperados en <code>$eventType</code>:
+     *  - <code>entry</code>
+     *  - <code>recent_entry</code>
+     *  - <code>exit</code>
+     *  - <code>recent_exit</code>
+     *  - <code>expired</code>
+     *  - <code>not_found</code>
+     *  - <code>birthday</code> (automático si coincide la fecha)
+     *  - <code>borrower_note</code> (si existe una nota del usuario)
+     *
+     * Claves de reemplazo disponibles en las plantillas:
+     * <code>{firstname}</code>, <code>{surname}</code>, <code>{nombre}</code>,
+     * <code>{apellido}</code>, <code>{title}</code>, <code>{titulo}</code>,
+     * <code>{usn}</code>, <code>{label}</code>, <code>{time}</code>,
+     * <code>{duration}</code> y <code>{note}</code>.
      */
-    private array $generalTemplates = [
+
+    /** Default templates for screen output */
+    private array $screenTemplates = [
         'not_found' => [
             "Código de usuario no reconocido. Por favor, intente de nuevo o consulte con el personal.",
             "Usuario no encontrado en nuestra base de datos. Verifique su código o contacte a un asistente.",
@@ -22,8 +38,46 @@ class MessageHandler {
             "Salida confirmada. Si deseas volver a entrar, espera un breve momento.",
             "¡Hasta pronto! Si necesitas volver a entrar, aguarda un poco.",
         ],
+        'expired' => "Atención, {nombre}. Tu membresía ha expirado. Has ingresado como VISITA. Por favor, acércate al mostrador para renovarla.",
+        'birthday' => "¡Feliz cumpleaños, {nombre}! Todo el equipo de la biblioteca te desea un día maravilloso.",
+        'borrower_note' => "Un mensaje importante del personal: {note}",
+        'entry' => [
+            'DOCEN'   => "{greeting}, {prof} {nombre}. Su entrada es a las: {time}.",
+            'INVESTI' => "{greeting}, {title_greet} {role} {apellido}. Entrada: {time}.",
+            'STAFF'   => "{greeting}, {welcome}, colega {nombre}. Entrada: {time}.",
+            'ADMIN'   => "{greeting}, {role} {nombre}. Entrada: {time}.",
+            'VISITA'  => "{greeting}. Le damos una cordial bienvenida. Su USN es: {usn}. Hora de entrada: {time}.",
+            'ESTUDI'  => "{greeting}, {welcome} {nombre}. Tu USN es: {usn}. Hora de entrada: {time}.",
+            'DEFAULT' => "{greeting}, {welcome} {nombre}. Entrada: {time}.",
+        ],
+        'exit' => [
+            'DOCEN'   => "Hasta pronto, {prof} {nombre}. Su duración total fue de: {duration}.",
+            'INVESTI' => "Despedida, {role} {apellido}. Duración: {duration}.",
+            'STAFF'   => "¡Hasta luego, {nombre}! Que tengas un buen día. Duración: {duration}.",
+            'ADMIN'   => "Hasta pronto, {role} {nombre}. Duración: {duration}.",
+            'VISITA'  => "Gracias por visitarnos. Tu visita duró: {duration}.",
+            'ESTUDI'  => "¡Hasta pronto, {nombre}! Tu duración total fue de: {duration}.",
+            'DEFAULT' => "¡Hasta pronto, {nombre}! Duración total: {duration}.",
+        ],
     ];
 
+    /** Default templates for TTS output (solo se definen diferencias) */
+    private array $ttsTemplates = [];
+
+    /**
+     * Plantillas breves para los mensajes mostrados en pantalla. Estos textos
+     * se enfocan en ser concisos y se utilizarán únicamente para el mensaje
+     * visible, mientras que la versión detallada será reproducida por TTS.
+     */
+    private array $screenTemplates = [
+        'not_found'    => 'Código no reconocido.',
+        'recent_entry' => 'Entrada ya registrada.',
+        'recent_exit'  => 'Salida ya registrada.',
+        'expired'      => 'Membresía expirada.',
+        'entry'        => 'Entrada registrada.',
+        'exit'         => 'Salida registrada.',
+    ];
+          
     /**
      * Punto de entrada principal para generar un mensaje.
      * La prioridad de generación es la siguiente:
@@ -32,16 +86,34 @@ class MessageHandler {
      *  3. Notas de personal.
      *  4. Membresía expirada.
      *  5. Mensajes de entrada o salida normales.
+     *
+     * @deprecated Usa getScreenMessage() o getTTSMessage() en su lugar.
      */
-    public function getMessage(string $eventType, ?array $userData = null, array $miscData = []): string {
+    public function getMessage(string $eventType, ?array $userData = null, array $miscData = [], string $target = 'screen'): string {
+        if ($target === 'tts') {
+            return $this->getTTSMessage($eventType, $userData, $miscData);
+        }
+        return $this->getScreenMessage($eventType, $userData, $miscData);
+    }           
+
+    /** Obtiene el mensaje para mostrar en pantalla */
+    public function getScreenMessage(string $eventType, ?array $userData = null, array $miscData = []): string {
+        return $this->generateMessage($eventType, $userData, $miscData, $this->screenTemplates);
+    }
+
+    /** Obtiene el mensaje para TTS */
+    public function getTTSMessage(string $eventType, ?array $userData = null, array $miscData = []): string {
+        // Si no hay plantilla específica se usa la de pantalla
+        $templates = array_replace_recursive($this->screenTemplates, $this->ttsTemplates);
+        return $this->generateMessage($eventType, $userData, $miscData, $templates);
+    }
+
+    /** Lógica principal de generación de mensajes */
+    private function generateMessage(string $eventType, ?array $userData, array $miscData, array $templates): string {
         $combinedData = array_merge($userData ?? [], $miscData);
 
-        if ($eventType === 'not_found') {
-            return $this->getRandomGeneral('not_found');
-        }
-
-        if (in_array($eventType, ['recent_entry', 'recent_exit'])) {
-            return $this->getRandomGeneral($eventType);
+        if (isset($templates[$eventType]) && !in_array($eventType, ['entry', 'exit'])) {
+            return $this->fetchTemplate($templates, $eventType);
         }
 
         if ($userData === null) {
@@ -49,25 +121,58 @@ class MessageHandler {
         }
 
         if ($this->isBirthday($userData['dateofbirth'] ?? null)) {
-            return $this->replacePlaceholders($this->buildBirthdayMessage(), $combinedData);
+            $msg = $this->fetchTemplate($templates, 'birthday');
+            return $this->replacePlaceholders($msg, $combinedData);
         }
 
         if (!empty($userData['borrowernotes'])) {
             $combinedData['note'] = $userData['borrowernotes'];
-            return $this->replacePlaceholders($this->buildBorrowerNoteMessage(), $combinedData);
+            $msg = $this->fetchTemplate($templates, 'borrower_note');
+            return $this->replacePlaceholders($msg, $combinedData);
         }
 
         if ($eventType === 'expired') {
-            return $this->replacePlaceholders($this->buildExpiredMessage(), $combinedData);
+            $msg = $this->fetchTemplate($templates, 'expired');
+            return $this->replacePlaceholders($msg, $combinedData);
         }
 
         if ($eventType === 'entry') {
             $hour = $miscData['current_hour'] ?? (int)date('H');
-            return $this->replacePlaceholders($this->buildEntryMessage($userData, $hour), $combinedData);
+            return $this->replacePlaceholders($this->buildEntryMessage($userData, $hour, $templates), $combinedData);
         }
 
         if ($eventType === 'exit') {
-            return $this->replacePlaceholders($this->buildExitMessage($userData), $combinedData);
+            return $this->replacePlaceholders($this->buildExitMessage($userData, $templates), $combinedData);
+        }
+
+        return '';
+    }
+
+    /**
+     * Obtiene el mensaje corto que se mostrará en pantalla. Devuelve la cadena
+     * ya envuelta en un elemento span con las clases de animación.
+     */
+    public function getScreenMessage(string $eventType, array $vars = []): string {
+        $combinedData = $vars;
+
+        // Mensajes simples basados en plantillas predefinidas
+        if (isset($this->screenTemplates[$eventType])) {
+            $text = $this->replacePlaceholders($this->screenTemplates[$eventType], $combinedData);
+            return "<span class=\"animated flash tts-text\">$text</span>";
+        }
+
+        // Mensajes especiales que dependen de datos del usuario
+        if ($eventType !== 'not_found' && !empty($vars)) {
+            if ($this->isBirthday($vars['dateofbirth'] ?? null)) {
+                $text = $this->replacePlaceholders('¡Feliz cumpleaños, {nombre}!', $combinedData);
+                return "<span class=\"animated flash tts-text\">$text</span>";
+            }
+
+            if (!empty($vars['borrowernotes'])) {
+                $combinedData['note'] = $vars['borrowernotes'];
+                $text = $this->replacePlaceholders('Nota: {note}', $combinedData);
+                return "<span class=\"animated flash tts-text\">$text</span>";
+            }
         }
 
         return '';
@@ -77,84 +182,80 @@ class MessageHandler {
      * Construye el mensaje de entrada utilizando la franja horaria,
      * la categoría y el género del usuario.
      */
-    private function buildEntryMessage(array $userData, int $hour): string {
+    private function buildEntryMessage(array $userData, int $hour, array $templates): string {
         $gender   = strtoupper($userData['gender'] ?? 'DEFAULT');
         $category = strtoupper($userData['categorycode'] ?? 'DEFAULT');
 
         $greeting = $this->getTimeGreeting($hour);
 
-        switch ($category) {
-            case 'DOCEN':
-                $prof = $this->genderize('Profesor', $gender, 'Profesora', 'Profesor/a');
-                return "$greeting, $prof {nombre}. Su entrada es a las: {time}.";
-            case 'INVESTI':
-                $title  = $this->genderize('Estimado', $gender, 'Estimada', 'Estimado/a');
-                $role   = $this->genderize('Investigador', $gender, 'Investigadora', 'Investigador/a');
-                return "$greeting, $title $role {apellido}. Entrada: {time}.";
-            case 'STAFF':
-                $welcome = $this->genderize('Bienvenido', $gender);
-                return "$greeting, $welcome, colega {nombre}. Entrada: {time}.";
-            case 'ADMIN':
-                $role = $this->genderize('creador', $gender, 'creadora', 'creador/a');
-                return "$greeting, $role {nombre}. Entrada: {time}.";
-            case 'VISITA':
-                return "$greeting. Le damos una cordial bienvenida. Su USN es: {usn}. Hora de entrada: {time}.";
-            case 'ESTUDI':
-                $welcome = $this->genderize('Bienvenido', $gender);
-                return "$greeting, $welcome {nombre}. Tu USN es: {usn}. Hora de entrada: {time}.";
-            default:
-                $welcome = $this->genderize('Bienvenido', $gender);
-                return "$greeting, $welcome {nombre}. Entrada: {time}.";
-        }
+        $tplSet = $templates['entry'] ?? [];
+        $template = $tplSet[$category] ?? $tplSet['DEFAULT'] ?? '';
+
+        $template = str_replace([
+            '{greeting}',
+            '{prof}',
+            '{title_greet}',
+            '{role}',
+            '{welcome}'
+        ], [
+            $greeting,
+            $this->genderize('Profesor', $gender, 'Profesora', 'Profesor/a'),
+            $this->genderize('Estimado', $gender, 'Estimada', 'Estimado/a'),
+            match ($category) {
+                'INVESTI' => $this->genderize('Investigador', $gender, 'Investigadora', 'Investigador/a'),
+                'ADMIN'   => $this->genderize('creador', $gender, 'creadora', 'creador/a'),
+                default   => ''
+            },
+            $this->genderize('Bienvenido', $gender)
+        ], $template);
+
+        return $template;
     }
 
     /**
      * Construye el mensaje de salida de acuerdo con la categoría del usuario.
      */
-    private function buildExitMessage(array $userData): string {
+    private function buildExitMessage(array $userData, array $templates): string {
         $gender   = strtoupper($userData['gender'] ?? 'DEFAULT');
         $category = strtoupper($userData['categorycode'] ?? 'DEFAULT');
 
-        switch ($category) {
-            case 'DOCEN':
-                $prof = $this->genderize('Profesor', $gender, 'Profesora', 'Profesor/a');
-                return "Hasta pronto, $prof {nombre}. Su duración total fue de: {duration}.";
-            case 'INVESTI':
-                $role = $this->genderize('Investigador', $gender, 'Investigadora', 'Investigador/a');
-                return "Despedida, $role {apellido}. Duración: {duration}.";
-            case 'STAFF':
-                return "¡Hasta luego, {nombre}! Que tengas un buen día. Duración: {duration}.";
-            case 'ADMIN':
-                $role = $this->genderize('creador', $gender, 'creadora', 'creador/a');
-                return "Hasta pronto, $role {nombre}. Duración: {duration}.";
-            case 'VISITA':
-                return "Gracias por visitarnos. Tu visita duró: {duration}.";
-            case 'ESTUDI':
-                return "¡Hasta pronto, {nombre}! Tu duración total fue de: {duration}.";
-            default:
-                return "¡Hasta pronto, {nombre}! Duración total: {duration}.";
-        }
+        $tplSet = $templates['exit'] ?? [];
+        $template = $tplSet[$category] ?? $tplSet['DEFAULT'] ?? '';
+
+        $template = str_replace([
+            '{prof}',
+            '{role}'
+        ], [
+            $this->genderize('Profesor', $gender, 'Profesora', 'Profesor/a'),
+            match ($category) {
+                'INVESTI' => $this->genderize('Investigador', $gender, 'Investigadora', 'Investigador/a'),
+                'ADMIN'   => $this->genderize('creador', $gender, 'creadora', 'creador/a'),
+                default   => ''
+            }
+        ], $template);
+
+        return $template;
     }
 
     /**
      * Mensaje mostrado cuando la cuenta está expirada.
      */
-    private function buildExpiredMessage(): string {
-        return "Atención, {nombre}. Tu membresía ha expirado. Has ingresado como VISITA. Por favor, acércate al mostrador para renovarla.";
+    private function buildExpiredMessage(array $templates): string {
+        return $this->fetchTemplate($templates, 'expired');
     }
 
     /**
      * Mensaje de cumpleaños.
      */
-    private function buildBirthdayMessage(): string {
-        return "¡Feliz cumpleaños, {nombre}! Todo el equipo de la biblioteca te desea un día maravilloso.";
+    private function buildBirthdayMessage(array $templates): string {
+        return $this->fetchTemplate($templates, 'birthday');
     }
 
     /**
      * Mensaje para mostrar notas de personal.
      */
-    private function buildBorrowerNoteMessage(): string {
-        return "Un mensaje importante del personal: {note}";
+    private function buildBorrowerNoteMessage(array $templates): string {
+        return $this->fetchTemplate($templates, 'borrower_note');
     }
 
     /**
@@ -182,11 +283,17 @@ class MessageHandler {
     }
 
     /**
-     * Selecciona de forma aleatoria uno de los mensajes genéricos.
+     * Selecciona de forma aleatoria uno de los mensajes.
      */
-    private function getRandomGeneral(string $type): string {
-        $templates = $this->generalTemplates[$type] ?? [];
-        return $templates[array_rand($templates)] ?? '';
+    private function fetchTemplate(array $templates, string $key): string {
+        $tpl = $templates[$key] ?? '';
+        if (is_array($tpl)) {
+            if (!$tpl) {
+                return '';
+            }
+            return $tpl[array_rand($tpl)];
+        }
+        return $tpl;
     }
 
     /**

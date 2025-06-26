@@ -3,19 +3,23 @@
 	include "./process/operations/stats.php";
 	$title = "Gate Register";
 	$acc_code = "U02";
-	if(!isset($_SESSION['id']) && empty($_SESSION['id'])) {
-   header("location:login.php");
+	if (!isset($_SESSION['id']) && empty($_SESSION['id'])) {
+	    header("location:login.php");
 	}
-        require "./functions/access.php";
-        require_once "./template/header.php";
-        require "functions/dbfunc.php";
-require_once "functions/MessageHandler.php";
-$messageHandler = new MessageHandler();
-function renderTtsMessage(string $text): string {
-    $json = json_encode($text);
-    // Provide a class to identify the message element
-    return "<span class=\"animated flash tts-text\">$text</span><script>playTTS($json);</script>";
-}
+	require "./functions/access.php";
+	require_once "./template/header.php";
+	require "functions/dbfunc.php";
+	require_once "functions/MessageHandler.php";
+	$messageHandler = new MessageHandler();
+
+	/**
+	 * Genera un script para reproducir el mensaje TTS en el navegador usando playTTS (debes definirla en JS).
+	 * No imprime el texto, solo dispara la voz.
+	 */
+	function renderTtsMessage(string $text): string {
+	    $json = json_encode($text);
+	    return "<script>if(typeof playTTS==='function'){playTTS($json);}</script>";
+	}
 
 function getEventType($msg)
 {
@@ -231,21 +235,24 @@ if (isset($data1)) {
                                                     'current_hour' => (int)date('H')
                                             ];
                                             $eventType = getEventType($msg);
-                                            $displayMessage = $messageHandler->getMessage($eventType, $messageData, $miscData);
+                                            $screenMessage = $messageHandler->getScreenMessage($eventType, $messageData);
+                                            $ttsMessage    = $messageHandler->getTTSMessage($eventType, $messageData, $miscData);
 
                                             if (in_array($eventType, ['recent_entry', 'recent_exit'])) {
                                                 $last = $_SESSION['recent_msg_time'] ?? 0;
                                                 $type = $_SESSION['recent_msg_type'] ?? '';
                                                 if (time() - $last < 10 && $type === $eventType) {
-                                                    $displayMessage = '';
+                                                    $screenMessage = '';
+                                                    $ttsMessage = '';
                                                 } else {
                                                     $_SESSION['recent_msg_time'] = time();
                                                     $_SESSION['recent_msg_type'] = $eventType;
                                                 }
                                             }
 
-                                                if ($displayMessage !== '') {
-                                                    echo renderTtsMessage($displayMessage);
+                                                if ($screenMessage !== '' || $ttsMessage !== '') {
+                                                    echo $screenMessage;
+                                                    echo renderTtsAudio($ttsMessage);
                                                 } else { ?>
 							<div class="idle">
 								<div class="animated pulse infinite"> 

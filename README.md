@@ -1,10 +1,10 @@
-# Sistema de Gestión de Entradas/Salidas (In/Out Management System) v1.1.2
+# Sistema de Gestión de Entradas/Salidas (In/Out Management System) v1.2.0
 
 ## Descripción
 
 Este proyecto es un sistema de gestión de entradas y salidas de usuarios, diseñado principalmente para monitorear el flujo de personas en bibliotecas (CRAI) y otras instalaciones. El sistema registra la hora de entrada y salida de cada usuario mediante un número de tarjeta o código de identificación y se integra con la base de datos de Koha para obtener información del usuario.
 
-Esta versión (`v1.1.2`) mejora la seguridad general con consultas preparadas y compatibilidad con contraseñas antiguas.  También mantiene el foco en el campo de escaneo para agilizar el registro de entradas y salidas.
+Esta version (`v1.2.0`) simplifica la configuracion cargando las credenciales desde un archivo `.env` y mantiene las mejoras de seguridad.
 
 ## Características
 
@@ -27,7 +27,6 @@ Esta versión (`v1.1.2`) mejora la seguridad general con consultas preparadas y 
 * **Servidor Web:** Apache2 (compatible con Nginx como proxy inverso)
 * **Frontend:** HTML, CSS, JavaScript, jQuery, Bootstrap Material Design
 
----
 
 ## Instalación
 
@@ -51,6 +50,11 @@ Si importaste la base de datos incluida encontrarás estos usuarios iniciales:
 - **admin / library**
 
 ---
+## Historial de versiones
+
+- **v1.2.0** - Nueva carga de credenciales mediante archivo `.env`.
+- **v1.1.2** - Mejoras de seguridad con consultas preparadas y compatibilidad con contraseñas antiguas.
+
 
 ## Contribuciones
 

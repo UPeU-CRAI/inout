@@ -36,6 +36,7 @@ Para desplegar la aplicación sigue este resumen. Si necesitas un paso a paso m�
 2. **Clonar el repositorio** en el directorio deseado del servidor.
 3. **Importar la base de datos** ejecutando `DB/inout.sql` sobre tu instancia de MariaDB/MySQL.
 4. **Configurar la conexión** copiando el archivo `.env.example` a `.env` y completando tus credenciales de base de datos.
+   Si deseas utilizar la síntesis de voz, proporciona también la ruta del JSON de Google en `TTS_CREDENTIALS_PATH`.
 
 5. **Configurar tu servidor web** creando un VirtualHost que apunte al directorio del proyecto y habilitando el módulo `rewrite`.
 

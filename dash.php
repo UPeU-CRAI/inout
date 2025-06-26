@@ -17,7 +17,8 @@ $tts = new PersonalizedGreeting();
 function renderTtsMessage(string $text): string {
     global $tts;
     $audio = $tts->synthesize($text);
-    return "<span class=\"animated flash\">$text</span>" . $audio;
+    // Provide a class to identify the message element
+    return "<span class=\"animated flash tts-text\">$text</span>" . $audio;
 }
 
 function getEventType($msg)
@@ -336,15 +337,22 @@ if (isset($data1)) {
             });
         }
 
-        $('span').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
+        const audio = document.getElementById('tts-audio');
+        if (audio) {
+            audio.addEventListener('ended', function () {
+                window.location.replace('dash.php');
+            });
+        } else {
+            // Fallback to previous behavior if no audio is present
+            $('span.animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
+                setTimeout(function(){
+                    window.location.replace('dash.php');
+                }, 5200);
+            });
             setTimeout(function(){
-                window.location.replace("dash.php");
-            }, 5200);
-        });
-
-        setTimeout(function(){
-            // window.location.replace("dash.php");
-        }, 9800);
+                // window.location.replace("dash.php");
+            }, 9800);
+        }
     });
 </script>
 <!-- MAIN CONTENT ENDS -->

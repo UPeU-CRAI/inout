@@ -20,20 +20,24 @@ class PersonalizedGreeting
             putenv('GOOGLE_APPLICATION_CREDENTIALS=' . $credentials);
             try {
                 $this->client = new TextToSpeechClient();
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $this->client = null;
             }
         }
     }
 
-    public function synthesize(string $text): string
+    /**
+     * Recibe el texto de voz y devuelve el audio HTML para TTS, o string vacío si falla.
+     * Solo úsalo con el mensaje de voz generado desde MessageHandler (getBothMessages()['voice']).
+     */
+    public function synthesizeVoice(string $voiceText): string
     {
-        if ($this->client === null) {
+        if ($this->client === null || trim($voiceText) === '') {
             return '';
         }
 
         try {
-            $input = new SynthesisInput(['text' => $text]);
+            $input = new SynthesisInput(['text' => $voiceText]);
             $voice = new VoiceSelectionParams([
                 'language_code' => 'es-ES',
                 'name' => 'es-ES-Standard-A'
@@ -53,9 +57,9 @@ class PersonalizedGreeting
             }
             $b64 = base64_encode($audioContent);
             $src = "data:audio/mpeg;base64,$b64";
-            // Use a fixed ID so JavaScript can wait for the audio to finish
-            return "<audio id=\"tts-audio\" autoplay style=\"display:none\"><source src='$src' type='audio/mpeg'></audio>";
-        } catch (Exception $e) {
+            // Usa un ID fijo para poder controlar el audio por JS si es necesario
+            return "<audio id=\"tts-audio\" autoplay style=\"display:none\"><source src=\"$src\" type=\"audio/mpeg\"></audio>";
+        } catch (\Exception $e) {
             return '';
         }
     }

@@ -10,103 +10,86 @@
 	require_once "./template/header.php";
 	require "functions/dbfunc.php";
 	require_once "functions/MessageHandler.php";
+	require_once "functions/PersonalizedGreeting.php";
 	$messageHandler = new MessageHandler();
+	$tts = new PersonalizedGreeting();
 
-	/**
-	 * Genera un script para reproducir el mensaje TTS en el navegador usando playTTS (debes definirla en JS).
-	 * No imprime el texto, solo dispara la voz.
-	 */
-	function renderTtsMessage(string $text): string {
-	    $json = json_encode($text);
-	    return "<script>if(typeof playTTS==='function'){playTTS($json);}</script>";
+	function getEventType($msg)
+	{
+	    switch ($msg) {
+	        case '1': return 'entry';
+	        case '2': return 'recent_entry';
+	        case '3': return 'expired';
+	        case '4': return 'exit';
+	        case '5': return 'recent_exit';
+	        case '0': return 'not_found';
+	        default:  return '';
+	    }
 	}
 
-function getEventType($msg)
-{
-    switch ($msg) {
-        case '1':
-            return 'entry';
-        case '2':
-            return 'recent_entry';
-        case '3':
-            return 'expired';
-        case '4':
-            return 'exit';
-        case '5':
-            return 'recent_exit';
-        case '0':
-            return 'not_found';
-        default:
-            return '';
-    }
-}
+	// Recopila campos de usuario de Koha si están disponibles
+	$userData = [];
+	if (isset($data1)) {
+	    $nameParts = preg_split('/\s+/', $data1[0], 3);
+	    $userData = [
+	        'firstname'     => $nameParts[1] ?? '',
+	        'surname'       => $nameParts[2] ?? '',
+	        'name'          => trim($nameParts[1] ?? ''),
+	        'title'         => $data1[9] ?? ($nameParts[0] ?? ''),
+	        'dateofbirth'   => $data1[10] ?? '',
+	        'dateexpiry'    => $data1[11] ?? '',
+	        'categorycode'  => $data1[3] ?? '',
+	        'gender'        => $data1[2] ?? '',
+	        'borrowernotes' => $data1[12] ?? '',
+	    ];
+	}
 
-// Collect Koha user fields if available
-$userData = [];
-if (isset($data1)) {
-    $nameParts = preg_split('/\s+/', $data1[0], 3);
-    $userData = [
-        'firstname'     => $nameParts[1] ?? '',
-        'surname'       => $nameParts[2] ?? '',
-        'name'          => trim($nameParts[1] ?? ''),
-        'title'         => $data1[9] ?? ($nameParts[0] ?? ''),
-        'dateofbirth'   => $data1[10] ?? '',
-        'dateexpiry'    => $data1[11] ?? '',
-        'categorycode'  => $data1[3] ?? '',
-        'gender'        => $data1[2] ?? '',
-        'borrowernotes' => $data1[12] ?? '',
-    ];
-}
+	$loc = $_SESSION['loc'];
+	$new_arrivals = $quote = $clock = $banner = false;
+	$banner = $_SESSION["banner"];
+	$activedash = $_SESSION["activedash"];
 
-  $loc = $_SESSION['loc'];
-
-  $new_arrivals = false;
-  $quote = false;
-  $clock = false;
-  $banner = false;
-
-  $banner = $_SESSION["banner"];
-  $activedash = $_SESSION["activedash"];
-
-  if($banner == "true"){
-  	$banner = true;
-  }elseif($banner == "false"){
-  	$banner = false;
-  }
-
-  if($activedash == 'clock'){
-  	$clock = true;
-  }elseif($activedash == 'quote'){
-  	$quote = true;
-  }elseif($activedash == 'newarrivals'){
-  	$new_arrivals = true;
-  }else{
-  	$new_arrivals = false;
-	  $quote = false;
-	  $clock = false;
-  }
+	$banner = ($banner == "true");
+	if ($activedash == 'clock') $clock = true;
+	elseif ($activedash == 'quote') $quote = true;
+	elseif ($activedash == 'newarrivals') $new_arrivals = true;
 
 	$data = checknews($conn, $loc);
-	if($data){
-		$news = true;
-		$new_arrivals = false;
-	  $quote = false;
-	  $clock = false;
-	  $banner = false;
-	}else{
-		$news = false;
-	}
+	$news = $data ? true : false;
+	if ($news) $new_arrivals = $quote = $clock = $banner = false;
 
- $img_flag = true;
-	if(!$e_img){
-		$img_flag = false;
-	}
+	$img_flag = !empty($e_img);
 
 	$jsonfile = file_get_contents("assets/quotes.json");
-  $quotes = json_decode($jsonfile, true);
-  $onequote = $quotes[rand(0, count($quotes) - 1)];
+	$quotes = json_decode($jsonfile, true);
+	$onequote = $quotes[rand(0, count($quotes) - 1)];
+
+	// EVENTO y datos combinados
+	$messageData = array_merge($userData, [
+		'label'        => $_SESSION['noname'] ?? '',
+		'usn'          => $usn ?? '',
+		'time'         => isset($time) ? date('g:i A', strtotime($time)) : '',
+		'duration'     => isset($otime[0]) ? $otime[0] : '',
+		'note'         => $userData['borrowernotes'] ?? '',
+	]);
+	$miscData = ['current_hour' => (int)date('H')];
+	$eventType = getEventType($msg ?? '');
+	$messages = $messageHandler->getBothMessages($eventType, $messageData, $miscData);
+	$ttsMessage = $messages['voice'] ?? '';
+
+	// Controla repetición de mensajes recientes (solo para TTS)
+	if (in_array($eventType, ['recent_entry', 'recent_exit'])) {
+		$last = $_SESSION['recent_msg_time'] ?? 0;
+		$type = $_SESSION['recent_msg_type'] ?? '';
+		if (time() - $last < 10 && $type === $eventType) {
+			$ttsMessage = '';
+		} else {
+			$_SESSION['recent_msg_time'] = time();
+			$_SESSION['recent_msg_type'] = $eventType;
+		}
+	}
 ?>
-<body style="background-color: #F1EADE;"> 
+<body style="background-color: #F1EADE;">
 <!-- MAIN CONTENT START -->
 <div class="content" style="min-height: calc(100vh - 90px);">
 	<div class="container-fluid">
@@ -114,158 +97,147 @@ if (isset($data1)) {
 	    <div class="col-md-6">
 	    	<div class="card" style="min-height: calc(100vh - 150px);">
 	        <div class="card-body">
-	        	<?php if($banner) { ?>
-							<img class="img-responsive" src="assets/img/banner.png">
-						<?php }else{ ?>
-							<h3 class="text-center"><?php echo $_SESSION['lib']; ?></h3>
-	        	<?php } ?>
-	        <?php if($news) { ?>
-	        	<div class="card-block">
-							<div class="card-title text-info h4 text-center">
-								 <?php echo "<br/>".$data['nhead']; ?> 
-							</div>		        
-							<div class="h4 text-center" style="text-align: justify !important;">
-								 <?php echo "<br/>".nl2br($data['nbody']); ?> 
-							</div>
-							<div class="h4 text-success text-center">
-						 		<?php echo "<br/>".$data['nfoot']; ?> 
-							</div>
+	        	<?php if ($banner): ?>
+					<img class="img-responsive" src="assets/img/banner.png">
+				<?php else: ?>
+					<h3 class="text-center"><?= $_SESSION['lib']; ?></h3>
+	        	<?php endif; ?>
+
+				<?php if ($news): ?>
+					<div class="card-block">
+						<div class="card-title text-info h4 text-center">
+							 <br><?= $data['nhead']; ?>
 						</div>
-					<?php } ?>
-					<?php if($new_arrivals) { ?>
-						<h3 class="text-center">New Arrivals</h3>
-						<div class="new-arrivals">
-							<img src="assets/books/1.png">
-							<img src="assets/books/2.png">
-							<img src="assets/books/3.png">
-							<img src="assets/books/4.png">
+						<div class="h4 text-center" style="text-align: justify !important;">
+							 <br><?= nl2br($data['nbody']); ?>
 						</div>
-						<div class="new-arrivals">
-							<img src="assets/books/5.png">
-							<img src="assets/books/6.png"> 
-							<img src="assets/books/7.png">
-							<img src="assets/books/8.png">
+						<div class="h4 text-success text-center">
+						 	<br><?= $data['nfoot']; ?>
 						</div>
-					<?php } ?>
-					<?php if($quote) { ?>
-						<div class="card-block2" style="min-height: calc(100vh - 430px);">
-							<div class="qcard">
-							  <div class="qcontent">
-							    <h3 class="qsub-heading">Quote for the thought</h3>
-							    <blockquote>
-								    <h1 class="qheading"><?php echo $onequote["content"]; ?></h1>
-								    <p class="qcaption"><strong><?php echo $onequote["author"]; ?></strong></p>
-							  	</blockquote>
-							  </div>
-							</div>
+					</div>
+				<?php endif; ?>
+
+				<?php if ($new_arrivals): ?>
+					<h3 class="text-center">New Arrivals</h3>
+					<div class="new-arrivals">
+						<img src="assets/books/1.png"><img src="assets/books/2.png">
+						<img src="assets/books/3.png"><img src="assets/books/4.png">
+					</div>
+					<div class="new-arrivals">
+						<img src="assets/books/5.png"><img src="assets/books/6.png">
+						<img src="assets/books/7.png"><img src="assets/books/8.png">
+					</div>
+				<?php endif; ?>
+
+				<?php if ($quote): ?>
+					<div class="card-block2" style="min-height: calc(100vh - 430px);">
+						<div class="qcard">
+						  <div class="qcontent">
+						    <h3 class="qsub-heading">Quote for the thought</h3>
+						    <blockquote>
+							    <h1 class="qheading"><?= $onequote["content"]; ?></h1>
+							    <p class="qcaption"><strong><?= $onequote["author"]; ?></strong></p>
+						  	</blockquote>
+						  </div>
 						</div>
-					<?php } ?>
-					<?php if($clock) { ?>
-						<div class="card-body">
-							<div class="analogclock">
-							  <div>
-							    <div class="cinfo cdate"></div>
-							    <div class="cinfo cday"></div>
-							  </div>
-							  <div class="cdot"></div>
-							  <div>
-							    <div class="chour-hand"></div>
-							    <div class="cminute-hand"></div>
-							    <div class="csecond-hand"></div>
-							  </div>
-							  <div id="dial">
-							    <span class="n3">3</span>
-							    <span class="n6">6</span>
-							    <span class="n9">9</span>
-							    <span class="n12">12</span>
-							  </div>
-							  <div class="cdiallines"></div>
-							</div>
+					</div>
+				<?php endif; ?>
+
+				<?php if ($clock): ?>
+					<div class="card-body">
+						<div class="analogclock">
+						  <div>
+						    <div class="cinfo cdate"></div>
+						    <div class="cinfo cday"></div>
+						  </div>
+						  <div class="cdot"></div>
+						  <div>
+						    <div class="chour-hand"></div>
+						    <div class="cminute-hand"></div>
+						    <div class="csecond-hand"></div>
+						  </div>
+						  <div id="dial">
+						    <span class="n3">3</span>
+						    <span class="n6">6</span>
+						    <span class="n9">9</span>
+						    <span class="n12">12</span>
+						  </div>
+						  <div class="cdiallines"></div>
 						</div>
-					<?php } ?>
+					</div>
+				<?php endif; ?>
 	        </div>
 	      </div>
 	    </div>
 	    <div class="col-md-6 text-center" style="margin-top: 24px;">
 	    	<div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-          <h2 style="flex-grow: 1; text-align: center;">In Out Management System</h2>
-          <a class="nav-link" href="functions/signout.php" style="display: flex; align-items: center; text-decoration: none;">
-            <i class="material-icons">power_settings_new</i>
-            <p class="d-lg-none d-md-block" style="margin: 0; padding-left: 5px;">Logout</p>
-          </a>
-        </div>
-      <h3><?php echo $_SESSION['locname']; ?></h3>
-      <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="GET">
-        <input type="text" name="id" id="usn" class="" value="" autofocus="true">
-      </form>
-	    	<?php
-	    		if(isset($d_status)){
-	    	?>
+	          <h2 style="flex-grow: 1; text-align: center;">In Out Management System</h2>
+	          <a class="nav-link" href="functions/signout.php" style="display: flex; align-items: center; text-decoration: none;">
+	            <i class="material-icons">power_settings_new</i>
+	            <p class="d-lg-none d-md-block" style="margin: 0; padding-left: 5px;">Logout</p>
+	          </a>
+	        </div>
+	      <h3><?= $_SESSION['locname']; ?></h3>
+	      <form action="<?= $_SERVER['PHP_SELF']; ?>" method="GET">
+	        <input type="text" name="id" id="usn" class="" value="" autofocus="true">
+	      </form>
+
+	      <?php
+	      // SIEMPRE muestra los datos si hay usuario, incluso si expiró
+	      if (!empty($userData)) { ?>
 	    	<div class="card-body text-center">
-	    		<?php if($img_flag) { ?>
-	    			<img src="data:image/jpg/png/jpeg;base64,<?php echo base64_encode($e_img); ?>"  class="rounded-circle mb-4" alt="...">
-		    	<?php } else { ?>
+	    		<?php if ($img_flag): ?>
+	    			<img src="data:image/jpg/png/jpeg;base64,<?= base64_encode($e_img); ?>" class="rounded-circle mb-4" alt="...">
+		    	<?php else: ?>
 		    		<img src="assets/img/placeholder.png" class="rounded-circle mb-4" alt="...">
-		    	<?php } ?>
-					<h4 class="mb-0" style="font-weight: 800;"><?php echo $e_name; ?></h4>
-					<p class="mb-2"><?php echo $usn; ?></p>
-				</div>
-				<?php
-					}
-				?>
-		    <div class="h1 t-shadow">
+		    	<?php endif; ?>
+				<h4 class="mb-0" style="font-weight: 800;"><?= $e_name; ?></h4>
+				<p class="mb-2"><?= $usn; ?></p>
+				<div class="status-inout 
 					<?php
-						if ($d_status == "OUT") {
-						    echo "<span class='status-inout text-danger animated flash'>OUT</span>";
-						} elseif ($d_status == "IN") {
-						    echo "<span class='status-inout text-success animated flash'>IN</span>";
-						}
+						if ($d_status == "IN") echo 'text-success';
+						elseif ($d_status == "OUT") echo 'text-danger';
+						else echo 'text-warning';
+					?> animated flash">
+					<?php
+						if ($d_status == "IN") echo "IN";
+						elseif ($d_status == "OUT") echo "OUT";
+						else echo "VISITA";
 					?>
 				</div>
-				<div class="h2 t-shadow">
-                                        <?php
-                                            $messageData = array_merge($userData, [
-                                                    'label'        => $_SESSION['noname'],
-                                                    'usn'          => $usn,
-                                                    'time'         => date('g:i A', strtotime($time)),
-                                                    'duration'     => isset($otime[0]) ? $otime[0] : '',
-                                                    'note'         => $userData['borrowernotes'] ?? '',
-                                                ]);
-                                            $miscData = [
-                                                    'current_hour' => (int)date('H')
-                                            ];
-                                            $eventType = getEventType($msg);
-                                            $screenMessage = $messageHandler->getScreenMessage($eventType, $messageData);
-                                            $ttsMessage    = $messageHandler->getTTSMessage($eventType, $messageData, $miscData);
+				<?php if ($d_status == "IN"): ?>
+					<div>Hora de entrada: <?= isset($time) ? date('g:i A', strtotime($time)) : '-'; ?></div>
+				<?php elseif ($d_status == "OUT"): ?>
+					<div>Hora de salida: <?= isset($time) ? date('g:i A', strtotime($time)) : '-'; ?></div>
+					<div>Permanencia: <?= $otime[0] ?? '-'; ?></div>
+				<?php endif; ?>
+				<?php if ($eventType == 'expired' || $msg == '3'): ?>
+					<div class="text-danger font-weight-bold">MATRÍCULA EXPIRADA</div>
+				<?php endif; ?>
+	    	</div>
+	      <?php } elseif ($eventType == 'not_found') { ?>
+	    	<div class="text-danger" style="font-size:2em;">Usuario no encontrado en la base de datos</div>
+	      <?php } ?>
 
-                                            if (in_array($eventType, ['recent_entry', 'recent_exit'])) {
-                                                $last = $_SESSION['recent_msg_time'] ?? 0;
-                                                $type = $_SESSION['recent_msg_type'] ?? '';
-                                                if (time() - $last < 10 && $type === $eventType) {
-                                                    $screenMessage = '';
-                                                    $ttsMessage = '';
-                                                } else {
-                                                    $_SESSION['recent_msg_time'] = time();
-                                                    $_SESSION['recent_msg_type'] = $eventType;
-                                                }
-                                            }
+	      <!-- AUDIO SOLO POR TTS -->
+	      <?php
+			if ($ttsMessage !== '') {
+				echo $tts->synthesizeVoice($ttsMessage);
+			}
+		  ?>
 
-                                                if ($screenMessage !== '' || $ttsMessage !== '') {
-                                                    echo $screenMessage;
-                                                    echo renderTtsMessage($ttsMessage);
-                                                } else { ?>
-							<div class="idle">
-								<div class="animated pulse infinite"> 
-							    <span class='text-info'>SCAN YOUR ID CARD</span>
-							  </div>
-							  <div class="row">
-									<div class="col-md-3">
+			<?php if (empty($userData) && $eventType != 'not_found') { ?>
+				<div class="idle">
+					<div class="animated pulse infinite">
+						<span class='text-info'>SCAN YOUR ID CARD</span>
+					</div>
+					<div class="row">
+						<div class="col-md-3">
 				            <div class="card card-stats">
 				              <div class="card-header card-header-info card-header-icon">
-				                <div class="card-icon">
-				                </div>
+				                <div class="card-icon"></div>
 				                <p class="card-category">Gentlemen</p>
-				                <h3 class="card-title"><?php echo $male[0]; ?></h3>
+				                <h3 class="card-title"><?= $male[0]; ?></h3>
 				              </div>
 				              <div class="card-footer">
 				                <div class="stats">
@@ -277,10 +249,9 @@ if (isset($data1)) {
 				          <div class="col-md-3">
 				            <div class="card card-stats">
 				              <div class="card-header card-header-rose card-header-icon">
-				                <div class="card-icon">
-				                </div>
+				                <div class="card-icon"></div>
 				                <p class="card-category">Ladies</p>
-				                <h3 class="card-title"><?php echo $female[0]; ?></h3>
+				                <h3 class="card-title"><?= $female[0]; ?></h3>
 				              </div>
 				              <div class="card-footer">
 				                <div class="stats">
@@ -292,10 +263,9 @@ if (isset($data1)) {
 				          <div class="col-md-3">
 				            <div class="card card-stats">
 				              <div class="card-header card-header-success card-header-icon">
-				                <div class="card-icon">
-				                </div>
+				                <div class="card-icon"></div>
 				                <p class="card-category">Checked In</p>
-				                <h3 class="card-title"><?php echo $tin[0]; ?></h3>
+				                <h3 class="card-title"><?= $tin[0]; ?></h3>
 				              </div>
 				              <div class="card-footer">
 				                <div class="stats">
@@ -307,10 +277,9 @@ if (isset($data1)) {
 				          <div class="col-md-3">
 				            <div class="card card-stats">
 				              <div class="card-header card-header-warning card-header-icon">
-				                <div class="card-icon">
-				                </div>
+				                <div class="card-icon"></div>
 				                <p class="card-category">Day Count</p>
-				                <h3 class="card-title"><?php echo $visit[0]; ?></h3>
+				                <h3 class="card-title"><?= $visit[0]; ?></h3>
 				              </div>
 				              <div class="card-footer">
 				                <div class="stats">
@@ -319,14 +288,12 @@ if (isset($data1)) {
 				              </div>
 				            </div>
 				          </div>
-								</div>
-							</div>
-					<?php
-						}
-					?>
+					</div>
 				</div>
+			<?php } ?>
+
 	    </div>
-	  </div>              
+	  </div>
 	</div>
 </div>
 <script src="assets/js/analogclock.js"></script>
@@ -339,11 +306,9 @@ if (isset($data1)) {
                 setTimeout(function () { input.focus(); }, 0);
             });
         }
-
-        attachAudioRedirect();
         setTimeout(function () {
             if (!document.getElementById('tts-audio')) {
-                // Fallback to previous behavior if no audio is present
+                // Fallback animación si no hay audio TTS
                 $('span.animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
                     setTimeout(function(){
                         window.location.replace('dash.php');
@@ -359,4 +324,4 @@ if (isset($data1)) {
 <!-- MAIN CONTENT ENDS -->
 <?php
 	require_once "./template/footer.php";
-?>	
+?>

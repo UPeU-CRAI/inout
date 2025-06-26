@@ -25,17 +25,13 @@ if ($ftime > $ltime) {
     $_SESSION['t'] = "Evening";
 }
 
-// Sanitize input
+// Sanitize username only for the query
 $name = sanitize($conn, $name);
-$pass = sanitize($conn, $pass);
-
-// Hash password
-$pass = sha1($pass);
 
 // Prepare and execute query to prevent SQL injection
-$query = "SELECT * FROM users WHERE username = ? AND pass = ?";
+$query = "SELECT * FROM users WHERE username = ?";
 $stmt = mysqli_prepare($conn, $query);
-mysqli_stmt_bind_param($stmt, "ss", $name, $pass);
+mysqli_stmt_bind_param($stmt, "s", $name);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
@@ -45,6 +41,26 @@ if (!$result || mysqli_num_rows($result) === 0) {
 }
 
 $user = mysqli_fetch_assoc($result);
+
+// Verify password supporting legacy SHA1 hashes
+$verified = false;
+if ($user) {
+    if (password_verify($pass, $user['pass'])) {
+        $verified = true;
+    } elseif ($user['pass'] === sha1($pass)) {
+        $verified = true;
+        // Upgrade to password_hash
+        $newHash = password_hash($pass, PASSWORD_DEFAULT);
+        $update = mysqli_prepare($conn, "UPDATE users SET pass = ? WHERE id = ?");
+        mysqli_stmt_bind_param($update, "si", $newHash, $user['id']);
+        mysqli_stmt_execute($update);
+    }
+}
+
+if (!$verified) {
+    header('Location: login.php?msg=1');
+    exit;
+}
 
 if ($user && $user['active'] == 1) {
     // Fetch setup data

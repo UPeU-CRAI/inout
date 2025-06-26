@@ -14,11 +14,9 @@ $messageHandler = new MessageHandler();
 require_once "functions/PersonalizedGreeting.php";
 $tts = new PersonalizedGreeting();
 
-function renderTtsMessage(string $text): string {
+function renderTtsAudio(string $text): string {
     global $tts;
-    $audio = $tts->synthesize($text);
-    // Provide a class to identify the message element
-    return "<span class=\"animated flash tts-text\">$text</span>" . $audio;
+    return $tts->synthesize($text);
 }
 
 function getEventType($msg)
@@ -235,21 +233,24 @@ if (isset($data1)) {
                                                     'current_hour' => (int)date('H')
                                             ];
                                             $eventType = getEventType($msg);
-                                            $displayMessage = $messageHandler->getMessage($eventType, $messageData, $miscData);
+                                            $screenMessage = $messageHandler->getScreenMessage($eventType, $messageData);
+                                            $ttsMessage    = $messageHandler->getTTSMessage($eventType, $messageData, $miscData);
 
                                             if (in_array($eventType, ['recent_entry', 'recent_exit'])) {
                                                 $last = $_SESSION['recent_msg_time'] ?? 0;
                                                 $type = $_SESSION['recent_msg_type'] ?? '';
                                                 if (time() - $last < 10 && $type === $eventType) {
-                                                    $displayMessage = '';
+                                                    $screenMessage = '';
+                                                    $ttsMessage = '';
                                                 } else {
                                                     $_SESSION['recent_msg_time'] = time();
                                                     $_SESSION['recent_msg_type'] = $eventType;
                                                 }
                                             }
 
-                                                if ($displayMessage !== '') {
-                                                    echo renderTtsMessage($displayMessage);
+                                                if ($screenMessage !== '' || $ttsMessage !== '') {
+                                                    echo $screenMessage;
+                                                    echo renderTtsAudio($ttsMessage);
                                                 } else { ?>
 							<div class="idle">
 								<div class="animated pulse infinite"> 

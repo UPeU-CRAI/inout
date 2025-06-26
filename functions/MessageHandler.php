@@ -25,6 +25,20 @@ class MessageHandler {
     ];
 
     /**
+     * Plantillas breves para los mensajes mostrados en pantalla. Estos textos
+     * se enfocan en ser concisos y se utilizarán únicamente para el mensaje
+     * visible, mientras que la versión detallada será reproducida por TTS.
+     */
+    private array $screenTemplates = [
+        'not_found'    => 'Código no reconocido.',
+        'recent_entry' => 'Entrada ya registrada.',
+        'recent_exit'  => 'Salida ya registrada.',
+        'expired'      => 'Membresía expirada.',
+        'entry'        => 'Entrada registrada.',
+        'exit'         => 'Salida registrada.',
+    ];
+
+    /**
      * Punto de entrada principal para generar un mensaje.
      * La prioridad de generación es la siguiente:
      *  1. Cumpleaños.
@@ -34,6 +48,14 @@ class MessageHandler {
      *  5. Mensajes de entrada o salida normales.
      */
     public function getMessage(string $eventType, ?array $userData = null, array $miscData = []): string {
+        return $this->getTTSMessage($eventType, $userData, $miscData);
+    }
+
+    /**
+     * Obtiene el texto completo que será reproducido por el sistema TTS.
+     * La lógica sigue el mismo orden de prioridades que tenía anteriormente.
+     */
+    public function getTTSMessage(string $eventType, ?array $userData = null, array $miscData = []): string {
         $combinedData = array_merge($userData ?? [], $miscData);
 
         if ($eventType === 'not_found') {
@@ -68,6 +90,36 @@ class MessageHandler {
 
         if ($eventType === 'exit') {
             return $this->replacePlaceholders($this->buildExitMessage($userData), $combinedData);
+        }
+
+        return '';
+    }
+
+    /**
+     * Obtiene el mensaje corto que se mostrará en pantalla. Devuelve la cadena
+     * ya envuelta en un elemento span con las clases de animación.
+     */
+    public function getScreenMessage(string $eventType, array $vars = []): string {
+        $combinedData = $vars;
+
+        // Mensajes simples basados en plantillas predefinidas
+        if (isset($this->screenTemplates[$eventType])) {
+            $text = $this->replacePlaceholders($this->screenTemplates[$eventType], $combinedData);
+            return "<span class=\"animated flash tts-text\">$text</span>";
+        }
+
+        // Mensajes especiales que dependen de datos del usuario
+        if ($eventType !== 'not_found' && !empty($vars)) {
+            if ($this->isBirthday($vars['dateofbirth'] ?? null)) {
+                $text = $this->replacePlaceholders('¡Feliz cumpleaños, {nombre}!', $combinedData);
+                return "<span class=\"animated flash tts-text\">$text</span>";
+            }
+
+            if (!empty($vars['borrowernotes'])) {
+                $combinedData['note'] = $vars['borrowernotes'];
+                $text = $this->replacePlaceholders('Nota: {note}', $combinedData);
+                return "<span class=\"animated flash tts-text\">$text</span>";
+            }
         }
 
         return '';

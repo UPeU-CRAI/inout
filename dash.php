@@ -227,6 +227,7 @@ if (isset($data1)) {
                                             ];
                                             $eventType = getEventType($msg);
                                             $displayMessage = $messageHandler->getMessage($eventType, $messageData, $miscData);
+                                            $audioMessage = $displayMessage;
                                                 if ($displayMessage !== '') {
                                                     echo "<span class=\"animated flash\">$displayMessage</span>";
                                                 } else { ?>
@@ -306,9 +307,14 @@ if (isset($data1)) {
 	</div>
 </div>
 <script src="assets/js/analogclock.js"></script>
+<script src="assets/js/speech.js"></script>
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function () {
         const input = document.getElementById('usn');
+        const audioMessage = <?php echo json_encode($audioMessage ?? ''); ?>;
+        if (audioMessage) {
+            speakMessage(audioMessage);
+        }
         if (input) {
             input.focus();
             input.addEventListener('blur', function () {

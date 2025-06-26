@@ -3,8 +3,8 @@
 	require '../../functions/general.php';
   $edate = date("20y-m-d");
 
-	if(isset($_POST['updateDash'])){
-    $activedash = $_POST['activedash'];
+        if(isset($_POST['updateDash'])){
+    $activedash = sanitize($conn, $_POST['activedash']);
     $query = "UPDATE `setup` SET `value` = '$activedash' WHERE `setup`.`var` = 'activedash'";
     $result = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error());
 
@@ -27,11 +27,11 @@
     $query = "UPDATE `setup` SET `value` = '$ccname' WHERE `setup`.`var` = 'cname'";
     $result = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error());
 
-    $libtime = $_POST['libtime'];
+    $libtime = sanitize($conn, $_POST['libtime']);
     $query = "UPDATE `setup` SET `value` = '$libtime' WHERE `setup`.`var` = 'libtime'";
     $result = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error());
 
-    $noname = $_POST['noname'];
+    $noname = sanitize($conn, $_POST['noname']);
     $query = "UPDATE `setup` SET `value` = '$noname' WHERE `setup`.`var` = 'noname'";
     $result = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error());
 
@@ -53,9 +53,9 @@
   }
 
   if(isset($_POST['addnews'])){
-    $nhead = $_POST['nhead'];
-    $nbody = $_POST['nbody'];
-    $nfoot = $_POST['nfoot'];
+    $nhead = sanitize($conn, $_POST['nhead']);
+    $nbody = sanitize($conn, $_POST['nbody']);
+    $nfoot = sanitize($conn, $_POST['nfoot']);
     $loc = sanitize($conn,$_POST['loc']);
 
     $query = "UPDATE `news` SET `status` = 'No' WHERE `status` = 'Yes' AND `loc` = '".$loc."'";
@@ -70,9 +70,9 @@
   }
 
   if(isset($_GET['nid']) && $_GET['status']){
-    $id = $_GET['nid'];
-    $status = $_GET['status'];
-    $loc = $_GET['loc'];
+    $id = intval($_GET['nid']);
+    $status = sanitize($conn, $_GET['status']);
+    $loc = sanitize($conn, $_GET['loc']);
     $active = ($status == "Yes") ? "No" : "Yes";
     $query = "UPDATE `news` SET `status` = 'No' WHERE `status` = 'Yes' AND `loc` = '".$loc."'";
     $result = mysqli_query($conn, $query) or die("Invalid Query:".mysqli_error($conn));

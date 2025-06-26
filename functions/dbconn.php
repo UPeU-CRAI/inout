@@ -2,20 +2,28 @@
 // Reporta errores de MySQL como excepciones
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-// --- Credenciales para la base de datos InOut ---
-$inout_servername = "consola-mariadb"; 
-$inout_username   = "Uinoutl";
-$inout_password   = "DbL1n0u72023#$";
-$inout_db         = "inout_bul";
-
-// --- Credenciales para la base de datos Koha ---
-$koha_servername = "consola-mariadb";
-$koha_username   = "koha_bul";
-$koha_password   = 'rP"K)|k#TjQEHs8w';
-$koha_db         = "koha_bul";
-
 // Establecer la zona horaria correcta
 date_default_timezone_set("America/Lima");
+
+// --- Cargar credenciales desde variables de entorno o un archivo externo ---
+$configFile = __DIR__ . '/../config.php';
+$config = [];
+if (file_exists($configFile)) {
+    $loaded = include $configFile;
+    if (is_array($loaded)) {
+        $config = $loaded;
+    }
+}
+
+$inout_servername = getenv('INOUT_DB_HOST') ?: ($config['inout_servername'] ?? 'consola-mariadb');
+$inout_username   = getenv('INOUT_DB_USER') ?: ($config['inout_username'] ?? 'Uinoutl');
+$inout_password   = getenv('INOUT_DB_PASS') ?: ($config['inout_password'] ?? 'DbL1n0u72023#$');
+$inout_db         = getenv('INOUT_DB_NAME') ?: ($config['inout_db'] ?? 'inout_bul');
+
+$koha_servername  = getenv('KOHA_DB_HOST') ?: ($config['koha_servername'] ?? 'consola-mariadb');
+$koha_username    = getenv('KOHA_DB_USER') ?: ($config['koha_username'] ?? 'koha_bul');
+$koha_password    = getenv('KOHA_DB_PASS') ?: ($config['koha_password'] ?? 'rP"K)|k#TjQEHs8w');
+$koha_db          = getenv('KOHA_DB_NAME') ?: ($config['koha_db'] ?? 'koha_bul');
 
 try {
     // Crear la conexión para InOut

@@ -81,9 +81,9 @@
 							<?php
 					    	$note = getNews($conn);
 					    	while($row = mysqli_fetch_array($note)){
-					    		echo "<div class='chat_container chat_darker'>
-							  <p class='chat_p'><b style='font-size: 16px;'>".$row['nhead']."<br></b>".$row['nbody']."<br><b style='font-size: 16px;'>".$row['nfoot']."</b></p> Published On: ".$row['edate']."<br>Location: ".$row['loc']."
-							  <span class='chat_time-right'>Active: <a class='btn btn-sm btn-info' href='process/operations/process.php?nid=".$row['id']."&status=".$row['status']."&loc=".$row['loc']."'>".$row['status']."</a></span></div>";
+                                                        echo "<div class='chat_container chat_darker'>
+                                                          <p class='chat_p'><b style='font-size: 16px;'>".htmlspecialchars($row['nhead'])."<br></b>".htmlspecialchars($row['nbody'])."<br><b style='font-size: 16px;'>".htmlspecialchars($row['nfoot'])."</b></p> Published On: ".$row['edate']."<br>Location: ".$row['loc']."
+                                                          <span class='chat_time-right'>Active: <a class='btn btn-sm btn-info' href='process/operations/process.php?nid=".$row['id']."&status=".$row['status']."&loc=".$row['loc']."'>".$row['status']."</a></span></div>";
 					    	}
 					    ?>
 						</div>

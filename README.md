@@ -1,113 +1,78 @@
-Download Stable Version 6.0 from Release Panel.
+# Sistema de Gestión de Entradas/Salidas (In/Out Management System) v1.1.2
 
-Uncoming Updates:
-* Introducing Inout Plus app
-* Client less Inout App (Mobile App)
-* KOHA Mobile app
-* Social Community App for Institutions based on KOHA
-for more information or demo contact on +918197173097 or email on info@playtech.in
+## Descripción
 
+Este proyecto es un sistema de gestión de entradas y salidas de usuarios, diseñado principalmente para monitorear el flujo de personas en bibliotecas (CRAI) y otras instalaciones. El sistema registra la hora de entrada y salida de cada usuario mediante un número de tarjeta o código de identificación y se integra con la base de datos de Koha para obtener información del usuario.
 
-Changelog v6.0
-* Support php8.*
-* Minor bug fixes
+Esta versión (`v1.1.2`) mejora la seguridad general con consultas preparadas y compatibilidad con contraseñas antiguas.  También mantiene el foco en el campo de escaneo para agilizar el registro de entradas y salidas.
 
-Changelog 5.2
-* Input field is back [Not showing input field is fixed]
-* Minor bugfixes
+## Características
 
-Changelog 5
-[New Features]
-* Automatic Checkin/checkout System //Discontinued
-* Backup System added
-* New user interface
-* New arrival display
-* Random Quotes display
-* News module redesign
-* Banner added
-* Analog Clock added
+* Registro de entradas y salidas de usuarios en tiempo real.
+* Panel de visualización (`dashboard`) para el registro de actividad.
+* Integración con el sistema de gestión de bibliotecas Koha.
+* Sistema de roles de usuario (Master, Admin, User).
+* Generación de reportes de actividad.
+* Noticias y anuncios para los usuarios.
+* Mensajes de saludo dinámicos y personalizados según rol y género.
+* Avisos automáticos cuando la cuenta de un usuario está expirada.
+* Configuración flexible mediante variables de entorno o `config.php`.
+* Consultas preparadas y sanitización de entradas para mayor seguridad.
+* El campo de escaneo mantiene el foco automáticamente en el dashboard.
 
-[Bug Fixes]
-* Automatic logout after 20 minutes
-* user id length
-* Location name error
-* Blank Image Fix
-* 10 Second pause after checkout
-* Other visual minor bugs are fixed
+## Pila Tecnológica
 
-**INSTALLATION**
-Please refer install.md file.
+* **Backend:** PHP 8.1
+* **Base de Datos:** MariaDB / MySQL
+* **Servidor Web:** Apache2 (compatible con Nginx como proxy inverso)
+* **Frontend:** HTML, CSS, JavaScript, jQuery, Bootstrap Material Design
 
+---
 
-TO SWITCH BETWEEN PHP PLEASE GO THROUGH FOLLOWING LINK.
+## Instalación
 
-https://github.com/omkar2403/inout/wiki/Blank-Screen-After-Installation
+Para desplegar la aplicación sigue este resumen. Si necesitas un paso a paso más detallado consulta el archivo [install.md](install.md).
 
+1. **Instalar dependencias básicas**: Apache o Nginx, PHP 8.1 y las extensiones de MySQL.
+2. **Clonar el repositorio** en el directorio deseado del servidor.
+3. **Importar la base de datos** ejecutando `DB/inout.sql` sobre tu instancia de MariaDB/MySQL.
+4. **Configurar la conexión** creando un archivo `config.php` en la raíz del proyecto (o definiendo variables de entorno) con las credenciales de tu servidor. Un ejemplo de `config.php` es:
 
-No need of migration of Database from v5.* to v6
-Migration from version v4.* to v5.*
+    ```php
+    <?php
+    return [
+        'inout_servername' => 'IP_DE_TU_SERVIDOR_DB',
+        'inout_username'   => 'Uinoutl',
+        'inout_password'   => 'DbL1n0u72023#$',
+        'inout_db'         => 'inout_bul',
 
-* Read and Update database from updatedb.txt file.
+        'koha_servername'  => 'IP_DE_TU_SERVIDOR_DB',
+        'koha_username'    => 'koha_bul',
+        'koha_password'    => 'rP"K)|k#TjQEHs8w',
+        'koha_db'          => 'koha_bul',
+    ];
+    ```
 
+    Este archivo no debe subirse al repositorio. También puedes establecer las credenciales mediante variables de entorno (`INOUT_DB_HOST`, `INOUT_DB_USER`, etc.).
 
-**New Arrivals Setup**
+5. **Configurar tu servidor web** creando un VirtualHost que apunte al directorio del proyecto y habilitando el módulo `rewrite`.
 
-* Book image must be 150x200 resolution and must be in PNG format.
+Tras estos pasos la aplicación quedará lista para acceder desde `http://tu-dominio/login.php`.
 
-* You can add upto 8 images of new arrival books.
+### Credenciales de prueba
 
-* Rename your images 1.png, 2.png and so on.
+Si importaste la base de datos incluida encontrarás estos usuarios iniciales:
 
-* Move your all images to assets/books director. Replace existing images.
+- **master / superuser**
+- **user / 123456**
+- **admin / library**
 
-* Login to master. Go to setup then setup main screen. 
+---
 
-* Select New Arrivals and submit. Done!
+## Contribuciones
 
+Las contribuciones son bienvenidas. Para cambios mayores, por favor abre un "issue" primero para discutir lo que te gustaría cambiar.
 
-**Banner Setup**
+## Licencia
 
-* Banner image should be 890x150 resulution and must be in PNG format.
-
-* You can design your own image in photoshop.
-
-* Rename image file to banner.png and move to assets/img directory. Replace existing image file.
-
-* Login to master. Go to setup then setup main screen. 
-
-* Select display banner and submit. Done!
-
-
-SUGGESTIONS ARE WELCOME. FEEL FREE TO CONTACT.
-
-For any queries New Ticket System is open for all. Please open an ticket and submit query regarding in out management system and KOHA.
-
-https://ticket.playtech.in/
-
-For first time, create a new account. 
-
-
-Introduction:
-
-In out management system is web based application. It is used to track the patrons who visits to library or related locations like study zone, reading room etc. It’ll scan the barcode from the ID and log the entry time and exit time of the patrons. The patron data will be fetched from the KOHA database along with the images and displayed on this system.
-
-There are two interfaces, one is for the reading barcodes at the door and another one is for access the reports. This system will generate four types of reports in the form of excel sheet and can be downloaded. There are three user by default for administration of this system. Master user can have eye on every location added in the system. And the other two users for respected locations.
-
-The system uses koha database to fetch the information of patrons and store it another database along with the location, entry time and exit time. These data can be accessed from admin panel in various manner like datewise, timewise, student wise and many more.
-
-Thank You
-
-Buy me a coffee: https://rzp.io/l/ta9LROfv7N
-
-Find the Guide Here: https://writeride.com/how-to-install-in-out-management-system/
-
-Profile @ https://omkar2403.github.io/its_me/
-
-**Only Urgent** Mail Me @ omkar.kakeru@gmail.com else use our ticket system mentioned above.
-
-Demo Video @ https://www.youtube.com/watch?v=1LqqwKYamHc
-
-Thank you all library staff & koha community for making use of this application. Thank you all.
-
-In Out Management System by Omkar Kakeru is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.
-
+Este proyecto está bajo la Licencia [MIT](https://choosealicense.com/licenses/mit/).

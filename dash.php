@@ -6,9 +6,48 @@
 	if(!isset($_SESSION['id']) && empty($_SESSION['id'])) {
    header("location:login.php");
 	}
-	require "./functions/access.php";
-	require_once "./template/header.php";
-	require "functions/dbfunc.php";
+        require "./functions/access.php";
+        require_once "./template/header.php";
+        require "functions/dbfunc.php";
+require_once "functions/MessageHandler.php";
+$messageHandler = new MessageHandler();
+
+function getEventType($msg)
+{
+    switch ($msg) {
+        case '1':
+            return 'entry';
+        case '2':
+            return 'recent_entry';
+        case '3':
+            return 'expired';
+        case '4':
+            return 'exit';
+        case '5':
+            return 'recent_exit';
+        case '0':
+            return 'not_found';
+        default:
+            return '';
+    }
+}
+
+// Collect Koha user fields if available
+$userData = [];
+if (isset($data1)) {
+    $nameParts = preg_split('/\s+/', $data1[0], 3);
+    $userData = [
+        'firstname'     => $nameParts[1] ?? '',
+        'surname'       => $nameParts[2] ?? '',
+        'name'          => trim($nameParts[1] ?? ''),
+        'title'         => $data1[9] ?? ($nameParts[0] ?? ''),
+        'dateofbirth'   => $data1[10] ?? '',
+        'dateexpiry'    => $data1[11] ?? '',
+        'categorycode'  => $data1[3] ?? '',
+        'gender'        => $data1[2] ?? '',
+        'borrowernotes' => $data1[12] ?? '',
+    ];
+}
 
   $loc = $_SESSION['loc'];
 
@@ -175,32 +214,22 @@
 					?>
 				</div>
 				<div class="h2 t-shadow">
-					<?php
-						if ($msg == "1") {
-							?> <span class="animated flash"> <?php 
-						    echo "<span class='text-primary'>Your ".$_SESSION['noname']." is: " . $usn . "<br>Entry time is: " . date('g:i A', strtotime($time))."</span>";
-						    ?> </span> <?php
-						} elseif ($msg == "2") {
-						    # code...
-						    ?> <span class="animated flash"> <?php 
-						    echo "<span class='text-warning'>You just Checked In.<br> Wait for 10 Seconds to Check Out.</span>";
-						    ?> </span> <?php
-						} elseif ($msg == "3") {
-						    # code...
-						    ?> <span class="animated flash"> <?php 
-						    echo "<span class='text-danger'>Invalid or Expired ".$_SESSION['noname']."<br> Contact Librarian for more details.</span>";
-						    ?> </span> <?php
-						} elseif ($msg == "4") {
-						    # code...
-						    ?> <span class="animated flash"> <?php 
-						    echo "<span class='text-success'>Your Exit time is: " . date('g:i A', strtotime($time)) . "<br><span class='text-warning'>Total Time Duration : ".$otime[0]."</span>";
-						    ?> </span> <?php
-						} elseif ($msg == "5") {
-						    # code...
-						    ?> <span class="animated flash"> <?php 
-						    echo "<span class='text-info'>You just Checked Out.<br> Wait for 10 Seconds to Check In.</span>";
-						    ?> </span> <?php
-						} else { ?> 
+                                        <?php
+                                            $messageData = array_merge($userData, [
+                                                    'label'        => $_SESSION['noname'],
+                                                    'usn'          => $usn,
+                                                    'time'         => date('g:i A', strtotime($time)),
+                                                    'duration'     => isset($otime[0]) ? $otime[0] : '',
+                                                    'note'         => $userData['borrowernotes'] ?? '',
+                                                ]);
+                                            $miscData = [
+                                                    'current_hour' => (int)date('H')
+                                            ];
+                                            $eventType = getEventType($msg);
+                                            $displayMessage = $messageHandler->getMessage($eventType, $messageData, $miscData);
+                                                if ($displayMessage !== '') {
+                                                    echo "<span class=\"animated flash\">$displayMessage</span>";
+                                                } else { ?>
 							<div class="idle">
 								<div class="animated pulse infinite"> 
 							    <span class='text-info'>SCAN YOUR ID CARD</span>
@@ -278,15 +307,25 @@
 </div>
 <script src="assets/js/analogclock.js"></script>
 <script type="text/javascript">
-	$('span').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
-	  	setTimeout(function(){
-			window.location.replace("dash.php");
-		}, 5200);
-	});
-	document.getElementById("usn").focus();
-	setTimeout(function(){
-		// window.location.replace("dash.php");
-	}, 9800);
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.getElementById('usn');
+        if (input) {
+            input.focus();
+            input.addEventListener('blur', function () {
+                setTimeout(function () { input.focus(); }, 0);
+            });
+        }
+
+        $('span').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
+            setTimeout(function(){
+                window.location.replace("dash.php");
+            }, 5200);
+        });
+
+        setTimeout(function(){
+            // window.location.replace("dash.php");
+        }, 9800);
+    });
 </script>
 <!-- MAIN CONTENT ENDS -->
 <?php

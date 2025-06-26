@@ -33,7 +33,7 @@ class MessageHandler {
      *  4. Membresía expirada.
      *  5. Mensajes de entrada o salida normales.
      */
-    public function getMessage(string $eventType, ?array $userData = null, array $miscData = []): string {
+    public function getDisplayMessage(string $eventType, ?array $userData = null, array $miscData = []): string {
         $combinedData = array_merge($userData ?? [], $miscData);
 
         if ($eventType === 'not_found') {
@@ -74,6 +74,49 @@ class MessageHandler {
     }
 
     /**
+     * Generates a short greeting string intended for audio playback.
+     */
+    public function getAudioMessage(string $eventType, ?array $userData = null, array $miscData = []): string {
+        $combinedData = array_merge($userData ?? [], $miscData);
+
+        if ($eventType === 'not_found') {
+            return $this->getRandomGeneral('not_found');
+        }
+
+        if (in_array($eventType, ['recent_entry', 'recent_exit'])) {
+            return $this->getRandomGeneral($eventType);
+        }
+
+        if ($userData === null) {
+            return '';
+        }
+
+        if ($this->isBirthday($userData['dateofbirth'] ?? null)) {
+            return $this->replacePlaceholders($this->buildBirthdayMessage(), $combinedData);
+        }
+
+        if (!empty($userData['borrowernotes'])) {
+            $combinedData['note'] = $userData['borrowernotes'];
+            return $this->replacePlaceholders($this->buildBorrowerNoteMessage(), $combinedData);
+        }
+
+        if ($eventType === 'expired') {
+            return $this->replacePlaceholders($this->buildExpiredMessage(), $combinedData);
+        }
+
+        if ($eventType === 'entry') {
+            $hour = $miscData['current_hour'] ?? (int)date('H');
+            return $this->replacePlaceholders($this->buildEntryGreeting($userData, $hour), $combinedData);
+        }
+
+        if ($eventType === 'exit') {
+            return $this->replacePlaceholders($this->buildExitGreeting($userData), $combinedData);
+        }
+
+        return '';
+    }
+
+    /**
      * Construye el mensaje de entrada utilizando la franja horaria,
      * la categoría y el género del usuario.
      */
@@ -86,25 +129,25 @@ class MessageHandler {
         switch ($category) {
             case 'DOCEN':
                 $prof = $this->genderize('Profesor', $gender, 'Profesora', 'Profesor/a');
-                return "$greeting, $prof {nombre}. Su entrada es a las: {time}.";
+                return "$greeting, $prof {nombre}. Su entrada es a las: {entry_time}.";
             case 'INVESTI':
                 $title  = $this->genderize('Estimado', $gender, 'Estimada', 'Estimado/a');
                 $role   = $this->genderize('Investigador', $gender, 'Investigadora', 'Investigador/a');
-                return "$greeting, $title $role {apellido}. Entrada: {time}.";
+                return "$greeting, $title $role {apellido}. Entrada: {entry_time}.";
             case 'STAFF':
                 $welcome = $this->genderize('Bienvenido', $gender);
-                return "$greeting, $welcome, colega {nombre}. Entrada: {time}.";
+                return "$greeting, $welcome, colega {nombre}. Entrada: {entry_time}.";
             case 'ADMIN':
                 $role = $this->genderize('creador', $gender, 'creadora', 'creador/a');
-                return "$greeting, $role {nombre}. Entrada: {time}.";
+                return "$greeting, $role {nombre}. Entrada: {entry_time}.";
             case 'VISITA':
-                return "$greeting. Le damos una cordial bienvenida. Su USN es: {usn}. Hora de entrada: {time}.";
+                return "$greeting. Le damos una cordial bienvenida. Su USN es: {usn}. Hora de entrada: {entry_time}.";
             case 'ESTUDI':
                 $welcome = $this->genderize('Bienvenido', $gender);
-                return "$greeting, $welcome {nombre}. Tu USN es: {usn}. Hora de entrada: {time}.";
+                return "$greeting, $welcome {nombre}. Tu USN es: {usn}. Hora de entrada: {entry_time}.";
             default:
                 $welcome = $this->genderize('Bienvenido', $gender);
-                return "$greeting, $welcome {nombre}. Entrada: {time}.";
+                return "$greeting, $welcome {nombre}. Entrada: {entry_time}.";
         }
     }
 
@@ -118,21 +161,83 @@ class MessageHandler {
         switch ($category) {
             case 'DOCEN':
                 $prof = $this->genderize('Profesor', $gender, 'Profesora', 'Profesor/a');
-                return "Hasta pronto, $prof {nombre}. Su duración total fue de: {duration}.";
+                return "Hasta pronto, $prof {nombre}. Salida: {exit_time}. Duración total fue de: {duration}.";
             case 'INVESTI':
                 $role = $this->genderize('Investigador', $gender, 'Investigadora', 'Investigador/a');
-                return "Despedida, $role {apellido}. Duración: {duration}.";
+                return "Despedida, $role {apellido}. Salida: {exit_time}. Duración: {duration}.";
             case 'STAFF':
-                return "¡Hasta luego, {nombre}! Que tengas un buen día. Duración: {duration}.";
+                return "¡Hasta luego, {nombre}! Que tengas un buen día. Salida: {exit_time}. Duración: {duration}.";
             case 'ADMIN':
                 $role = $this->genderize('creador', $gender, 'creadora', 'creador/a');
-                return "Hasta pronto, $role {nombre}. Duración: {duration}.";
+                return "Hasta pronto, $role {nombre}. Salida: {exit_time}. Duración: {duration}.";
             case 'VISITA':
-                return "Gracias por visitarnos. Tu visita duró: {duration}.";
+                return "Gracias por visitarnos. Salida: {exit_time}. Tu visita duró: {duration}.";
             case 'ESTUDI':
-                return "¡Hasta pronto, {nombre}! Tu duración total fue de: {duration}.";
+                return "¡Hasta pronto, {nombre}! Salida: {exit_time}. Tu duración total fue de: {duration}.";
             default:
-                return "¡Hasta pronto, {nombre}! Duración total: {duration}.";
+                return "¡Hasta pronto, {nombre}! Salida: {exit_time}. Duración total: {duration}.";
+        }
+    }
+
+    /**
+     * Crea un saludo breve para un registro de entrada.
+     */
+    private function buildEntryGreeting(array $userData, int $hour): string {
+        $gender   = strtoupper($userData['gender'] ?? 'DEFAULT');
+        $category = strtoupper($userData['categorycode'] ?? 'DEFAULT');
+
+        $greeting = $this->getTimeGreeting($hour);
+
+        switch ($category) {
+            case 'DOCEN':
+                $prof = $this->genderize('Profesor', $gender, 'Profesora', 'Profesor/a');
+                return "$greeting, $prof {nombre}.";
+            case 'INVESTI':
+                $title  = $this->genderize('Estimado', $gender, 'Estimada', 'Estimado/a');
+                $role   = $this->genderize('Investigador', $gender, 'Investigadora', 'Investigador/a');
+                return "$greeting, $title $role {apellido}.";
+            case 'STAFF':
+                $welcome = $this->genderize('Bienvenido', $gender);
+                return "$greeting, $welcome, colega {nombre}.";
+            case 'ADMIN':
+                $role = $this->genderize('creador', $gender, 'creadora', 'creador/a');
+                return "$greeting, $role {nombre}.";
+            case 'VISITA':
+                return "$greeting. Le damos una cordial bienvenida.";
+            case 'ESTUDI':
+                $welcome = $this->genderize('Bienvenido', $gender);
+                return "$greeting, $welcome {nombre}.";
+            default:
+                $welcome = $this->genderize('Bienvenido', $gender);
+                return "$greeting, $welcome {nombre}.";
+        }
+    }
+
+    /**
+     * Crea un breve mensaje de despedida para salida.
+     */
+    private function buildExitGreeting(array $userData): string {
+        $gender   = strtoupper($userData['gender'] ?? 'DEFAULT');
+        $category = strtoupper($userData['categorycode'] ?? 'DEFAULT');
+
+        switch ($category) {
+            case 'DOCEN':
+                $prof = $this->genderize('Profesor', $gender, 'Profesora', 'Profesor/a');
+                return "Hasta pronto, $prof {nombre}.";
+            case 'INVESTI':
+                $role = $this->genderize('Investigador', $gender, 'Investigadora', 'Investigador/a');
+                return "Despedida, $role {apellido}.";
+            case 'STAFF':
+                return "¡Hasta luego, {nombre}!";
+            case 'ADMIN':
+                $role = $this->genderize('creador', $gender, 'creadora', 'creador/a');
+                return "Hasta pronto, $role {nombre}.";
+            case 'VISITA':
+                return "Gracias por visitarnos.";
+            case 'ESTUDI':
+                return "¡Hasta pronto, {nombre}!";
+            default:
+                return "¡Hasta pronto, {nombre}!";
         }
     }
 
@@ -217,6 +322,8 @@ class MessageHandler {
             '{titulo}'    => htmlspecialchars($data['title'] ?? '', ENT_QUOTES, 'UTF-8'),
             '{usn}'       => htmlspecialchars($data['usn'] ?? '', ENT_QUOTES, 'UTF-8'),
             '{label}'     => htmlspecialchars($data['label'] ?? '', ENT_QUOTES, 'UTF-8'),
+            '{entry_time}' => htmlspecialchars($data['entry_time'] ?? '', ENT_QUOTES, 'UTF-8'),
+            '{exit_time}'  => htmlspecialchars($data['exit_time'] ?? '', ENT_QUOTES, 'UTF-8'),
             '{time}'      => htmlspecialchars($data['time'] ?? '', ENT_QUOTES, 'UTF-8'),
             '{duration}'  => htmlspecialchars($data['duration'] ?? '', ENT_QUOTES, 'UTF-8'),
             '{note}'      => htmlspecialchars($data['note'] ?? '', ENT_QUOTES, 'UTF-8'),

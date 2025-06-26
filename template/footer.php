@@ -36,6 +36,7 @@
 <script src="assets/js/plugins/arrive.min.js"></script>
 <script src="assets/js/plugins/chartist.min.js"></script>
 <script src="assets/js/material-dashboard.min.js?v=2.0.2" type="text/javascript"></script>
+<script src="assets/js/speech.js"></script>
 
 <!-- DateTime Picker and Sliders -->
 <script>

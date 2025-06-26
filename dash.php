@@ -219,6 +219,8 @@ if (isset($data1)) {
                                                     'label'        => $_SESSION['noname'],
                                                     'usn'          => $usn,
                                                     'time'         => date('g:i A', strtotime($time)),
+                                                    'entry_time'   => $entryTime ? date('g:i A', strtotime($entryTime)) : '',
+                                                    'exit_time'    => $exitTime ? date('g:i A', strtotime($exitTime)) : '',
                                                     'duration'     => isset($otime[0]) ? $otime[0] : '',
                                                     'note'         => $userData['borrowernotes'] ?? '',
                                                 ]);
@@ -226,9 +228,11 @@ if (isset($data1)) {
                                                     'current_hour' => (int)date('H')
                                             ];
                                             $eventType = getEventType($msg);
-                                            $displayMessage = $messageHandler->getMessage($eventType, $messageData, $miscData);
+                                            $displayMessage = $messageHandler->getDisplayMessage($eventType, $messageData, $miscData);
+                                            $audioMessage   = $messageHandler->getAudioMessage($eventType, $messageData, $miscData);
                                                 if ($displayMessage !== '') {
                                                     echo "<span class=\"animated flash\">$displayMessage</span>";
+                                                    echo "<script> speakMessage(" . json_encode($audioMessage) . ");</script>";
                                                 } else { ?>
 							<div class="idle">
 								<div class="animated pulse infinite"> 

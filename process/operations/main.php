@@ -11,6 +11,8 @@
         $usn_koha = sanitize($koha, $usn_raw); // sanitize for Koha DB
         $date = date('Y-m-d');
         $time = date('H:i:s');
+        $entryTime = '';
+        $exitTime  = '';
         error_reporting(E_ALL);
         //patron data fetching
         $sql = "SELECT CONCAT(title,' ',firstname,' ',surname) AS surname,borrowernumber,sex,categorycode,branchcode,sort1,sort2,mobile,email,title,dateofbirth,dateexpiry,borrowernotes FROM borrowers WHERE cardnumber='$usn_koha'";
@@ -56,6 +58,7 @@
                         $msg = "1";
                         $e_img = $data2[0];
                         $time1 = date('g:i A', strtotime($time));
+                        $entryTime = $time;
                         $sql = "INSERT INTO `tmp2` (`usn`, `time`) VALUES ('$usn', CURRENT_TIMESTAMP);";
                         $result = mysqli_query($conn, $sql) or die("Invalid query: 8" . mysqli_error());
                     }else{
@@ -69,6 +72,8 @@
                         $msg = "4";
                         $e_img = $data2[0];
                         $time1 = date('g:i A', strtotime($time));
+                        $entryTime = $exit[5];
+                        $exitTime  = $time;
                         $sql = "INSERT INTO `tmp2` (`usn`, `time`) VALUES ('$usn', CURRENT_TIMESTAMP);";
                         $result = mysqli_query($conn, $sql) or die("Invalid query: 8" . mysqli_error());
                     }
@@ -100,6 +105,7 @@
                     $msg = "1";
                     $e_img = $data2[0];
                     $time1 = date('g:i A', strtotime($time));
+                    $entryTime = $time;
                     $sql = "INSERT INTO `tmp2` (`usn`, `time`) VALUES ('$usn', CURRENT_TIMESTAMP);";
                     $result = mysqli_query($conn, $sql) or die("Invalid query: 12" . mysqli_error());
                 }
@@ -111,6 +117,8 @@
             $e_img = NULL;
             $date = NULL;
             $time1 = "-";
+            $entryTime = '';
+            $exitTime  = '';
         } else {
             $msg = "0";
             $e_name = NULL;
@@ -118,6 +126,8 @@
             $e_img = NULL;
             $date = NULL;
             $time1 = "-";
+            $entryTime = '';
+            $exitTime  = '';
         }
     } else {
         $e_name = NULL;
@@ -126,5 +136,7 @@
         $msg = NULL;
         $date = NULL;
         $time1 = "-";
+        $entryTime = '';
+        $exitTime  = '';
     }
 ?>

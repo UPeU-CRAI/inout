@@ -49,15 +49,22 @@
 		return $result;
 	}
 
-	function getDataById($conn, $table, $id){
-		$sql = "SELECT * FROM $table where id=$id";
-		$result = mysqli_query($conn, $sql);
-		if(!$result){
-			echo "Can't retrieve data " . mysqli_error($conn);
-			exit;
-		}
-		return $result;
-	}
+        function getDataById(mysqli $conn, string $table, int $id){
+                $sql = "SELECT * FROM `$table` WHERE id = ?";
+                $stmt = mysqli_prepare($conn, $sql);
+                if(!$stmt){
+                        echo "Can't prepare statement " . mysqli_error($conn);
+                        exit;
+                }
+                mysqli_stmt_bind_param($stmt, 'i', $id);
+                mysqli_stmt_execute($stmt);
+                $result = mysqli_stmt_get_result($stmt);
+                if(!$result){
+                        echo "Can't retrieve data " . mysqli_error($conn);
+                        exit;
+                }
+                return $result;
+        }
 
 	function getQueue($conn){
 		$query = "SELECT count(_id) FROM reg WHERE status='queue' AND session='{$_SESSION['t']}'";
@@ -74,15 +81,24 @@
 		return $result;
 	}
 
-	function getDataBySpesificId($conn, $table, $var, $var2){
-		$sql = "SELECT * FROM $table where $var = $var2";
-		$result = mysqli_query($conn, $sql);
-		if(!$result){
-			echo "Can't retrieve data " . mysqli_error($conn);
-			exit;
-		}
-		return $result;
-	}
+        function getDataBySpesificId(mysqli $conn, string $table, string $var, $var2){
+                $column = preg_replace('/[^a-zA-Z0-9_]/', '', $var);
+                $sql = "SELECT * FROM `$table` WHERE `$column` = ?";
+                $stmt = mysqli_prepare($conn, $sql);
+                if(!$stmt){
+                        echo "Can't prepare statement " . mysqli_error($conn);
+                        exit;
+                }
+                $type = is_int($var2) ? 'i' : 's';
+                mysqli_stmt_bind_param($stmt, $type, $var2);
+                mysqli_stmt_execute($stmt);
+                $result = mysqli_stmt_get_result($stmt);
+                if(!$result){
+                        echo "Can't retrieve data " . mysqli_error($conn);
+                        exit;
+                }
+                return $result;
+        }
 
 	function setupStats($conn){
 	  $query = "SELECT value FROM `setup` where var='cname'";

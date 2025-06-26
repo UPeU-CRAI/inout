@@ -307,15 +307,25 @@ if (isset($data1)) {
 </div>
 <script src="assets/js/analogclock.js"></script>
 <script type="text/javascript">
-	$('span').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
-	  	setTimeout(function(){
-			window.location.replace("dash.php");
-		}, 5200);
-	});
-	document.getElementById("usn").focus();
-	setTimeout(function(){
-		// window.location.replace("dash.php");
-	}, 9800);
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.getElementById('usn');
+        if (input) {
+            input.focus();
+            input.addEventListener('blur', function () {
+                setTimeout(function () { input.focus(); }, 0);
+            });
+        }
+
+        $('span').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
+            setTimeout(function(){
+                window.location.replace("dash.php");
+            }, 5200);
+        });
+
+        setTimeout(function(){
+            // window.location.replace("dash.php");
+        }, 9800);
+    });
 </script>
 <!-- MAIN CONTENT ENDS -->
 <?php

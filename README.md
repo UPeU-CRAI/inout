@@ -16,7 +16,7 @@ Esta versión (`v1.1.2`) mejora la seguridad general con consultas preparadas y 
 * Noticias y anuncios para los usuarios.
 * Mensajes de saludo dinámicos y personalizados según rol y género.
 * Avisos automáticos cuando la cuenta de un usuario está expirada.
-* Configuración flexible mediante variables de entorno o `config.php`.
+* Configuración flexible mediante variables de entorno.
 * Consultas preparadas y sanitización de entradas para mayor seguridad.
 * El campo de escaneo mantiene el foco automáticamente en el dashboard.
 
@@ -36,24 +36,7 @@ Para desplegar la aplicación sigue este resumen. Si necesitas un paso a paso m�
 1. **Instalar dependencias básicas**: Apache o Nginx, PHP 8.1 y las extensiones de MySQL.
 2. **Clonar el repositorio** en el directorio deseado del servidor.
 3. **Importar la base de datos** ejecutando `DB/inout.sql` sobre tu instancia de MariaDB/MySQL.
-4. **Configurar la conexión** creando un archivo `config.php` en la raíz del proyecto (o definiendo variables de entorno) con las credenciales de tu servidor. Un ejemplo de `config.php` es:
-
-    ```php
-    <?php
-    return [
-        'inout_servername' => 'IP_DE_TU_SERVIDOR_DB',
-        'inout_username'   => 'Uinoutl',
-        'inout_password'   => 'DbL1n0u72023#$',
-        'inout_db'         => 'inout_bul',
-
-        'koha_servername'  => 'IP_DE_TU_SERVIDOR_DB',
-        'koha_username'    => 'koha_bul',
-        'koha_password'    => 'rP"K)|k#TjQEHs8w',
-        'koha_db'          => 'koha_bul',
-    ];
-    ```
-
-    Este archivo no debe subirse al repositorio. También puedes establecer las credenciales mediante variables de entorno (`INOUT_DB_HOST`, `INOUT_DB_USER`, etc.).
+4. **Configurar la conexión** copiando el archivo `.env.example` a `.env` y completando tus credenciales de base de datos.
 
 5. **Configurar tu servidor web** creando un VirtualHost que apunte al directorio del proyecto y habilitando el módulo `rewrite`.
 

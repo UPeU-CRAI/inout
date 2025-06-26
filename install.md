@@ -162,31 +162,17 @@ mysql -u admin -p lib < inout.sql
 
 Navigate to the database directory, switch to superuser, and restore the sample database.
 
-### Step 4: Update Database Connection Details
+### Step 4: Configure Database Credentials
+
+Copy the example environment file and edit it with your database information:
 
 ```bash
-sudo nano /usr/share/koha/opac/htdocs/inout/functions/dbconn.php
+cp .env.example .env
+nano .env
 ```
 
-Open the file for editing.
-
-Replace the connection details with your MySQL username, password, and database name:
-
-```php
-<?php
-$servername = "localhost";
-$username = "admin"; // database username
-$password = "Admin@7676";  // database password
-$db = "lib";  // inout database name
-$koha = "koha_library";  // koha database name
-$conn = mysqli_connect($servername, $username, $password, $db);
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error($conn));
-}
-
-```
-
-Update MySQL connection details in the `dbconn.php` file.
+Fill in the values for `INOUT_DB_*` y `KOHA_DB_*`. La aplicación leerá
+automáticamente estas variables al iniciar.
 
 ### Step 5: Restart Apache
 

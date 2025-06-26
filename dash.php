@@ -252,7 +252,7 @@ if (isset($data1)) {
 
                                                 if ($screenMessage !== '' || $ttsMessage !== '') {
                                                     echo $screenMessage;
-                                                    echo renderTtsAudio($ttsMessage);
+                                                    echo renderTtsMessage($ttsMessage);
                                                 } else { ?>
 							<div class="idle">
 								<div class="animated pulse infinite"> 

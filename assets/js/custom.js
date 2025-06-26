@@ -16,3 +16,24 @@ showNotification = function(from, align, message, color) {
     }
   });
 }
+
+function attachAudioRedirect() {
+  const audio = document.getElementById('tts-audio');
+  if (audio) {
+    audio.addEventListener('ended', function () {
+      window.location.replace('dash.php');
+    });
+  }
+}
+
+function playTTS(text) {
+  $.ajax({
+    url: 'tts.php',
+    method: 'POST',
+    data: { text: text },
+    success: function (html) {
+      $('body').append(html);
+      attachAudioRedirect();
+    }
+  });
+}

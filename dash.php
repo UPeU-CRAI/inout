@@ -3,21 +3,23 @@
 	include "./process/operations/stats.php";
 	$title = "Gate Register";
 	$acc_code = "U02";
-	if(!isset($_SESSION['id']) && empty($_SESSION['id'])) {
-   header("location:login.php");
+	if (!isset($_SESSION['id']) && empty($_SESSION['id'])) {
+	    header("location:login.php");
 	}
-        require "./functions/access.php";
-        require_once "./template/header.php";
-        require "functions/dbfunc.php";
-require_once "functions/MessageHandler.php";
-$messageHandler = new MessageHandler();
-require_once "functions/PersonalizedGreeting.php";
-$tts = new PersonalizedGreeting();
+	require "./functions/access.php";
+	require_once "./template/header.php";
+	require "functions/dbfunc.php";
+	require_once "functions/MessageHandler.php";
+	$messageHandler = new MessageHandler();
 
-function renderTtsAudio(string $text): string {
-    global $tts;
-    return $tts->synthesize($text);
-}
+	/**
+	 * Genera un script para reproducir el mensaje TTS en el navegador usando playTTS (debes definirla en JS).
+	 * No imprime el texto, solo dispara la voz.
+	 */
+	function renderTtsMessage(string $text): string {
+	    $json = json_encode($text);
+	    return "<script>if(typeof playTTS==='function'){playTTS($json);}</script>";
+	}
 
 function getEventType($msg)
 {
@@ -338,22 +340,20 @@ if (isset($data1)) {
             });
         }
 
-        const audio = document.getElementById('tts-audio');
-        if (audio) {
-            audio.addEventListener('ended', function () {
-                window.location.replace('dash.php');
-            });
-        } else {
-            // Fallback to previous behavior if no audio is present
-            $('span.animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
+        attachAudioRedirect();
+        setTimeout(function () {
+            if (!document.getElementById('tts-audio')) {
+                // Fallback to previous behavior if no audio is present
+                $('span.animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
+                    setTimeout(function(){
+                        window.location.replace('dash.php');
+                    }, 5200);
+                });
                 setTimeout(function(){
-                    window.location.replace('dash.php');
-                }, 5200);
-            });
-            setTimeout(function(){
-                // window.location.replace("dash.php");
-            }, 9800);
-        }
+                    // window.location.replace("dash.php");
+                }, 9800);
+            }
+        }, 1000);
     });
 </script>
 <!-- MAIN CONTENT ENDS -->

@@ -11,6 +11,14 @@
         require "functions/dbfunc.php";
 require_once "functions/MessageHandler.php";
 $messageHandler = new MessageHandler();
+require_once "functions/PersonalizedGreeting.php";
+$tts = new PersonalizedGreeting();
+
+function renderTtsMessage(string $text): string {
+    global $tts;
+    $audio = $tts->synthesize($text);
+    return "<span class=\"animated flash\">$text</span>" . $audio;
+}
 
 function getEventType($msg)
 {
@@ -227,8 +235,20 @@ if (isset($data1)) {
                                             ];
                                             $eventType = getEventType($msg);
                                             $displayMessage = $messageHandler->getMessage($eventType, $messageData, $miscData);
+
+                                            if (in_array($eventType, ['recent_entry', 'recent_exit'])) {
+                                                $last = $_SESSION['recent_msg_time'] ?? 0;
+                                                $type = $_SESSION['recent_msg_type'] ?? '';
+                                                if (time() - $last < 10 && $type === $eventType) {
+                                                    $displayMessage = '';
+                                                } else {
+                                                    $_SESSION['recent_msg_time'] = time();
+                                                    $_SESSION['recent_msg_type'] = $eventType;
+                                                }
+                                            }
+
                                                 if ($displayMessage !== '') {
-                                                    echo "<span class=\"animated flash\">$displayMessage</span>";
+                                                    echo renderTtsMessage($displayMessage);
                                                 } else { ?>
 							<div class="idle">
 								<div class="animated pulse infinite"> 

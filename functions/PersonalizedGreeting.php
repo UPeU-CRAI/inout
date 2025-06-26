@@ -53,7 +53,8 @@ class PersonalizedGreeting
             }
             $b64 = base64_encode($audioContent);
             $src = "data:audio/mpeg;base64,$b64";
-            return "<audio autoplay style=\"display:none\"><source src='$src' type='audio/mpeg'></audio>";
+            // Use a fixed ID so JavaScript can wait for the audio to finish
+            return "<audio id=\"tts-audio\" autoplay style=\"display:none\"><source src='$src' type='audio/mpeg'></audio>";
         } catch (Exception $e) {
             return '';
         }

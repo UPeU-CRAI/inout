@@ -98,7 +98,7 @@ class MessageHandler {
     private function generateMessage(string $eventType, ?array $userData, array $miscData, array $templates): string {
         $combinedData = array_merge($userData ?? [], $miscData);
 
-        if (isset($templates[$eventType]) && !in_array($eventType, ['entry', 'exit'])) {
+        if (in_array($eventType, ['not_found', 'recent_entry', 'recent_exit'])) {
             return $this->fetchTemplate($templates, $eventType);
         }
 

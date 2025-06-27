@@ -27,10 +27,14 @@ class PersonalizedGreeting
     }
 
     /**
-     * Recibe el texto de voz y devuelve el audio HTML para TTS, o string vacío si falla.
-     * Solo úsalo con el mensaje de voz generado desde MessageHandler (getBothMessages()['voice']).
+     * Devuelve un tag <audio> HTML para reproducir el TTS (o string vacío si falla).
+     * Puedes pasar género ("F", "M", o cualquier valor) para seleccionar voz femenina/masculina.
+     * 
+     * @param string $voiceText  El texto que se leerá.
+     * @param string $gender     "F" para femenino, "M" para masculino, otro para default.
+     * @return string            HTML <audio> tag embebido con el audio generado, o vacío si falla.
      */
-    public function synthesizeVoice(string $voiceText): string
+    public function synthesizeVoice(string $voiceText, string $gender = 'M'): string
     {
         if ($this->client === null || trim($voiceText) === '') {
             return '';
@@ -38,9 +42,17 @@ class PersonalizedGreeting
 
         try {
             $input = new SynthesisInput(['text' => $voiceText]);
+
             $languageCode = getenv('TTS_LANGUAGE_CODE') ?: 'es-ES';
-            $voiceName = getenv('TTS_VOICE') ?: 'es-ES-Standard-A';
-            
+
+            // Voz según género:
+            $gender = strtoupper($gender);
+            if ($gender === 'F') {
+                $voiceName = getenv('TTS_VOICE_B') ?: getenv('TTS_VOICE') ?: 'es-ES-Wavenet-B';
+            } else {
+                $voiceName = getenv('TTS_VOICE_A') ?: getenv('TTS_VOICE') ?: 'es-ES-Wavenet-A';
+            }
+
             $voice = new VoiceSelectionParams([
                 'language_code' => $languageCode,
                 'name' => $voiceName
@@ -60,9 +72,10 @@ class PersonalizedGreeting
             }
             $b64 = base64_encode($audioContent);
             $src = "data:audio/mpeg;base64,$b64";
-            // Usa un ID fijo para poder controlar el audio por JS si es necesario
+            // Usamos un ID fijo para controlarlo fácilmente con JS si quieres
             return "<audio id=\"tts-audio\" autoplay style=\"display:none\"><source src=\"$src\" type=\"audio/mpeg\"></audio>";
         } catch (\Exception $e) {
+            // Puedes hacer log del error si lo deseas
             return '';
         }
     }

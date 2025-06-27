@@ -211,14 +211,22 @@ class MessageHandler {
     }
 
     private function buildEntryMessage(array $userData, array $templates, bool $avoidRepeat, array $combinedData): string {
-        $category = strtoupper($userData['categorycode'] ?? 'DEFAULT');
+        $valid = ['DOCEN', 'ADMIN', 'ESTUDI', 'STAFF', 'VISITA', 'INVESTI'];
+        $category = strtoupper(trim($userData['categorycode'] ?? ''));
+        if (!in_array($category, $valid)) {
+            $category = 'DEFAULT';
+        }
         $tplSet = $templates['entry'] ?? [];
         $candidates = $tplSet[$category] ?? $tplSet['DEFAULT'] ?? [];
         return $this->pickNonRepeated($candidates, "entry_" . $category, $avoidRepeat, $combinedData);
     }
 
     private function buildExitMessage(array $userData, array $templates, bool $avoidRepeat, array $combinedData): string {
-        $category = strtoupper($userData['categorycode'] ?? 'DEFAULT');
+        $valid = ['DOCEN', 'ADMIN', 'ESTUDI', 'STAFF', 'VISITA', 'INVESTI'];
+        $category = strtoupper(trim($userData['categorycode'] ?? ''));
+        if (!in_array($category, $valid)) {
+            $category = 'DEFAULT';
+        }
         $tplSet = $templates['exit'] ?? [];
         $candidates = $tplSet[$category] ?? $tplSet['DEFAULT'] ?? [];
         return $this->pickNonRepeated($candidates, "exit_" . $category, $avoidRepeat, $combinedData);

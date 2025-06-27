@@ -6,6 +6,6 @@ header('Content-Type: text/html; charset=utf-8');
 $text = trim($_POST['text'] ?? '');
 if ($text !== '') {
     $tts = new PersonalizedGreeting();
-    echo $tts->synthesize($text);
+    echo $tts->synthesizeVoice($text);
 }
 

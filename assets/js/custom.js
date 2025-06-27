@@ -19,11 +19,28 @@ showNotification = function(from, align, message, color) {
 
 function attachAudioRedirect() {
   const audio = document.getElementById('tts-audio');
-  if (audio) {
-    audio.addEventListener('ended', function () {
-      window.location.replace('dash.php');
-    });
-  }
+  if (!audio) return;
+
+  let done = false;
+
+  const cleanupAndRedirect = function () {
+    if (done) return;
+    done = true;
+
+    audio.remove();
+
+    const ttsText = document.getElementById('tts-text');
+    if (ttsText) {
+      ttsText.textContent = '';
+    }
+
+    window.location.replace('dash.php');
+  };
+
+  audio.addEventListener('ended', cleanupAndRedirect);
+
+  // Fallback in case the 'ended' event does not fire
+  setTimeout(cleanupAndRedirect, 10000);
 }
 
 function playTTS(text) {

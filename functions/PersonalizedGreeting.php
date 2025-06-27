@@ -38,9 +38,12 @@ class PersonalizedGreeting
 
         try {
             $input = new SynthesisInput(['text' => $voiceText]);
+            $languageCode = getenv('TTS_LANGUAGE_CODE') ?: 'es-ES';
+            $voiceName = getenv('TTS_VOICE') ?: 'es-ES-Standard-A';
+            
             $voice = new VoiceSelectionParams([
-                'language_code' => 'es-ES',
-                'name' => 'es-ES-Standard-A'
+                'language_code' => $languageCode,
+                'name' => $voiceName
             ]);
             $audioConfig = new AudioConfig([
                 'audio_encoding' => AudioEncoding::MP3

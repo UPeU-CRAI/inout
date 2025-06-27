@@ -44,7 +44,7 @@ error_reporting(E_ALL);
 			'title'         => $data1[9] ?? ($nameParts[0] ?? ''),
 			'dateofbirth'   => $data1[10] ?? '',
 			'dateexpiry'    => $data1[11] ?? '',
-			'categorycode'  => $data1[3] ?? '',
+                        'categorycode'  => strtoupper(trim($data1[3] ?? '')),
 			'gender'        => $data1[2] ?? '',
 			'borrowernotes' => $data1[12] ?? '',
 		];

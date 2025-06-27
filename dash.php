@@ -195,12 +195,14 @@
 				<p class="mb-2"><?= $usn; ?></p>
 				<div class="status-inout 
 					<?php
-						if ($d_status == "IN") echo 'text-success';
+				      		if ($eventType == 'expired') echo ' text-warning';
+						elseif ($d_status == "IN") echo 'text-success';
 						elseif ($d_status == "OUT") echo 'text-danger';
 						else echo 'text-warning';
 					?> animated flash">
 					<?php
-						if ($d_status == "IN") echo "IN";
+				      		if ($eventType == 'expired' || $msg == '3') echo "VISITA";
+						elseif ($d_status == "IN") echo "IN";
 						elseif ($d_status == "OUT") echo "OUT";
 						else echo "VISITA";
 					?>

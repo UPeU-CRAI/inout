@@ -219,9 +219,10 @@ error_reporting(E_ALL);
 
 				<!-- AUDIO SOLO POR TTS, SEGÚN GÉNERO -->
 				<?php
-				if ($ttsMessage !== '') {
-					echo $tts->synthesizeVoice($ttsMessage, $userData['gender'] ?? 'M');
-				}
+                                if ($ttsMessage !== '') {
+                                        echo $tts->synthesizeVoice($ttsMessage, $userData['gender'] ?? 'M');
+                                        echo "<div id=\"tts-text\">" . htmlspecialchars($ttsMessage) . "</div>";
+                                }
 				?>
 
 				<?php if (empty($userData) && $eventType != 'not_found') { ?>

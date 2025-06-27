@@ -37,7 +37,7 @@ class MessageHandler {
             "¡Enhorabuena, {nombre}! te deseo un cumpleaños inolvidable.",
         ],
         'borrower_note' => [
-            "Atención, {nombre}. Mensaje para {nombre} : {note}",
+            "Atención!, Mensaje para {nombre} : {note}",
             "{nombre}, tienes un mensaje: {note}",
             "{nombre}, El personal te informa: {note}",
         ],

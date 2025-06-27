@@ -185,38 +185,41 @@
 	      <?php
 	      // SIEMPRE muestra los datos si hay usuario, incluso si expiró
 	      if (!empty($userData)) { ?>
-	    	<div class="card-body text-center">
-	    		<?php if ($img_flag): ?>
-	    			<img src="data:image/jpg/png/jpeg;base64,<?= base64_encode($e_img); ?>" class="rounded-circle mb-4" alt="...">
-		    	<?php else: ?>
-		    		<img src="assets/img/placeholder.png" class="rounded-circle mb-4" alt="...">
-		    	<?php endif; ?>
-				<h4 class="mb-0" style="font-weight: 800;"><?= $e_name; ?></h4>
-				<p class="mb-2"><?= $usn; ?></p>
-				<div class="status-inout 
-					<?php
-				      		if ($eventType == 'expired') echo ' text-warning';
-						elseif ($d_status == "IN") echo 'text-success';
-						elseif ($d_status == "OUT") echo 'text-danger';
-						else echo 'text-warning';
-					?> animated flash">
-					<?php
-				      		if ($eventType == 'expired' || $msg == '3') echo "VISITA";
-						elseif ($d_status == "IN") echo "IN";
-						elseif ($d_status == "OUT") echo "OUT";
-						else echo "VISITA";
-					?>
-				</div>
-				<?php if ($d_status == "IN"): ?>
-					<div>Hora de entrada: <?= isset($time) ? date('g:i A', strtotime($time)) : '-'; ?></div>
-				<?php elseif ($d_status == "OUT"): ?>
-					<div>Hora de salida: <?= isset($time) ? date('g:i A', strtotime($time)) : '-'; ?></div>
-					<div>Permanencia: <?= $otime[0] ?? '-'; ?></div>
-				<?php endif; ?>
-				<?php if ($eventType == 'expired' || $msg == '3'): ?>
-					<div class="text-danger font-weight-bold">MATRÍCULA EXPIRADA</div>
-				<?php endif; ?>
-	    	</div>
+		<div class="card-body text-center">
+		    <?php if ($img_flag): ?>
+		        <img src="data:image/jpg/png/jpeg;base64,<?= base64_encode($e_img); ?>" class="rounded-circle mb-4" alt="...">
+		    <?php else: ?>
+		        <img src="assets/img/placeholder.png" class="rounded-circle mb-4" alt="...">
+		    <?php endif; ?>
+		    <h4 class="mb-0" style="font-weight: 800;"><?= $e_name; ?></h4>
+		    <p class="mb-2"><?= $usn; ?></p>
+		    <div class="status-inout 
+		        <?php
+		            if ($eventType == 'expired' || $msg == '3') echo ' text-warning';
+		            elseif ($d_status == "IN") echo 'text-success';
+		            elseif ($d_status == "OUT") echo 'text-danger';
+		            else echo 'text-warning';
+		        ?> animated flash">
+		        <?php
+		            if ($eventType == 'expired' || $msg == '3') echo "VISITA";
+		            elseif ($d_status == "IN") echo "IN";
+		            elseif ($d_status == "OUT") echo "OUT";
+		            else echo "VISITA";
+		        ?>
+		    </div>
+		    <!-- Mostrar hora de entrada SIEMPRE que hay datos -->
+		    <?php if ($d_status == "IN"): ?>
+		        <div>Hora de entrada: <?= isset($time) ? date('g:i A', strtotime($time)) : '-'; ?></div>
+		    <?php elseif ($d_status == "OUT"): ?>
+		        <div>Hora de salida: <?= isset($time) ? date('g:i A', strtotime($time)) : '-'; ?></div>
+		        <div>Permanencia: <?= $otime[0] ?? '-'; ?></div>
+		    <?php else: ?>
+		        <div>Hora de entrada: <?= isset($time) ? date('g:i A', strtotime($time)) : '-'; ?></div>
+		    <?php endif; ?>
+		    <?php if ($eventType == 'expired' || $msg == '3'): ?>
+		        <div class="text-danger font-weight-bold">MATRÍCULA EXPIRADA</div>
+		    <?php endif; ?>
+		</div>
 	      <?php } elseif ($eventType == 'not_found') { ?>
 	    	<div class="text-danger" style="font-size:2em;">Usuario no encontrado en la base de datos</div>
 	      <?php } ?>

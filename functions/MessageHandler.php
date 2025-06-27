@@ -5,7 +5,7 @@ class MessageHandler {
         'morning'   => ['¡Buenos días', 'Muy buenos días', 'Saludos matutinos'],
         'afternoon' => ['¡Buenas tardes', 'Que tenga una excelente tarde', 'Saludos cordiales esta tarde'],
         'night'     => ['¡Buenas noches', 'Le deseamos una noche tranquila', 'Saludos en esta hermosa noche'],
-        'default'   => ['Saludos', 'Hola'],
+        'default'   => ['Saludos', 'Hola', 'Qué tal'],
     ];
 
     // Plantillas para voz (TTS), ahora más formales y divertidas
@@ -27,19 +27,19 @@ class MessageHandler {
             "Registro de salida duplicado. ¡Hasta la próxima!",
         ],
         'expired' => [
-            "{greeting}, {nombre}. Le informamos que su membresía ha expirado. Ha sido registrado como visitante. Consulte con el personal para renovaciones.",
-            "{greeting}, {nombre}. Su matrícula está vencida. Acceso como visitante autorizado solo por hoy.",
-            "{greeting}, {nombre}. Matrícula caducada. Por favor acérquese a informes para más información.",
+            "{greeting}, {nombre}. Le informamos que su contrato de matrícula ha expirado. Ha sido registrado como visitante. Bienvenido!.",
+            "{greeting}, {nombre}. Su matrícula está vencida. Puedes acceder como visitante autorizado.",
+            "{greeting}, {nombre}. Matrícula caducada. Puedes acceder como visitante.",
         ],
         'birthday' => [
-            "¡Feliz cumpleaños, {nombre}! Que su día esté lleno de éxitos y buenos momentos en el CRAI.",
-            "Celebramos junto a usted, {nombre}, un año más de vida. ¡Muchas felicidades!",
-            "¡Enhorabuena, {nombre}! El equipo del CRAI le desea un cumpleaños inolvidable.",
+            "¡Feliz cumpleaños, {nombre}! Que tu día esté lleno de éxitos y buenos momentos en el CRAI.",
+            "Celebramos junto a ti, {nombre}, un año más de vida. ¡Muchas felicidades!",
+            "¡Enhorabuena, {nombre}! te deseo un cumpleaños inolvidable.",
         ],
         'borrower_note' => [
-            "Atención, {nombre}. Tiene un mensaje especial: {note}",
-            "Mensaje para usted, {nombre}: {note}",
-            "El personal desea informarle: {note}",
+            "Atención, {nombre}. Mensaje para {nombre} : {note}",
+            "{nombre}, tienes un mensaje: {note}",
+            "{nombre}, El personal te informa: {note}",
         ],
         // Entradas personalizadas por rol, formales y amables
         'entry' => [
@@ -73,6 +73,16 @@ class MessageHandler {
                 "{greeting}, {nombre}. El CRAI está a tu servicio para aprender y crecer.",
                 "{greeting}, {nombre}. Te deseamos una jornada llena de éxitos académicos.",
                 "{greeting}, {nombre}. ¡Aprovecha tu día de estudio al máximo!",
+                "{greeting}, {nombre}. Recuerda que el conocimiento es tu mejor herramienta.",
+                "{greeting}, {nombre}. Estamos aquí para apoyarte en tu proceso de aprendizaje.",
+                "{greeting}, {nombre}. Esperamos que tu visita al CRAI sea productiva y enriquecedora.",
+                "{greeting}, {nombre}. Que tengas un excelente día y logres todas tus metas académicas.",
+                "{greeting}, {nombre}. No olvides que cada día es una oportunidad para superarte.",
+                "{greeting}, {nombre}. Sigue adelante con entusiasmo y dedicación.",
+                "{greeting}, {nombre}. Tu esfuerzo y constancia serán recompensados.",
+                "{greeting}, {nombre}. ¡Éxitos en tus estudios! Recuerda que estamos para ayudarte.",
+                "{greeting}, {nombre}. Que el aprendizaje de hoy impulse tu futuro.",
+                "{greeting}, {nombre}. Siempre es un gusto recibirte en el CRAI.",
             ],
             'DEFAULT' => [
                 "{greeting}, {nombre}. Acceso exitoso. ¡Adelante!",
@@ -104,6 +114,17 @@ class MessageHandler {
             'ESTUDI' => [
                 "Hasta luego, {nombre}. ¡Sigue adelante con tus estudios!",
                 "Registro de salida exitoso. ¡Te esperamos pronto, {nombre}!",
+                "Gracias por tu visita, {nombre}. Que tengas una tarde productiva.",
+                "Salida registrada. ¡Que tu día continúe lleno de aprendizajes, {nombre}!",
+                "Nos vemos pronto, {nombre}. Recuerda que el CRAI siempre está para ti.",
+                "¡Hasta la próxima, {nombre}! Que todo te salga excelente.",
+                "Te despedimos con un saludo, {nombre}. ¡Éxitos en tus próximas tareas!",
+                "Esperamos verte nuevamente pronto, {nombre}. ¡Sigue creciendo!",
+                "Gracias por tu esfuerzo y dedicación, {nombre}. Buen camino.",
+                "¡Buen regreso, {nombre}! Recuerda descansar y recargar energías.",
+                "Has finalizado tu visita, {nombre}. ¡A seguir conquistando metas!",
+                "Hasta pronto, {nombre}. Recuerda que cada día suma en tu formación.",
+                "Salida completada, {nombre}. No dudes en volver cuando lo necesites.",
             ],
             'DEFAULT' => [
                 "Salida registrada correctamente. ¡Hasta la próxima!",
@@ -219,11 +240,15 @@ class MessageHandler {
      * Guarda la frase elegida en $_SESSION['last_tts'][$sessionKey]
      */
     private function pickNonRepeated(array $options, string $sessionKey, bool $avoidRepeat, array $data = []): string {
+        if (empty($options)) return ''; // <-- Esto previene el error si no hay opciones
+    
         $lastUsed = $_SESSION['last_tts'][$sessionKey] ?? null;
         $available = $options;
         if ($avoidRepeat && count($available) > 1 && $lastUsed) {
             $available = array_values(array_diff($available, [$lastUsed]));
         }
+        if (empty($available)) return ''; // <-- También previene si tras filtrar no quedan opciones
+    
         $chosen = $available[array_rand($available)];
         if ($avoidRepeat) {
             $_SESSION['last_tts'][$sessionKey] = $chosen;

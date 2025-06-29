@@ -1,0 +1,17 @@
+{
+    "name": "upeu/inout-tts",
+    "description": "Google Text to Speech Integration",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alberto Sánchez",
+            "email": "atisbo78@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "google/cloud-text-to-speech": "^2.2",
+        "vlucas/phpdotenv": "^5.6"
+    }
+}

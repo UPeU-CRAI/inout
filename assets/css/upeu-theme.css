@@ -107,3 +107,84 @@ h3.text_titulo2 {
 .upeu-text-accent {
     color: var(--upeu-accent) !important;
 }
+
+
+
+
+/* --- ESTILOS GENERALES DEL PERFIL (TEMA OSCURO) --- */
+
+/* Contenedor principal de la tarjeta */
+.card.upeu-card-body.text-center {
+  padding: 24px;
+  /* Fondo oscuro para la tarjeta, ligeramente diferente al fondo principal */
+  background-color: #1a2c41; 
+  border-radius: 12px;
+  /* La sombra no se verá en un fondo oscuro, la quitamos o la hacemos un brillo sutil */
+  box-shadow: none; 
+  /* Un borde claro para definir la tarjeta */
+  border: 1px solid #3d5a80;
+  text-align: center;
+}
+
+/* Imagen de perfil circular */
+.rounded-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  /* Borde más claro para que resalte en el fondo oscuro de la tarjeta */
+  border: 3px solid #3d5a80; 
+}
+
+/* Nombre del usuario (h4) */
+h4.mb-0 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  /* Color de texto blanco/claro para alto contraste */
+  color: #e0e0e0; 
+  margin-bottom: 0 !important;
+}
+
+/* Texto secundario (p) */
+p.mb-2 {
+  font-size: 1.1rem;
+  /* Un gris más claro para el texto secundario, que sigue siendo legible */
+  color: #98c1d9; 
+  margin-bottom: 0.5rem !important;
+}
+
+/* Contenedor para el estado (IN / OUT) */
+.status-inout {
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 20px;
+  display: inline-block;
+  margin: 16px 0;
+}
+
+/* --- CLASES DE UTILIDAD (COLORES Y ESTADO PARA TEMA OSCURO) --- */
+
+/* Colores de estado más brillantes para que resalten */
+.text-warning {
+  color: #ffd60a !important;
+  background-color: rgba(255, 214, 10, 0.15);
+}
+
+.text-success {
+  color: #52b788 !important;
+  background-color: rgba(82, 183, 136, 0.15);
+}
+
+.text-danger {
+  color: #ff758f !important;
+}
+
+.font-weight-bold {
+  font-weight: 700 !important;
+}
+
+/* Clases de margen inferior (sin cambios) */
+.mb-0 { margin-bottom: 0 !important; }
+.mb-2 { margin-bottom: 0.5rem !important; }
+.mb-4 { margin-bottom: 1.5rem !important; }

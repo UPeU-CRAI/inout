@@ -48,6 +48,10 @@ h3.text_titulo2 {
   background: #003865;
 }
 
+.card {
+  box-shadow: 0 0 0 0 rgba(0,0,0,.14);
+}
+
 .material-icons {
   font-family: 'Material Icons';
   font-weight: normal;

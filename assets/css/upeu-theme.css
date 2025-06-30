@@ -13,6 +13,19 @@ h1, h2, h3, h4, h5, h6 {
     font-family: 'Montserrat', sans-serif;
 }
 
+.form_imput_id_card {
+  font-size: 50px;
+  text-align: center;
+  border-radius: 9px;
+  box-sizing: border-box;
+  height: 90px;
+  width: 340px;
+  padding-top: 15px;
+  font-family: 'Overpass Mono', monospace;
+  font-weight: 700;
+  color: #343434;
+}
+
 .upeu-card {
     border: 1px solid var(--upeu-primary);
     border-radius: 0.5rem;

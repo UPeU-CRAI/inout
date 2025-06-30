@@ -181,7 +181,7 @@ error_reporting(E_ALL);
 						<p class="d-lg-none d-md-block" style="margin: 0; padding-left: 5px;">Logout</p>
 					</a>
 				</div>
-				<h3><?= htmlspecialchars($_SESSION['locname'] ?? '') ?></h3>
+				<h3 class="text_titulo2"><?= htmlspecialchars($_SESSION['locname'] ?? '') ?></h3>
 				<form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="GET">
 					<input type="text" name="id" id="usn" class="form_imput_id_card" value="" autofocus="true">
 				</form>

@@ -44,6 +44,10 @@ h3.text_titulo2 {
   font-size: 34px;
 }
 
+.card-body.upeu-card-body .card.upeu-card {
+  background: #003865;
+}
+
 .material-icons {
   font-family: 'Material Icons';
   font-weight: normal;

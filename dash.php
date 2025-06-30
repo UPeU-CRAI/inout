@@ -93,7 +93,7 @@ error_reporting(E_ALL);
 	}
 
 ?>
-<body style="background-color: #F1EADE;">
+<body style="background-color: #003865;">
 <!-- MAIN CONTENT START -->
 <div class="content" style="min-height: calc(100vh - 90px);">
 	<div class="container-fluid">

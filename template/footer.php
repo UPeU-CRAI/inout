@@ -1,5 +1,5 @@
 
-<footer class="footer">
+<footer class="footer upeu-footer">
   <div class="container-fluid">
     <nav class="float-left">
       <ul>

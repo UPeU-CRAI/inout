@@ -13,7 +13,7 @@
 	require "functions/general.php";	
 ?>
 <!-- MAIN CONTENT START -->
-<div class="content upeu-container" style="min-height: calc(100vh - 160px);">
+<div class="content upeu-container">
 	<div class="container-fluid">
 	  <div class="row">
 	    <div class="col-md-12">

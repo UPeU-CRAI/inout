@@ -21,6 +21,9 @@ h2.text_titulo1 {
   margin-bottom: 0px;
 }
 
+h3.text_titulo2 {
+  color: #ffffff !important;
+}
 
 .form_imput_id_card {
   font-size: 50px;

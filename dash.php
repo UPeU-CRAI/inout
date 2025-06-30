@@ -175,7 +175,7 @@ error_reporting(E_ALL);
 			</div>
 			<div class="col-md-6 text-center" style="margin-top: 24px;">
 				<div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-					<h2 style="flex-grow: 1; text-align: center;">In Out Management System</h2>
+					<h2 style="flex-grow: 1; text-align: center;">InOut System</h2>
 					<a class="nav-link" href="functions/signout.php" style="display: flex; align-items: center; text-decoration: none;">
 						<i class="material-icons">power_settings_new</i>
 						<p class="d-lg-none d-md-block" style="margin: 0; padding-left: 5px;">Logout</p>
@@ -228,14 +228,14 @@ error_reporting(E_ALL);
 				<?php if (empty($userData) && $eventType != 'not_found') { ?>
 					<div class="idle">
 						<div class="animated pulse infinite">
-							<span class='text-info'>SCAN YOUR ID CARD</span>
+							<span class='text-info'>ESCANEA TU ID CARD:</span>
 						</div>
 						<div class="row">
 							<div class="col-md-3">
 								<div class="card upeu-card card-stats">
 									<div class="card-header card-header-info card-header-icon">
 										<div class="card-icon"></div>
-										<p class="card-category">Gentlemen</p>
+										<p class="card-category">Hombres</p>
 										<h3 class="card-title"><?= htmlspecialchars($male[0] ?? '') ?></h3>
 									</div>
 									<div class="card-footer">
@@ -249,7 +249,7 @@ error_reporting(E_ALL);
 								<div class="card upeu-card card-stats">
 									<div class="card-header card-header-rose card-header-icon">
 										<div class="card-icon"></div>
-										<p class="card-category">Ladies</p>
+										<p class="card-category">Mujeres</p>
 										<h3 class="card-title"><?= htmlspecialchars($female[0] ?? '') ?></h3>
 									</div>
 									<div class="card-footer">
@@ -263,7 +263,7 @@ error_reporting(E_ALL);
 								<div class="card upeu-card card-stats">
 									<div class="card-header card-header-success card-header-icon">
 										<div class="card-icon"></div>
-										<p class="card-category">Checked In</p>
+										<p class="card-category">Somos</p>
 										<h3 class="card-title"><?= htmlspecialchars($tin[0] ?? '') ?></h3>
 									</div>
 									<div class="card-footer">
@@ -277,7 +277,7 @@ error_reporting(E_ALL);
 								<div class="card upeu-card card-stats">
 									<div class="card-header card-header-warning card-header-icon">
 										<div class="card-icon"></div>
-										<p class="card-category">Day Count</p>
+										<p class="card-category">Hoy</p>
 										<h3 class="card-title"><?= htmlspecialchars($visit[0] ?? '') ?></h3>
 									</div>
 									<div class="card-footer">

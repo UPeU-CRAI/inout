@@ -325,37 +325,6 @@ error_reporting(E_ALL);
 	});
 </script>
 <!-- MAIN CONTENT ENDS -->
-Claro, aquí te explico cómo comentar apropiadamente ese código PHP.
-
-El código que muestras tiene un comentario de HTML (``) que está envolviendo una línea de código PHP.
-
-Esto no es un comentario de PHP. El servidor aún puede intentar procesar el código PHP que está dentro del comentario HTML si la configuración del servidor lo permite, lo que podría causar errores o comportamientos inesperados.
-
-Formas Correctas de Comentar en PHP
-Para comentar código PHP, debes usar la sintaxis de comentarios de PHP. Hay dos tipos principales:
-
-Comentario de una sola línea (//): Ideal para deshabilitar temporalmente una línea de código o para añadir una nota breve.
-
-Comentario de múltiples líneas (/* */): Útil para deshabilitar un bloque de código o para explicaciones más largas.
-
-Aplicado a tu Código
-Opción 1: Comentario de una sola línea
-Si quieres deshabilitar temporalmente la inclusión del footer.php, la forma correcta sería:
-
-PHP
-
-<?php // require_once "./template/footer.php"; ?>
-En este caso:
-
-`` sigue siendo un comentario HTML, lo cual es correcto para el código HTML.
-
-// require_once... es ahora un comentario PHP. El servidor ignorará esta línea y no cargará el archivo footer.php.
-
-Opción 2: Comentario de múltiples líneas
-Si tienes más líneas de PHP que comentar, puedes usar esta sintaxis:
-
-PHP
-
 <?php
 /*
 require_once "./template/footer.php";

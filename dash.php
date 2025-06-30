@@ -175,7 +175,7 @@ error_reporting(E_ALL);
 			</div>
 			<div class="col-md-6 text-center" style="margin-top: 24px;">
 				<div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-					<h2 style="flex-grow: 1; text-align: center;">InOut System</h2>
+					<h2 class="text_titulo1" style="flex-grow: 1; text-align: center;">InOut System</h2>
 					<a class="nav-link" href="functions/signout.php" style="display: flex; align-items: center; text-decoration: none;">
 						<i class="material-icons">power_settings_new</i>
 						<p class="d-lg-none d-md-block" style="margin: 0; padding-left: 5px;">Logout</p>

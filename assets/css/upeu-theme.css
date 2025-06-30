@@ -153,8 +153,8 @@ p.mb-2 {
   margin-bottom: 0.5rem !important;
 }
 
-/* Contenedor para el estado (IN / OUT) */
-.status-inout {
+
+.card-body.upeu-card-body.text-center {
   font-size: 1.2rem;
   font-weight: bold;
   padding: 8px 16px;

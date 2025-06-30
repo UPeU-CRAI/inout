@@ -76,7 +76,10 @@
                 <i class="material-icons design_bullet-list-67 visible-on-sidebar-mini">view_list</i>
               </button>
             </div>
-            <a class="navbar-brand" href="#"><?php echo htmlspecialchars($title ?? '', ENT_QUOTES, 'UTF-8'); ?></a>
+            <a class="navbar-brand d-flex align-items-center" href="#">
+              <img src="https://upeu.edu.pe/wp-content/uploads/2022/04/logo-upeu-dark-svg.svg" alt="UPeU" class="upeu-logo" />
+              <?php echo htmlspecialchars($title ?? '', ENT_QUOTES, 'UTF-8'); ?>
+            </a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation-example" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="sr-only">Toggle navigation</span>

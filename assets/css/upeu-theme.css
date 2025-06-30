@@ -66,8 +66,12 @@ body {
 
 .upeu-footer,
 .footer.upeu-footer {
-    background-color: var(--upeu-primary);
-    color: #fff;
+    background-color: #fff;
+    color: var(--upeu-primary);
+}
+
+.upeu-footer a {
+    color: var(--upeu-primary);
 }
 
 .upeu-btn {
@@ -111,4 +115,73 @@ body {
 
 .upeu-container {
     min-height: calc(100vh - 160px);
+}
+
+/* UPeU dashboard enhancements */
+.upeu-logo {
+    height: 40px;
+    margin-right: 1rem;
+}
+
+.upeu-scan-input {
+    width: 100%;
+    max-width: 400px;
+    padding: 1rem;
+    font-size: 1.5rem;
+    border: 2px solid var(--upeu-primary);
+    border-radius: 12px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+.upeu-scan-input:focus {
+    outline: none;
+    border-color: var(--upeu-accent);
+    box-shadow: 0 0 0 0.25rem rgba(255,183,27,0.4);
+}
+
+.upeu-stat-card {
+    position: relative;
+    border-radius: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+.upeu-stat-card .upeu-flag {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+    border-bottom-right-radius: 0.5rem;
+    text-transform: uppercase;
+}
+.upeu-flag-info { background-color: #17a2b8; }
+.upeu-flag-pink { background-color: #e83e8c; }
+.upeu-flag-success { background-color: #28a745; }
+.upeu-flag-warning { background-color: #ffc107; color: #003e6b; }
+
+.upeu-stat-card .card-title {
+    font-size: 2rem;
+    font-weight: 700;
+}
+.upeu-stat-card .card-footer {
+    background-color: #f7f7f7;
+}
+
+.upeu-title-underline {
+    display: inline-block;
+    position: relative;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--upeu-primary);
+}
+.upeu-title-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 100%;
+    max-width: 200px;
+    height: 6px;
+    background-color: var(--upeu-accent);
 }

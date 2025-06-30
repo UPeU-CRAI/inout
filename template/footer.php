@@ -7,6 +7,7 @@
         <li><a href="https://www.koha-community.org/" target="_blank">Powered By KOHA Community</a></li>
       </ul>
     </nav>
+    <div class="text-center small text-secondary">Educamos con Misi&oacute;n</div>
     <div class="copyright float-right">
       © <script>document.write(new Date().getFullYear())</script>, made with 
       <i class="material-icons" style="color:red;">favorite</i> by 

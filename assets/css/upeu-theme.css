@@ -67,9 +67,8 @@ h3.text_titulo2 {
 
 
 .upeu-card {
-    border: 1px solid var(--upeu-primary);
+    border: 0px solid var(--upeu-primary);
     border-radius: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .upeu-card-header {

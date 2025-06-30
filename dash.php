@@ -182,9 +182,9 @@ error_reporting(E_ALL);
                                         </a>
 				</div>
 				<h3><?= htmlspecialchars($_SESSION['locname'] ?? '') ?></h3>
-				<form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="GET">
-					<input type="text" name="id" id="usn" class="" value="" autofocus="true">
-				</form>
+                                <form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="GET" class="my-4">
+                                        <input type="text" name="id" id="usn" class="upeu-scan-input" value="" autofocus="true">
+                                </form>
 
 				<?php
 				// SIEMPRE muestra los datos si hay usuario, incluso si expiró
@@ -227,67 +227,71 @@ error_reporting(E_ALL);
 
 				<?php if (empty($userData) && $eventType != 'not_found') { ?>
 					<div class="idle">
-						<div class="animated pulse infinite">
-							<span class='text-info'>SCAN YOUR ID CARD</span>
-						</div>
-						<div class="row">
-							<div class="col-md-3">
-								<div class="card upeu-card card-stats">
-									<div class="card-header card-header-info card-header-icon">
-										<div class="card-icon"></div>
-										<p class="card-category">Gentlemen</p>
-										<h3 class="card-title"><?= htmlspecialchars($male[0] ?? '') ?></h3>
-									</div>
-									<div class="card-footer">
-										<div class="stats">
-											<i class="material-icons">update</i> Just Updated
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="col-md-3">
-								<div class="card upeu-card card-stats">
-									<div class="card-header card-header-rose card-header-icon">
-										<div class="card-icon"></div>
-										<p class="card-category">Ladies</p>
-										<h3 class="card-title"><?= htmlspecialchars($female[0] ?? '') ?></h3>
-									</div>
-									<div class="card-footer">
-										<div class="stats">
-											<i class="material-icons">update</i> Just Updated
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="col-md-3">
-								<div class="card upeu-card card-stats">
-									<div class="card-header card-header-success card-header-icon">
-										<div class="card-icon"></div>
-										<p class="card-category">Checked In</p>
-										<h3 class="card-title"><?= htmlspecialchars($tin[0] ?? '') ?></h3>
-									</div>
-									<div class="card-footer">
-										<div class="stats">
-											<i class="material-icons">update</i> Just Updated
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="col-md-3">
-								<div class="card upeu-card card-stats">
-									<div class="card-header card-header-warning card-header-icon">
-										<div class="card-icon"></div>
-										<p class="card-category">Day Count</p>
-										<h3 class="card-title"><?= htmlspecialchars($visit[0] ?? '') ?></h3>
-									</div>
-									<div class="card-footer">
-										<div class="stats">
-											<i class="material-icons">update</i> Just Updated
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
+                                                <div class="animated pulse infinite">
+                                                        <span class='upeu-title-underline'>Escanea tu ID Card</span>
+                                                </div>
+                                                <div class="row">
+                                                        <div class="col-md-3">
+                                                                <div class="card upeu-card card-stats upeu-stat-card">
+                                                                        <span class="upeu-flag upeu-flag-info">Hombres</span>
+                                                                        <div class="card-header card-header-icon">
+                                                                                <div class="card-icon"></div>
+                                                                                <p class="card-category">Gentlemen</p>
+                                                                                <h3 class="card-title"><?= htmlspecialchars($male[0] ?? '') ?></h3>
+                                                                        </div>
+                                                                        <div class="card-footer">
+                                                                                <div class="stats">
+                                                                                        <i class="material-icons">update</i> Just Updated
+                                                                                </div>
+                                                                        </div>
+                                                                </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                                <div class="card upeu-card card-stats upeu-stat-card">
+                                                                        <span class="upeu-flag upeu-flag-pink">Mujeres</span>
+                                                                        <div class="card-header card-header-icon">
+                                                                                <div class="card-icon"></div>
+                                                                                <p class="card-category">Ladies</p>
+                                                                                <h3 class="card-title"><?= htmlspecialchars($female[0] ?? '') ?></h3>
+                                                                        </div>
+                                                                        <div class="card-footer">
+                                                                                <div class="stats">
+                                                                                        <i class="material-icons">update</i> Just Updated
+                                                                                </div>
+                                                                        </div>
+                                                                </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                                <div class="card upeu-card card-stats upeu-stat-card">
+                                                                        <span class="upeu-flag upeu-flag-success">Presentes</span>
+                                                                        <div class="card-header card-header-icon">
+                                                                                <div class="card-icon"></div>
+                                                                                <p class="card-category">Checked In</p>
+                                                                                <h3 class="card-title"><?= htmlspecialchars($tin[0] ?? '') ?></h3>
+                                                                        </div>
+                                                                        <div class="card-footer">
+                                                                                <div class="stats">
+                                                                                        <i class="material-icons">update</i> Just Updated
+                                                                                </div>
+                                                                        </div>
+                                                                </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                                <div class="card upeu-card card-stats upeu-stat-card">
+                                                                        <span class="upeu-flag upeu-flag-warning">Visitas</span>
+                                                                        <div class="card-header card-header-icon">
+                                                                                <div class="card-icon"></div>
+                                                                                <p class="card-category">Day Count</p>
+                                                                                <h3 class="card-title"><?= htmlspecialchars($visit[0] ?? '') ?></h3>
+                                                                        </div>
+                                                                        <div class="card-footer">
+                                                                                <div class="stats">
+                                                                                        <i class="material-icons">update</i> Just Updated
+                                                                                </div>
+                                                                        </div>
+                                                                </div>
+                                                        </div>
+                                                </div>
 					</div>
 				<?php } ?>
 

@@ -183,7 +183,7 @@ error_reporting(E_ALL);
 				</div>
 				<h3><?= htmlspecialchars($_SESSION['locname'] ?? '') ?></h3>
 				<form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="GET">
-					<input type="text" name="id" id="usn" class="" value="" autofocus="true">
+					<input type="text" name="id" id="usn" class="form_imput_id_card" value="" autofocus="true">
 				</form>
 
 				<?php

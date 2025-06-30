@@ -21,6 +21,10 @@ h2.text_titulo1 {
   margin-bottom: 0px;
 }
 
+.card-body.upeu-card-body h3.text-center {
+  color: #ffffff !important;
+}
+
 h3.text_titulo2 {
   color: #ffffff !important;
 }

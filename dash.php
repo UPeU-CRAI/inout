@@ -95,12 +95,12 @@ error_reporting(E_ALL);
 ?>
 <body class="upeu-body">
 <!-- MAIN CONTENT START -->
-<div class="content upeu-content">
-	<div class="container-fluid">
-		<div class="row">
-                        <div class="col-md-6">
-                                <div class="card upeu-card upeu-card-tall">
-					<div class="card-body upeu-card-body">
+<div class="content upeu-content upeu-dashboard-content">
+        <div class="container-fluid">
+                <div class="row">
+                        <div class="col-md-6 mb-4">
+                                <div class="card upeu-clock-card upeu-card-tall">
+                                        <div class="card-body upeu-card-body">
 						<?php if ($banner): ?>
 							<img class="img-responsive" src="assets/img/banner.png">
 						<?php else: ?>
@@ -173,17 +173,18 @@ error_reporting(E_ALL);
 					</div>
 				</div>
 			</div>
-                        <div class="col-md-6 text-center mt-4">
-                                <div class="d-flex align-items-center justify-content-between w-100">
+                        <div class="col-md-6">
+                                <div class="upeu-dashboard-panel text-center">
+                                <div class="d-flex align-items-center justify-content-between w-100 mb-3">
                                         <h2 class="flex-grow-1 text-center">In Out Management System</h2>
                                         <a class="nav-link d-flex align-items-center text-decoration-none" href="functions/signout.php">
                                                 <i class="material-icons">power_settings_new</i>
                                                 <p class="d-lg-none d-md-block mb-0 pl-2">Logout</p>
                                         </a>
-				</div>
-				<h3><?= htmlspecialchars($_SESSION['locname'] ?? '') ?></h3>
+                                </div>
+                                <h3><?= htmlspecialchars($_SESSION['locname'] ?? '') ?></h3>
                                 <form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="GET" class="my-4">
-                                        <input type="text" name="id" id="usn" class="upeu-scan-input" value="" autofocus="true">
+                                        <input type="text" name="id" id="usn" class="upeu-input-scan" value="" autofocus="true">
                                 </form>
 
 				<?php
@@ -226,11 +227,11 @@ error_reporting(E_ALL);
 				?>
 
 				<?php if (empty($userData) && $eventType != 'not_found') { ?>
-					<div class="idle">
+                                        <div class="idle">
                                                 <div class="animated pulse infinite">
                                                         <span class='upeu-title-underline'>Escanea tu ID Card</span>
                                                 </div>
-                                                <div class="row">
+                                                <div class="row upeu-stats-row">
                                                         <div class="col-md-3">
                                                                 <div class="card upeu-card card-stats upeu-stat-card">
                                                                         <span class="upeu-flag upeu-flag-info">Hombres</span>

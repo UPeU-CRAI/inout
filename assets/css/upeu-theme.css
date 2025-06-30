@@ -123,7 +123,8 @@ body {
     margin-right: 1rem;
 }
 
-.upeu-scan-input {
+.upeu-scan-input,
+.upeu-input-scan {
     width: 100%;
     max-width: 400px;
     padding: 1rem;
@@ -132,7 +133,8 @@ body {
     border-radius: 12px;
     transition: border-color 0.3s, box-shadow 0.3s;
 }
-.upeu-scan-input:focus {
+.upeu-scan-input:focus,
+.upeu-input-scan:focus {
     outline: none;
     border-color: var(--upeu-accent);
     box-shadow: 0 0 0 0.25rem rgba(255,183,27,0.4);
@@ -184,4 +186,29 @@ body {
     max-width: 200px;
     height: 6px;
     background-color: var(--upeu-accent);
+}
+
+/* Dashboard layout styles */
+.upeu-dashboard-content {
+    background-color: var(--upeu-primary);
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.upeu-clock-card {
+    background-color: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    padding: 1.5rem;
+}
+
+.upeu-dashboard-panel {
+    background-color: #fff;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.upeu-stats-row .card.card-stats {
+    margin-bottom: 1.5rem;
 }

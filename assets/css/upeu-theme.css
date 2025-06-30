@@ -161,30 +161,5 @@ p.mb-2 {
   border-radius: 20px;
   display: inline-block;
   margin: 16px 0;
-}
-
-/* --- CLASES DE UTILIDAD (COLORES Y ESTADO PARA TEMA OSCURO) --- */
-
-/* Colores de estado más brillantes para que resalten */
-.text-warning {
-  color: #ffd60a !important;
-  background-color: rgba(255, 214, 10, 0.15);
-}
-
-.text-success {
   color: #ffffff !important;
-  background-color: rgba(82, 183, 136, 0.15);
 }
-
-.text-danger {
-  color: #ff758f !important;
-}
-
-.font-weight-bold {
-  font-weight: 700 !important;
-}
-
-/* Clases de margen inferior (sin cambios) */
-.mb-0 { margin-bottom: 0 !important; }
-.mb-2 { margin-bottom: 0.5rem !important; }
-.mb-4 { margin-bottom: 1.5rem !important; }

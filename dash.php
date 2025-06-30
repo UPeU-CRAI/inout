@@ -99,8 +99,8 @@ error_reporting(E_ALL);
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-6">
-				<div class="card" style="min-height: calc(100vh - 150px);">
-					<div class="card-body">
+				<div class="card upeu-card" style="min-height: calc(100vh - 150px);">
+					<div class="card-body upeu-card-body">
 						<?php if ($banner): ?>
 							<img class="img-responsive" src="assets/img/banner.png">
 						<?php else: ?>
@@ -148,7 +148,7 @@ error_reporting(E_ALL);
 						<?php endif; ?>
 
 						<?php if ($clock): ?>
-							<div class="card-body">
+							<div class="card-body upeu-card-body">
 								<div class="analogclock">
 									<div>
 										<div class="cinfo cdate"></div>
@@ -189,7 +189,7 @@ error_reporting(E_ALL);
 				<?php
 				// SIEMPRE muestra los datos si hay usuario, incluso si expiró
 				if (!empty($userData)) { ?>
-					<div class="card-body text-center">
+					<div class="card-body upeu-card-body text-center">
 						<?php if ($img_flag): ?>
 							<img src="data:image/jpg/png/jpeg;base64,<?= base64_encode($e_img); ?>" class="rounded-circle mb-4" alt="...">
 						<?php else: ?>
@@ -232,7 +232,7 @@ error_reporting(E_ALL);
 						</div>
 						<div class="row">
 							<div class="col-md-3">
-								<div class="card card-stats">
+								<div class="card upeu-card card-stats">
 									<div class="card-header card-header-info card-header-icon">
 										<div class="card-icon"></div>
 										<p class="card-category">Gentlemen</p>
@@ -246,7 +246,7 @@ error_reporting(E_ALL);
 								</div>
 							</div>
 							<div class="col-md-3">
-								<div class="card card-stats">
+								<div class="card upeu-card card-stats">
 									<div class="card-header card-header-rose card-header-icon">
 										<div class="card-icon"></div>
 										<p class="card-category">Ladies</p>
@@ -260,7 +260,7 @@ error_reporting(E_ALL);
 								</div>
 							</div>
 							<div class="col-md-3">
-								<div class="card card-stats">
+								<div class="card upeu-card card-stats">
 									<div class="card-header card-header-success card-header-icon">
 										<div class="card-icon"></div>
 										<p class="card-category">Checked In</p>
@@ -274,7 +274,7 @@ error_reporting(E_ALL);
 								</div>
 							</div>
 							<div class="col-md-3">
-								<div class="card card-stats">
+								<div class="card upeu-card card-stats">
 									<div class="card-header card-header-warning card-header-icon">
 										<div class="card-icon"></div>
 										<p class="card-category">Day Count</p>

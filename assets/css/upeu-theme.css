@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap');
+
+:root {
+    --upeu-primary: #003e6b;
+    --upeu-accent: #ffb71b;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.upeu-card {
+    border: 1px solid var(--upeu-primary);
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.upeu-card-header {
+    background-color: var(--upeu-primary);
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.125);
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
+
+.upeu-card-body {
+    padding: 1rem;
+}
+
+.upeu-bg-primary {
+    background-color: var(--upeu-primary) !important;
+}
+
+.upeu-bg-accent {
+    background-color: var(--upeu-accent) !important;
+}
+
+.upeu-text-primary {
+    color: var(--upeu-primary) !important;
+}
+
+.upeu-text-accent {
+    color: var(--upeu-accent) !important;
+}

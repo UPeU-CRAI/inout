@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="assets/css/clock.css">
     <link rel="stylesheet" type="text/css" href="assets/css/animate.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/upeu-theme.css">
     
     <!-- JavaScript -->
     <script src="assets/js/core/jquery.min.js" type="text/javascript"></script>

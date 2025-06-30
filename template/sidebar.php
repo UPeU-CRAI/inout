@@ -1,5 +1,5 @@
 
-<body class="" cz-shortcut-listen="true">
+<body class="upeu-body" cz-shortcut-listen="true">
   <div class="wrapper">          
     <div class="sidebar" data-color="rose" data-background-color="black" data-image="assets/img/sidebar.jpg">
       <div class="logo">
@@ -67,7 +67,7 @@
 
     <div class="main-panel">
       <!-- NAVBAR STARTS -->
-      <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top" id="navigation-example">
+      <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top upeu-header" id="navigation-example">
         <div class="container-fluid">
           <div class="navbar-wrapper">
             <div class="navbar-minimize">

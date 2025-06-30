@@ -93,13 +93,13 @@ error_reporting(E_ALL);
 	}
 
 ?>
-<body style="background-color: #F1EADE;">
+<body class="upeu-body">
 <!-- MAIN CONTENT START -->
-<div class="content" style="min-height: calc(100vh - 90px);">
+<div class="content upeu-content">
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-md-6">
-				<div class="card upeu-card" style="min-height: calc(100vh - 150px);">
+                        <div class="col-md-6">
+                                <div class="card upeu-card upeu-card-tall">
 					<div class="card-body upeu-card-body">
 						<?php if ($banner): ?>
 							<img class="img-responsive" src="assets/img/banner.png">
@@ -112,7 +112,7 @@ error_reporting(E_ALL);
 								<div class="card-title text-info h4 text-center">
 									<br><?= htmlspecialchars($data['nhead']); ?>
 								</div>
-								<div class="h4 text-center" style="text-align: justify !important;">
+                                                                <div class="h4 text-center upeu-text-justify">
 									<br><?= nl2br(htmlspecialchars($data['nbody'])); ?>
 								</div>
 								<div class="h4 text-success text-center">
@@ -133,8 +133,8 @@ error_reporting(E_ALL);
 							</div>
 						<?php endif; ?>
 
-						<?php if ($quote): ?>
-							<div class="card-block2" style="min-height: calc(100vh - 430px);">
+                                                <?php if ($quote): ?>
+                                                        <div class="card-block2 upeu-card-quote">
 								<div class="qcard">
 									<div class="qcontent">
 										<h3 class="qsub-heading">Quote for the thought</h3>
@@ -173,13 +173,13 @@ error_reporting(E_ALL);
 					</div>
 				</div>
 			</div>
-			<div class="col-md-6 text-center" style="margin-top: 24px;">
-				<div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-					<h2 style="flex-grow: 1; text-align: center;">In Out Management System</h2>
-					<a class="nav-link" href="functions/signout.php" style="display: flex; align-items: center; text-decoration: none;">
-						<i class="material-icons">power_settings_new</i>
-						<p class="d-lg-none d-md-block" style="margin: 0; padding-left: 5px;">Logout</p>
-					</a>
+                        <div class="col-md-6 text-center mt-4">
+                                <div class="d-flex align-items-center justify-content-between w-100">
+                                        <h2 class="flex-grow-1 text-center">In Out Management System</h2>
+                                        <a class="nav-link d-flex align-items-center text-decoration-none" href="functions/signout.php">
+                                                <i class="material-icons">power_settings_new</i>
+                                                <p class="d-lg-none d-md-block mb-0 pl-2">Logout</p>
+                                        </a>
 				</div>
 				<h3><?= htmlspecialchars($_SESSION['locname'] ?? '') ?></h3>
 				<form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="GET">
@@ -195,7 +195,7 @@ error_reporting(E_ALL);
 						<?php else: ?>
 							<img src="assets/img/placeholder.png" class="rounded-circle mb-4" alt="...">
 						<?php endif; ?>
-						<h4 class="mb-0" style="font-weight: 800;"><?= htmlspecialchars($e_name ?? '') ?></h4>
+                                                <h4 class="mb-0 font-weight-bold"><?= htmlspecialchars($e_name ?? '') ?></h4>
 						<p class="mb-2"><?= htmlspecialchars($usn ?? '') ?></p>
 						<div class="status-inout 
 							<?= ($eventType == 'expired' || $msg == '3') ? 'text-warning' : (($d_status == "IN") ? 'text-success' : (($d_status == "OUT") ? 'text-danger' : 'text-warning')); ?> animated flash">
@@ -213,9 +213,9 @@ error_reporting(E_ALL);
 							<div class="text-danger font-weight-bold">MATRÍCULA EXPIRADA</div>
 						<?php endif; ?>
 					</div>
-				<?php } elseif ($eventType == 'not_found') { ?>
-					<div class="text-danger" style="font-size:2em;">Usuario no encontrado en la base de datos</div>
-				<?php } ?>
+                                <?php } elseif ($eventType == 'not_found') { ?>
+                                        <div class="text-danger h2">Usuario no encontrado en la base de datos</div>
+                                <?php } ?>
 
 				<!-- AUDIO SOLO POR TTS, SEGÚN GÉNERO -->
 				<?php

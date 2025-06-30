@@ -325,4 +325,4 @@ error_reporting(E_ALL);
 	});
 </script>
 <!-- MAIN CONTENT ENDS -->
-<?php require_once "./template/footer.php"; ?>
+<!-- <?php require_once "./template/footer.php"; ?> -->

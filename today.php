@@ -13,18 +13,18 @@
 	require "functions/general.php";	
 ?>
 <!-- MAIN CONTENT START -->
-<div class="content" style="min-height: calc(100vh - 160px);">
+<div class="content upeu-container" style="min-height: calc(100vh - 160px);">
 	<div class="container-fluid">
 	  <div class="row">
 	    <div class="col-md-12">
-	    	<div class="card">
+	    	<div class="card upeu-card">
 				  <div class="card-header card-header-info card-header-icon">
 				    <div class="card-icon">
 				      <i class="material-icons">assignment</i>
 				    </div>
 				    <h4 class="card-title">Today's In Out Report</h4>
 				  </div>
-				  <div class="card-body">
+				  <div class="card-body upeu-card-body">
 				  	<table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
 			        <thead>
 			          <tr>

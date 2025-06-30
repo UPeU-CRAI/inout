@@ -8,7 +8,7 @@
 	require_once "./template/sidebar.php";
 ?>
 <!-- MAIN CONTENT START -->
-<div class="content" style="min-height: calc(100vh - 160px);">
+<div class="content upeu-container" style="min-height: calc(100vh - 160px);">
 	<div class="container-fluid">
 	  <div class="row">
 	    <div class="col-md-12">

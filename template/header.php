@@ -8,6 +8,7 @@
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no" name="viewport">
     
     <!-- Stylesheets -->
+    <link rel="stylesheet" type="text/css" href="assets/css/upeu-theme.css">
     <link href="assets/css/material-icons.css" rel="stylesheet">
     <link href="assets/css/custom.css" rel="stylesheet">
     <link href="assets/css/material-dashboard.min.css" rel="stylesheet">
@@ -15,7 +16,6 @@
     <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="assets/css/clock.css">
     <link rel="stylesheet" type="text/css" href="assets/css/animate.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/upeu-theme.css">
     
     <!-- JavaScript -->
     <script src="assets/js/core/jquery.min.js" type="text/javascript"></script>

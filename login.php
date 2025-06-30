@@ -15,6 +15,7 @@ $msg = $_GET['msg'] ?? null;
     <title>Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no">
     
+    <link rel="stylesheet" type="text/css" href="assets/css/upeu-theme.css">
     <link href="assets/css/material-icons.css" rel="stylesheet">
     <link href="assets/css/material-dashboard.min.css" rel="stylesheet">
     <link href="assets/css/custom.css" rel="stylesheet">

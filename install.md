@@ -172,7 +172,8 @@ nano .env
 ```
 
 Fill in the values for `INOUT_DB_*` y `KOHA_DB_*`. La aplicación leerá
-automáticamente estas variables al iniciar.
+automáticamente estas variables al iniciar. Para que las portadas se muestren,
+define también `KOHA_OPAC_URL` con la URL base de tu OPAC.
 
 ### Step 5: Restart Apache
 

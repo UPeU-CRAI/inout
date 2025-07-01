@@ -14,12 +14,14 @@ Esta versión (`v1.3.1`) mejora los estilos CSS para una apariencia más pulida.
 * Sistema de roles de usuario (Master, Admin, User).
 * Generación de reportes de actividad.
 * Noticias y anuncios para los usuarios.
+* Novedades bibliográficas con imágenes de portada recientes.
 * Mensajes de saludo dinámicos y personalizados según rol y género.
 * Avisos automáticos cuando la cuenta de un usuario está expirada.
 * Síntesis de voz con Google Cloud Text-to-Speech para mensajes audibles.
 * Configuración flexible mediante variables de entorno.
 * Consultas preparadas y sanitización de entradas para mayor seguridad.
 * El campo de escaneo mantiene el foco automáticamente en el dashboard.
+* El panel de "New Arrivals" consulta Koha para mostrar las portadas de los últimos títulos ingresados.
 
 ## Pila Tecnológica
 
@@ -38,6 +40,9 @@ Para desplegar la aplicación sigue este resumen. Si necesitas un paso a paso m�
 3. **Importar la base de datos** ejecutando `DB/inout.sql` sobre tu instancia de MariaDB/MySQL.
 4. **Configurar la conexión** copiando el archivo `.env.example` a `.env` y completando tus credenciales de base de datos.
    Si deseas utilizar la síntesis de voz, proporciona también la ruta del JSON de Google en `TTS_CREDENTIALS_PATH`.
+   Para mostrar las carátulas en "New Arrivals" especifica la dirección base de tu OPAC en `KOHA_OPAC_URL`.
+   Asegúrate de que el archivo `.env` esté ubicado en la raíz del proyecto y que
+   dicha variable tenga un valor válido; si está vacía no se cargará la URL.
 
 5. **Configurar tu servidor web** creando un VirtualHost que apunte al directorio del proyecto y habilitando el módulo `rewrite`.
 

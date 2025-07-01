@@ -18,7 +18,8 @@ function load_env(string $path): void {
             continue;
         }
         list($name, $value) = array_map('trim', explode('=', $line, 2));
-        if ($name !== '' && getenv($name) === false) {
+        $current = getenv($name);
+        if ($name !== '' && ($current === false || $current === '')) {
             // Remove optional quotes around the value and unescape sequences
             if ((str_starts_with($value, '"') && str_ends_with($value, '"')) ||
                 (str_starts_with($value, "'") && str_ends_with($value, "'"))) {

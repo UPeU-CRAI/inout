@@ -13,6 +13,31 @@ h1, h2, h3, h4, h5, h6 {
     font-family: 'Montserrat', sans-serif;
 }
 
+.new-arrivals {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px 32px;        /* espacio entre portadas */
+  max-width: 520px;      /* 3 portadas + espacios, ajusta según tamaño */
+  margin: 32px auto 0 auto;
+  min-height: 540px;     /* asegura altura mínima para 3 filas */
+}
+
+.new-arrivals > img {
+  width: 140px;          /* tamaño portada */
+  height: 185px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px 0 #0002;
+  transition: transform 0.2s;
+}
+.new-arrivals > img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px 0 #0003;
+}
+
+
+
 h2.text_titulo1 {
   font-family: 'Prompt', Helvetica, Arial, Lucida, sans-serif;
   font-weight: 600;

@@ -16,9 +16,9 @@ h1, h2, h3, h4, h5, h6 {
 .new-arrivals {
   display: grid !important;
   grid-template-columns: repeat(3, 1fr);
-  gap: 28px 32px;        /* espacio entre portadas */
+  gap: 5px 10px;        /* espacio entre portadas */
   max-width: 520px;      /* 3 portadas + espacios, ajusta según tamaño */
-  margin: 32px auto 0 auto;
+  margin: 0px auto 0 auto;
   min-height: 540px;     /* asegura altura mínima para 3 filas */
 }
 

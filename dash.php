@@ -126,14 +126,24 @@ error_reporting(E_ALL);
 						    <?php
 						        $baseUrl = getenv('KOHA_OPAC_URL') ?: '';
 						        $covers = getNewArrivalsCovers($koha, $baseUrl, 8);
+						
+						        // Rellenar con imagen por defecto si hay menos de 8 portadas
+						        $placeholder = 'assets/img/placeholder.png';
+						        $total = 8;
+						        $covers = array_slice($covers, 0, $total); // Limita máximo a 8
+						        while (count($covers) < $total) {
+						            $covers[] = $placeholder;
+						        }
+						
 						        echo '<div class="new-arrivals">';
 						        foreach ($covers as $url) {
-						            echo '<img src="' . htmlspecialchars($url) . '" alt="Book cover">';
+						            // Solo imprime la portada si la URL no está vacía
+						            $src = !empty($url) ? htmlspecialchars($url) : $placeholder;
+						            echo '<img src="' . $src . '" alt="Book cover">';
 						        }
 						        echo '</div>';
 						    ?>
 						<?php endif; ?>
-
 
 						<?php if ($quote): ?>
 							<div class="card-block2" style="min-height: calc(100vh - 430px);">

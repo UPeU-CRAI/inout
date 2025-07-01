@@ -14,21 +14,32 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .new-arrivals {
-  display: flex;
+  display: flex !important;
   flex-wrap: wrap;
-  justify-content: center;    /* centra el contenido en el contenedor */
-  gap: 20px 30px;             /* espacio entre imágenes (vertical y horizontal) */
-  max-width: 600px;           /* ajusta según tu gusto */
-  margin: 0 auto;
+  justify-content: center;        /* Centra horizontalmente */
+  align-items: flex-start;        /* Alinea arriba en caso de diferentes alturas */
+  max-width: 700px;               /* Ajusta según el tamaño de tus portadas */
+  margin: 32px auto 0 auto;       /* Espaciado superior y centrado */
+  gap: 28px 32px;                 /* Espacio vertical y horizontal */
+  min-height: 350px;              /* Para evitar que la segunda fila suba si faltan portadas */
 }
 
 .new-arrivals > img {
-  flex: 1 0 21%;             /* 21% para 4 imágenes por fila (ajusta si quieres más o menos espacio) */
-  max-width: 120px;          /* tamaño máximo de cada portada */
-  height: auto;
-  object-fit: contain;
-  margin-bottom: 12px;
+  flex: 0 1 22%;                  /* Aproximadamente 4 por fila */
+  max-width: 140px;               /* Controla el tamaño de cada portada */
+  height: 185px;                  /* Alto fijo para todas (o ajusta según tu diseño) */
+  object-fit: contain;            /* Mantiene proporción sin deformar */
+  background: #fff;               /* Fondo blanco para las portadas */
+  border-radius: 6px;             /* Bordes suaves */
+  box-shadow: 0 4px 10px 0 #0002;/* Sombra sutil */
+  margin-bottom: 0;               /* Gap ya se encarga */
+  transition: transform 0.2s;
 }
+.new-arrivals > img:hover {
+  transform: scale(1.06);
+  box-shadow: 0 8px 20px 0 #0003;
+}
+
 
 h2.text_titulo1 {
   font-family: 'Prompt', Helvetica, Arial, Lucida, sans-serif;

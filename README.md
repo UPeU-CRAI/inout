@@ -1,10 +1,10 @@
-# Sistema de Gestión de Entradas/Salidas (In/Out Management System) v1.3.0
+# Sistema de Gestión de Entradas/Salidas (In/Out Management System) v1.3.1
 
 ## Descripción
 
 Este proyecto es un sistema de gestión de entradas y salidas de usuarios, diseñado principalmente para monitorear el flujo de personas en bibliotecas (CRAI) y otras instalaciones. El sistema registra la hora de entrada y salida de cada usuario mediante un número de tarjeta o código de identificación y se integra con la base de datos de Koha para obtener información del usuario.
 
-Esta versión (`v1.3.0`) incorpora la síntesis de voz de Google Cloud para generar saludos audibles y refina el manejo de mensajes tanto en pantalla como por voz. Además mantiene la configuración mediante el archivo `.env` y las mejoras de seguridad previas.
+Esta versión (`v1.3.1`) mejora los estilos CSS para una apariencia más pulida. También mantiene la integración con la síntesis de voz de Google Cloud introducida en `v1.3.0`, refinando el manejo de mensajes tanto en pantalla como por voz. Además conserva la configuración mediante el archivo `.env` y las mejoras de seguridad previas.
 
 ## Características
 
@@ -54,6 +54,7 @@ Si importaste la base de datos incluida encontrarás estos usuarios iniciales:
 ---
 ## Historial de versiones
 
+- **v1.3.1** - Correcciones y mejoras en los estilos CSS para una presentación más consistente.
 - **v1.3.0** - Integración con Google Cloud Text-to-Speech y plantillas de mensajes por voz. Mejora la lógica de mensajes en pantalla y audio, evitando repeticiones y normalizando categorías.
 - **v1.2.0** - Nueva carga de credenciales mediante archivo `.env`.
 - **v1.1.2** - Mejoras de seguridad con consultas preparadas y compatibilidad con contraseñas antiguas.

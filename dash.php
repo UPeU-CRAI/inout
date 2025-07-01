@@ -121,21 +121,19 @@ error_reporting(E_ALL);
 							</div>
 						<?php endif; ?>
 
-                                                <?php if ($new_arrivals): ?>
-                                                        <h3 class="text-center">New Arrivals</h3>
-                                                        <?php
-                                                        $baseUrl = getenv('KOHA_OPAC_URL') ?: '';
-                                                        $covers = getNewArrivalsCovers($koha, $baseUrl, 8);
-                                                        $chunks = array_chunk($covers, 4);
-                                                        foreach ($chunks as $chunk) {
-                                                                echo '<div class="new-arrivals">';
-                                                                foreach ($chunk as $url) {
-                                                                        echo '<img src="' . htmlspecialchars($url) . '" alt="Book cover">';
-                                                                }
-                                                                echo '</div>';
-                                                        }
-                                                        ?>
-                                                <?php endif; ?>
+						<?php if ($new_arrivals): ?>
+						    <h3 class="text-center">Nuevas adquisiciones</h3>
+						    <?php
+						        $baseUrl = getenv('KOHA_OPAC_URL') ?: '';
+						        $covers = getNewArrivalsCovers($koha, $baseUrl, 8);
+						        echo '<div class="new-arrivals">';
+						        foreach ($covers as $url) {
+						            echo '<img src="' . htmlspecialchars($url) . '" alt="Book cover">';
+						        }
+						        echo '</div>';
+						    ?>
+						<?php endif; ?>
+
 
 						<?php if ($quote): ?>
 							<div class="card-block2" style="min-height: calc(100vh - 430px);">

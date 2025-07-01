@@ -121,17 +121,26 @@ error_reporting(E_ALL);
 							</div>
 						<?php endif; ?>
 
-						<?php if ($new_arrivals): ?>
-							<h3 class="text-center">New Arrivals</h3>
-							<div class="new-arrivals">
-								<img src="assets/books/1.png"><img src="assets/books/2.png">
-								<img src="assets/books/3.png"><img src="assets/books/4.png">
-							</div>
-							<div class="new-arrivals">
-								<img src="assets/books/5.png"><img src="assets/books/6.png">
-								<img src="assets/books/7.png"><img src="assets/books/8.png">
-							</div>
-						<?php endif; ?>
+                                                <?php if ($new_arrivals): ?>
+                                                        <h3 class="text-center">New Arrivals</h3>
+                                                        <?php
+                                                        $covers = [];
+                                                        $sql = "SELECT DISTINCT biblionumber FROM items ORDER BY dateaccessioned DESC LIMIT 8";
+                                                        if ($result = mysqli_query($koha, $sql)) {
+                                                                while ($row = mysqli_fetch_assoc($result)) {
+                                                                        $covers[] = '/cgi-bin/koha/opac-image.pl?thumbnail=1&biblionumber=' . urlencode($row['biblionumber']);
+                                                                }
+                                                        }
+                                                        $chunks = array_chunk($covers, 4);
+                                                        foreach ($chunks as $chunk) {
+                                                                echo '<div class="new-arrivals">';
+                                                                foreach ($chunk as $url) {
+                                                                        echo '<img src="' . htmlspecialchars($url) . '" alt="Book cover">';
+                                                                }
+                                                                echo '</div>';
+                                                        }
+                                                        ?>
+                                                <?php endif; ?>
 
 						<?php if ($quote): ?>
 							<div class="card-block2" style="min-height: calc(100vh - 430px);">

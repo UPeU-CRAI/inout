@@ -161,5 +161,25 @@
     return $result;
   }
 
+  /**
+   * Fetch an array of cover image URLs for the most recent items in Koha.
+   *
+   * @param mysqli  $koha    Connection to the Koha database.
+   * @param string  $baseUrl Base OPAC URL. Trailing slash will be trimmed.
+   * @param int     $limit   Number of covers to return.
+   * @return array
+   */
+  function getNewArrivalsCovers(mysqli $koha, string $baseUrl, int $limit = 8): array {
+    $covers = [];
+    $limit = max(1, (int)$limit);
+    $sql = "SELECT DISTINCT biblionumber FROM items ORDER BY dateaccessioned DESC LIMIT $limit";
+    if ($result = mysqli_query($koha, $sql)) {
+      while ($row = mysqli_fetch_assoc($result)) {
+        $covers[] = rtrim($baseUrl, '/') . '/cgi-bin/koha/opac-image.pl?thumbnail=1&biblionumber=' . urlencode($row['biblionumber']);
+      }
+    }
+    return $covers;
+  }
+
 
 ?>

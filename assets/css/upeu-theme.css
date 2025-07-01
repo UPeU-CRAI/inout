@@ -14,21 +14,21 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .new-arrivals {
-  display: grid !important;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  justify-items: center;
-  align-items: center;
-  max-width: 650px; /* ajusta si quieres centrar mejor */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;    /* centra el contenido en el contenedor */
+  gap: 20px 30px;             /* espacio entre imágenes (vertical y horizontal) */
+  max-width: 600px;           /* ajusta según tu gusto */
   margin: 0 auto;
 }
+
 .new-arrivals > img {
-  width: 130px;
+  flex: 1 0 21%;             /* 21% para 4 imágenes por fila (ajusta si quieres más o menos espacio) */
+  max-width: 120px;          /* tamaño máximo de cada portada */
   height: auto;
   object-fit: contain;
+  margin-bottom: 12px;
 }
-
-
 
 h2.text_titulo1 {
   font-family: 'Prompt', Helvetica, Arial, Lucida, sans-serif;

@@ -14,31 +14,28 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .new-arrivals {
-  display: flex !important;
-  flex-wrap: wrap;
-  justify-content: center;        /* Centra horizontalmente */
-  align-items: flex-start;        /* Alinea arriba en caso de diferentes alturas */
-  max-width: 700px;               /* Ajusta según el tamaño de tus portadas */
-  margin: 32px auto 0 auto;       /* Espaciado superior y centrado */
-  gap: 28px 32px;                 /* Espacio vertical y horizontal */
-  min-height: 350px;              /* Para evitar que la segunda fila suba si faltan portadas */
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px 32px;        /* espacio entre portadas */
+  max-width: 520px;      /* 3 portadas + espacios, ajusta según tamaño */
+  margin: 32px auto 0 auto;
+  min-height: 540px;     /* asegura altura mínima para 3 filas */
 }
 
 .new-arrivals > img {
-  flex: 0 1 22%;                  /* Aproximadamente 4 por fila */
-  max-width: 140px;               /* Controla el tamaño de cada portada */
-  height: 185px;                  /* Alto fijo para todas (o ajusta según tu diseño) */
-  object-fit: contain;            /* Mantiene proporción sin deformar */
-  background: #fff;               /* Fondo blanco para las portadas */
-  border-radius: 6px;             /* Bordes suaves */
-  box-shadow: 0 4px 10px 0 #0002;/* Sombra sutil */
-  margin-bottom: 0;               /* Gap ya se encarga */
+  width: 140px;          /* tamaño portada */
+  height: 185px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px 0 #0002;
   transition: transform 0.2s;
 }
 .new-arrivals > img:hover {
-  transform: scale(1.06);
+  transform: scale(1.05);
   box-shadow: 0 8px 20px 0 #0003;
 }
+
 
 
 h2.text_titulo1 {

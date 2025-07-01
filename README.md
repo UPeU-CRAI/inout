@@ -14,12 +14,14 @@ Esta versión (`v1.3.1`) mejora los estilos CSS para una apariencia más pulida.
 * Sistema de roles de usuario (Master, Admin, User).
 * Generación de reportes de actividad.
 * Noticias y anuncios para los usuarios.
+* Novedades bibliográficas con imágenes de portada recientes.
 * Mensajes de saludo dinámicos y personalizados según rol y género.
 * Avisos automáticos cuando la cuenta de un usuario está expirada.
 * Síntesis de voz con Google Cloud Text-to-Speech para mensajes audibles.
 * Configuración flexible mediante variables de entorno.
 * Consultas preparadas y sanitización de entradas para mayor seguridad.
 * El campo de escaneo mantiene el foco automáticamente en el dashboard.
+* El panel de "New Arrivals" consulta Koha para mostrar las portadas de los últimos títulos ingresados.
 
 ## Pila Tecnológica
 

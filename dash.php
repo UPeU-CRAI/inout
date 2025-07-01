@@ -125,10 +125,11 @@ error_reporting(E_ALL);
                                                         <h3 class="text-center">New Arrivals</h3>
                                                         <?php
                                                         $covers = [];
+                                                        $baseUrl = rtrim(getenv('KOHA_OPAC_URL') ?: '', '/');
                                                         $sql = "SELECT DISTINCT biblionumber FROM items ORDER BY dateaccessioned DESC LIMIT 8";
                                                         if ($result = mysqli_query($koha, $sql)) {
                                                                 while ($row = mysqli_fetch_assoc($result)) {
-                                                                        $covers[] = '/cgi-bin/koha/opac-image.pl?thumbnail=1&biblionumber=' . urlencode($row['biblionumber']);
+                                                                        $covers[] = $baseUrl . '/cgi-bin/koha/opac-image.pl?thumbnail=1&biblionumber=' . urlencode($row['biblionumber']);
                                                                 }
                                                         }
                                                         $chunks = array_chunk($covers, 4);

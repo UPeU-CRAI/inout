@@ -13,6 +13,23 @@ h1, h2, h3, h4, h5, h6 {
     font-family: 'Montserrat', sans-serif;
 }
 
+.new-arrivals {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  justify-items: center;
+  align-items: center;
+  max-width: 650px; /* ajusta si quieres centrar mejor */
+  margin: 0 auto;
+}
+.new-arrivals > img {
+  width: 130px;
+  height: auto;
+  object-fit: contain;
+}
+
+
+
 h2.text_titulo1 {
   font-family: 'Prompt', Helvetica, Arial, Lucida, sans-serif;
   font-weight: 600;

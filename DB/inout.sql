@@ -129,7 +129,8 @@ INSERT INTO `setup` (`var`, `value`) VALUES
 ('noname', 'USN'),
 ('sessiontime', '7200'),
 ('banner', 'false'),
-('activedash', 'quote');
+('activedash', 'quote'),
+('tts_provider', 'google');
 
 -- --------------------------------------------------------
 

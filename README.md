@@ -40,9 +40,15 @@ Para desplegar la aplicación sigue este resumen. Si necesitas un paso a paso m�
 3. **Importar la base de datos** ejecutando `DB/inout.sql` sobre tu instancia de MariaDB/MySQL.
 4. **Configurar la conexión** copiando el archivo `.env.example` a `.env` y completando tus credenciales de base de datos.
    Si deseas utilizar la síntesis de voz, proporciona también la ruta del JSON de Google en `TTS_CREDENTIALS_PATH`.
+   Para Azure Speech, define tus credenciales en `SPEECH_KEY` y `SPEECH_REGION`.
    Para mostrar las carátulas en "New Arrivals" especifica la dirección base de tu OPAC en `KOHA_OPAC_URL`.
    Asegúrate de que el archivo `.env` esté ubicado en la raíz del proyecto y que
    dicha variable tenga un valor válido; si está vacía no se cargará la URL.
+
+   Para usar Azure Text-to-Speech define además `SPEECH_KEY` y `SPEECH_REGION`
+   en ese mismo archivo. Luego crea (o actualiza) la fila `tts_provider` en la
+   tabla `setup` de la base de datos con el valor `azure` o `google` según el
+   servicio que prefieras.
 
 5. **Configurar tu servidor web** creando un VirtualHost que apunte al directorio del proyecto y habilitando el módulo `rewrite`.
 

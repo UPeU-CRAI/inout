@@ -6,12 +6,13 @@
     "authors": [
         {
             "name": "Alberto Sánchez",
-            "email": "atisbo78@gmail.com"
+            "email": "atisbo7isbo78@gmail.com"
         }
     ],
     "minimum-stability": "stable",
     "require": {
         "google/cloud-text-to-speech": "^2.2",
-        "vlucas/phpdotenv": "^5.6"
+        "vlucas/phpdotenv": "^5.6",
+        "microsoft/cognitive-services-speech-sdk-php": "^1.33"
     }
 }

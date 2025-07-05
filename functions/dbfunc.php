@@ -49,22 +49,22 @@
 		return $result;
 	}
 
-        function getDataById(mysqli $conn, string $table, int $id){
-                $sql = "SELECT * FROM `$table` WHERE id = ?";
-                $stmt = mysqli_prepare($conn, $sql);
-                if(!$stmt){
-                        echo "Can't prepare statement " . mysqli_error($conn);
-                        exit;
-                }
-                mysqli_stmt_bind_param($stmt, 'i', $id);
-                mysqli_stmt_execute($stmt);
-                $result = mysqli_stmt_get_result($stmt);
-                if(!$result){
-                        echo "Can't retrieve data " . mysqli_error($conn);
-                        exit;
-                }
-                return $result;
-        }
+	function getDataById(mysqli $conn, string $table, int $id){
+		$sql = "SELECT * FROM `$table` WHERE id = ?";
+		$stmt = mysqli_prepare($conn, $sql);
+		if(!$stmt){
+			echo "Can't prepare statement " . mysqli_error($conn);
+			exit;
+		}
+		mysqli_stmt_bind_param($stmt, 'i', $id);
+		mysqli_stmt_execute($stmt);
+		$result = mysqli_stmt_get_result($stmt);
+		if(!$result){
+			echo "Can't retrieve data " . mysqli_error($conn);
+			exit;
+		}
+		return $result;
+	}
 
 	function getQueue($conn){
 		$query = "SELECT count(_id) FROM reg WHERE status='queue' AND session='{$_SESSION['t']}'";
@@ -81,24 +81,24 @@
 		return $result;
 	}
 
-        function getDataBySpesificId(mysqli $conn, string $table, string $var, $var2){
-                $column = preg_replace('/[^a-zA-Z0-9_]/', '', $var);
-                $sql = "SELECT * FROM `$table` WHERE `$column` = ?";
-                $stmt = mysqli_prepare($conn, $sql);
-                if(!$stmt){
-                        echo "Can't prepare statement " . mysqli_error($conn);
-                        exit;
-                }
-                $type = is_int($var2) ? 'i' : 's';
-                mysqli_stmt_bind_param($stmt, $type, $var2);
-                mysqli_stmt_execute($stmt);
-                $result = mysqli_stmt_get_result($stmt);
-                if(!$result){
-                        echo "Can't retrieve data " . mysqli_error($conn);
-                        exit;
-                }
-                return $result;
-        }
+	function getDataBySpesificId(mysqli $conn, string $table, string $var, $var2){
+		$column = preg_replace('/[^a-zA-Z0-9_]/', '', $var);
+		$sql = "SELECT * FROM `$table` WHERE `$column` = ?";
+		$stmt = mysqli_prepare($conn, $sql);
+		if(!$stmt){
+			echo "Can't prepare statement " . mysqli_error($conn);
+			exit;
+		}
+		$type = is_int($var2) ? 'i' : 's';
+		mysqli_stmt_bind_param($stmt, $type, $var2);
+		mysqli_stmt_execute($stmt);
+		$result = mysqli_stmt_get_result($stmt);
+		if(!$result){
+			echo "Can't retrieve data " . mysqli_error($conn);
+			exit;
+		}
+		return $result;
+	}
 
 	function setupStats($conn){
 	  $query = "SELECT value FROM `setup` where var='cname'";
@@ -162,33 +162,31 @@
   }
 
   /**
-   * Retrieve the value for a specific variable from the setup table.
+   * Retrieve a single value from the `setup` table.
    *
-   * @param mysqli $conn Active database connection.
-   * @param string $var  Variable name to search for.
-   * @return string|null The value if found or null otherwise.
+   * @param mysqli $conn  Database connection
+   * @param string $name  Setting name
+   * @return string|null  Setting value or null if not found
    */
-  function getSetupValue(mysqli $conn, string $var): string|null {
-    $sql  = "SELECT value FROM setup WHERE var = ?";
+  function get_setting(mysqli $conn, string $name): ?string {
+    $sql = "SELECT value FROM setup WHERE var = ?";
     $stmt = mysqli_prepare($conn, $sql);
     if (!$stmt) {
       return null;
     }
-    mysqli_stmt_bind_param($stmt, 's', $var);
+    mysqli_stmt_bind_param($stmt, 's', $name);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
-    if ($result && ($row = mysqli_fetch_row($result))) {
-      return $row[0];
-    }
-    return null;
+    $row = mysqli_fetch_assoc($result);
+    return $row['value'] ?? null;
   }
 
   /**
    * Fetch an array of cover image URLs for the most recent items in Koha.
    *
-   * @param mysqli  $koha    Connection to the Koha database.
+   * @param mysqli  $koha     Connection to the Koha database.
    * @param string  $baseUrl Base OPAC URL. Trailing slash will be trimmed.
-   * @param int     $limit   Number of covers to return.
+   * @param int     $limit    Number of covers to return.
    * @return array
    */
   function getNewArrivalsCovers(mysqli $koha, string $baseUrl, int $limit = 8): array {
@@ -202,6 +200,4 @@
     }
     return $covers;
   }
-
-
 ?>

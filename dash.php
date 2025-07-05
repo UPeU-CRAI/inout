@@ -15,10 +15,11 @@ error_reporting(E_ALL);
 	require_once "./template/header.php";
 	require "functions/dbfunc.php";
 	require_once "functions/MessageHandler.php";
-	require_once "functions/PersonalizedGreeting.php";
+require_once "functions/PersonalizedGreeting.php";
 
-	$messageHandler = new MessageHandler();
-	$tts = new PersonalizedGreeting();
+$messageHandler = new MessageHandler();
+$provider = get_setting($conn, 'tts_provider') ?: 'google';
+$tts = new PersonalizedGreeting($provider);
 
 	function getEventType($msg)
 	{

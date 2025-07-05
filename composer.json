@@ -12,6 +12,7 @@
     "minimum-stability": "stable",
     "require": {
         "google/cloud-text-to-speech": "^2.2",
+        "microsoft/cognitive-services-speech-sdk-php": "^1.33",
         "vlucas/phpdotenv": "^5.6"
     }
 }

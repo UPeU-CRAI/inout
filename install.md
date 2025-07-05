@@ -175,6 +175,10 @@ Fill in the values for `INOUT_DB_*` y `KOHA_DB_*`. La aplicación leerá
 automáticamente estas variables al iniciar. Para que las portadas se muestren,
 define también `KOHA_OPAC_URL` con la URL base de tu OPAC.
 
+If you plan to use text-to-speech you can choose **Google** or **Azure** as the
+provider. Set `SPEECH_KEY` and `SPEECH_REGION` in `.env` for Azure and update the
+`tts_provider` record in the `setup` table (`google` is the default).
+
 ### Step 5: Restart Apache
 
 ```bash
@@ -207,6 +211,9 @@ Now that the system is set up, here's how you can log in:
 
 - **Username:** admin
 - **Password:** library
+
+If you configured a text-to-speech provider, greeting messages will play aloud
+when users log in or out.
 
 ---
 

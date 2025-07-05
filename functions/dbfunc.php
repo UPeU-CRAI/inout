@@ -162,6 +162,26 @@
   }
 
   /**
+   * Retrieve a single value from the `setup` table.
+   *
+   * @param mysqli $conn  Database connection
+   * @param string $name  Setting name
+   * @return string|null  Setting value or null if not found
+   */
+  function get_setting(mysqli $conn, string $name): ?string {
+    $sql = "SELECT value FROM setup WHERE var = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) {
+      return null;
+    }
+    mysqli_stmt_bind_param($stmt, 's', $name);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($result);
+    return $row['value'] ?? null;
+  }
+
+  /**
    * Fetch an array of cover image URLs for the most recent items in Koha.
    *
    * @param mysqli  $koha    Connection to the Koha database.

@@ -5,18 +5,23 @@ use Google\Cloud\TextToSpeech\V1\VoiceSelectionParams;
 use Google\Cloud\TextToSpeech\V1\AudioConfig;
 use Google\Cloud\TextToSpeech\V1\AudioEncoding;
 use Google\Cloud\TextToSpeech\V1\SynthesizeSpeechRequest;
+use Microsoft\CognitiveServices\Speech\SpeechConfig as AzureSpeechConfig;
+use Microsoft\CognitiveServices\Speech\SpeechSynthesizer as AzureSpeechSynthesizer;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/env_loader.php';
 
 class PersonalizedGreeting
 {
+    private string $provider;
     private ?TextToSpeechClient $client = null;
 
-    public function __construct()
+    public function __construct(string $provider = 'google')
     {
+        $this->provider = strtolower($provider);
+
         $credentials = getenv('TTS_CREDENTIALS_PATH');
-        if ($credentials && file_exists($credentials)) {
+        if ($this->provider === 'google' && $credentials && file_exists($credentials)) {
             putenv('GOOGLE_APPLICATION_CREDENTIALS=' . $credentials);
             try {
                 $this->client = new TextToSpeechClient();
@@ -36,7 +41,19 @@ class PersonalizedGreeting
      */
     public function synthesizeVoice(string $voiceText, string $gender = 'M'): string
     {
-        if ($this->client === null || trim($voiceText) === '') {
+        if (trim($voiceText) === '') {
+            return '';
+        }
+
+        return match ($this->provider) {
+            'azure'  => $this->synthesizeAzure($voiceText, $gender),
+            default => $this->synthesizeGoogle($voiceText, $gender),
+        };
+    }
+
+    private function synthesizeGoogle(string $voiceText, string $gender): string
+    {
+        if ($this->client === null) {
             return '';
         }
 
@@ -45,7 +62,6 @@ class PersonalizedGreeting
 
             $languageCode = getenv('TTS_LANGUAGE_CODE') ?: 'es-ES';
 
-            // Voz según género:
             $gender = strtoupper($gender);
             if ($gender === 'F') {
                 $voiceName = getenv('TTS_VOICE_B') ?: getenv('TTS_VOICE') ?: 'es-ES-Wavenet-B';
@@ -72,10 +88,41 @@ class PersonalizedGreeting
             }
             $b64 = base64_encode($audioContent);
             $src = "data:audio/mpeg;base64,$b64";
-            // Usamos un ID fijo para controlarlo fácilmente con JS si quieres
             return "<audio id=\"tts-audio\" autoplay style=\"display:none\"><source src=\"$src\" type=\"audio/mpeg\"></audio>";
         } catch (\Exception $e) {
-            // Puedes hacer log del error si lo deseas
+            return '';
+        }
+    }
+
+    private function synthesizeAzure(string $voiceText, string $gender): string
+    {
+        $key = getenv('SPEECH_KEY');
+        $region = getenv('SPEECH_REGION');
+        if (!$key || !$region) {
+            return '';
+        }
+
+        try {
+            $config = AzureSpeechConfig::fromSubscription($key, $region);
+            $languageCode = getenv('TTS_LANGUAGE_CODE') ?: 'es-ES';
+            $gender = strtoupper($gender);
+            if ($gender === 'F') {
+                $voiceName = getenv('TTS_VOICE_B') ?: 'es-ES-ElviraNeural';
+            } else {
+                $voiceName = getenv('TTS_VOICE_A') ?: 'es-ES-AlvaroNeural';
+            }
+            $config->setSpeechSynthesisLanguage($languageCode);
+            $config->setSpeechSynthesisVoiceName($voiceName);
+            $synth = new AzureSpeechSynthesizer($config);
+            $result = $synth->speakText($voiceText);
+            $audio = $result->getAudioData();
+            if (!$audio) {
+                return '';
+            }
+            $b64 = base64_encode($audio);
+            $src = "data:audio/mpeg;base64,$b64";
+            return "<audio id=\"tts-audio\" autoplay style=\"display:none\"><source src=\"$src\" type=\"audio/mpeg\"></audio>";
+        } catch (\Exception $e) {
             return '';
         }
     }

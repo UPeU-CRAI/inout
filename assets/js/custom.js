@@ -47,8 +47,16 @@ function playTTS(text) {
   $.ajax({
     url: 'tts.php',
     method: 'POST',
+    dataType: 'json',
     data: { text: text },
-    success: function (html) {
+    success: function (resp) {
+      if (!resp || !resp.audio_male) {
+        window.location.replace('dash.php');
+        return;
+      }
+
+      var html = '<audio id="tts-audio" autoplay style="display:none">' +
+        '<source src="data:audio/mpeg;base64,' + resp.audio_male + '" type="audio/mpeg"></audio>';
       $('body').append(html);
       attachAudioRedirect();
     }

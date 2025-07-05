@@ -27,17 +27,13 @@ class PersonalizedGreeting
     }
 
     /**
-     * Devuelve un tag <audio> HTML para reproducir el TTS (o string vacío si falla).
-     * Puedes pasar género ("F", "M", o cualquier valor) para seleccionar voz femenina/masculina.
-     * 
-     * @param string $voiceText  El texto que se leerá.
-     * @param string $gender     "F" para femenino, "M" para masculino, otro para default.
-     * @return string            HTML <audio> tag embebido con el audio generado, o vacío si falla.
+     * Generate base64 encoded audio for the given text and gender.
+     * Returns null on failure.
      */
-    public function synthesizeVoice(string $voiceText, string $gender = 'M'): string
+    public function synthesizeVoiceData(string $voiceText, string $gender = 'M'): ?string
     {
         if ($this->client === null || trim($voiceText) === '') {
-            return '';
+            return null;
         }
 
         try {
@@ -45,7 +41,6 @@ class PersonalizedGreeting
 
             $languageCode = getenv('TTS_LANGUAGE_CODE') ?: 'es-ES';
 
-            // Voz según género:
             $gender = strtoupper($gender);
             if ($gender === 'F') {
                 $voiceName = getenv('TTS_VOICE_B') ?: getenv('TTS_VOICE') ?: 'es-ES-Wavenet-B';
@@ -68,15 +63,30 @@ class PersonalizedGreeting
             $response = $this->client->synthesizeSpeech($request);
             $audioContent = $response->getAudioContent();
             if (!$audioContent) {
-                return '';
+                return null;
             }
-            $b64 = base64_encode($audioContent);
-            $src = "data:audio/mpeg;base64,$b64";
-            // Usamos un ID fijo para controlarlo fácilmente con JS si quieres
-            return "<audio id=\"tts-audio\" autoplay style=\"display:none\"><source src=\"$src\" type=\"audio/mpeg\"></audio>";
+            return base64_encode($audioContent);
         } catch (\Exception $e) {
-            // Puedes hacer log del error si lo deseas
+            return null;
+        }
+    }
+
+    /**
+     * Devuelve un tag <audio> HTML para reproducir el TTS (o string vacío si falla).
+     * Puedes pasar género ("F", "M", o cualquier valor) para seleccionar voz femenina/masculina.
+     * 
+     * @param string $voiceText  El texto que se leerá.
+     * @param string $gender     "F" para femenino, "M" para masculino, otro para default.
+     * @return string            HTML <audio> tag embebido con el audio generado, o vacío si falla.
+     */
+    public function synthesizeVoice(string $voiceText, string $gender = 'M'): string
+    {
+        $b64 = $this->synthesizeVoiceData($voiceText, $gender);
+        if (!$b64) {
             return '';
         }
+
+        $src = "data:audio/mpeg;base64,$b64";
+        return "<audio id=\"tts-audio\" autoplay style=\"display:none\"><source src=\"$src\" type=\"audio/mpeg\"></audio>";
     }
 }

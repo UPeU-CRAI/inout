@@ -35,8 +35,8 @@ class AzureSpeech
 
         $gender = strtoupper($gender);
         $voiceName = $gender === 'F'
-            ? getenv('AZURE_TTS_VOICE_B') ?: 'en-US-JennyNeural'
-            : getenv('AZURE_TTS_VOICE_A') ?: 'en-US-AndrewNeural';
+            ? (getenv('AZURE_TTS_VOICE_B') ?: 'en-US-JennyNeural')
+            : (getenv('AZURE_TTS_VOICE_A') ?: 'en-US-AndrewNeural');
         $language = getenv('AZURE_TTS_LANGUAGE_CODE') ?: substr($voiceName, 0, 5);
         $format = getenv('AZURE_TTS_FORMAT') ?: 'audio-16khz-32kbitrate-mono-mp3';
 

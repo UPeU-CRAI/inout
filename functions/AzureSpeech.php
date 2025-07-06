@@ -1,10 +1,10 @@
 <?php
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/env_loader.php';
+
 use Microsoft\CognitiveServices\Speech\SpeechConfig;
 use Microsoft\CognitiveServices\Speech\SpeechSynthesizer;
 use Microsoft\CognitiveServices\Speech\ResultReason;
-
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/env_loader.php';
 
 class AzureSpeech
 {

@@ -3,6 +3,9 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+        // Carga variables de entorno desde .env
+        require_once "./functions/env_loader.php";
+
 	include "./process/operations/main.php";
 	include "./process/operations/stats.php";
 	$title = "Gate Register";
@@ -15,10 +18,16 @@ error_reporting(E_ALL);
 	require_once "./template/header.php";
 	require "functions/dbfunc.php";
 	require_once "functions/MessageHandler.php";
-	require_once "functions/PersonalizedGreeting.php";
+        $messageHandler = new MessageHandler();
 
-	$messageHandler = new MessageHandler();
-	$tts = new PersonalizedGreeting();
+        $provider = strtolower(getenv('TTS_PROVIDER') ?: 'google');
+        if ($provider === 'azure') {
+                require_once './functions/AzureSpeech.php';
+                $tts = new AzureSpeech();
+        } else {
+                require_once './functions/PersonalizedGreeting.php';
+                $tts = new PersonalizedGreeting();
+        }
 
 	function getEventType($msg)
 	{

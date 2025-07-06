@@ -51,6 +51,50 @@ Para desplegar la aplicación sigue este resumen. Si necesitas un paso a paso m�
 
 Tras estos pasos la aplicación quedará lista para acceder desde `http://tu-dominio/login.php`.
 
+## Integración con Azure Speech TTS (REST API)
+
+La síntesis de voz con Azure se implementa exclusivamente mediante la **REST API**.
+No se utiliza ningún SDK oficial de PHP, ya que actualmente no existe soporte
+completo para este lenguaje. La clase `AzureSpeech` hace uso de la extensión
+**cURL** y funciones nativas de PHP para obtener el token de autenticación y
+generar el audio.
+
+### Requisitos
+
+- PHP 8.1 con la extensión `cURL` habilitada. En sistemas basados en Debian o
+  Ubuntu puede instalarse con:
+
+  ```bash
+  sudo apt-get install php8.1-curl
+  ```
+
+  Para otras distribuciones consulta el gestor de paquetes correspondiente.
+- Definir `TTS_PROVIDER=azure` en el archivo `.env` o variables de entorno.
+- Proveer las credenciales y valores de configuración que se indican a
+  continuación.
+
+### Variables necesarias
+
+```ini
+SPEECH_KEY=YOUR_AZURE_SPEECH_KEY
+SPEECH_REGION=YOUR_AZURE_REGION
+AZURE_TTS_VOICE_A=es-MX-JorgeNeural
+AZURE_TTS_VOICE_B=es-MX-DaliaNeural
+AZURE_TTS_LANGUAGE_CODE=es-MX
+#AZURE_TTS_FORMAT=audio-16khz-32kbitrate-mono-mp3
+```
+
+Estas voces son solo un ejemplo. Puedes personalizarlas editando el archivo
+`.env` o configurando variables de entorno del sistema. Al modificar estos
+valores, el sistema usará las nuevas voces e idioma en las solicitudes a Azure.
+
+Tras cambiar el `.env` recuerda reiniciar Apache/Nginx o el proceso PHP-FPM para
+que PHP recargue las variables.
+
+Consulta el [listado oficial de voces de Azure](https://learn.microsoft.com/azure/cognitive-services/speech-service/language-support?tabs=tts)
+y la [documentación de la API REST](https://learn.microsoft.com/azure/cognitive-services/speech-service/rest-text-to-speech)
+para más detalles.
+
 ### Credenciales de prueba
 
 Si importaste la base de datos incluida encontrarás estos usuarios iniciales:

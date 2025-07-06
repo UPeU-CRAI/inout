@@ -15,7 +15,7 @@ class PersonalizedGreeting
 
     public function __construct()
     {
-        $credentials = getenv('TTS_CREDENTIALS_PATH');
+        $credentials = getenv('GOOGLE_TTS_CREDENTIALS_PATH');
         if ($credentials && file_exists($credentials)) {
             putenv('GOOGLE_APPLICATION_CREDENTIALS=' . $credentials);
             try {
@@ -43,14 +43,14 @@ class PersonalizedGreeting
         try {
             $input = new SynthesisInput(['text' => $voiceText]);
 
-            $languageCode = getenv('TTS_LANGUAGE_CODE') ?: 'es-ES';
+            $languageCode = getenv('GOOGLE_TTS_LANGUAGE_CODE') ?: 'es-ES';
 
             // Voz según género:
             $gender = strtoupper($gender);
             if ($gender === 'F') {
-                $voiceName = getenv('TTS_VOICE_B') ?: getenv('TTS_VOICE') ?: 'es-ES-Wavenet-B';
+                $voiceName = getenv('GOOGLE_TTS_VOICE_B') ?: getenv('GOOGLE_TTS_VOICE') ?: 'es-ES-Wavenet-B';
             } else {
-                $voiceName = getenv('TTS_VOICE_A') ?: getenv('TTS_VOICE') ?: 'es-ES-Wavenet-A';
+                $voiceName = getenv('GOOGLE_TTS_VOICE_A') ?: getenv('GOOGLE_TTS_VOICE') ?: 'es-ES-Wavenet-A';
             }
 
             $voice = new VoiceSelectionParams([

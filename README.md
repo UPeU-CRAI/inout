@@ -18,6 +18,7 @@ Esta versión (`v1.3.2`) incorpora un panel de *Novedades bibliográficas* que c
 * Mensajes de saludo dinámicos y personalizados según rol y género.
 * Avisos automáticos cuando la cuenta de un usuario está expirada.
 * Síntesis de voz con Google Cloud Text-to-Speech para mensajes audibles.
+* El audio se genera directamente desde PHP sin utilizar un script `tts.php`.
 * Configuración flexible mediante variables de entorno.
 * Consultas preparadas y sanitización de entradas para mayor seguridad.
 * El campo de escaneo mantiene el foco automáticamente en el dashboard.
@@ -39,7 +40,9 @@ Para desplegar la aplicación sigue este resumen. Si necesitas un paso a paso m�
 2. **Clonar el repositorio** en el directorio deseado del servidor.
 3. **Importar la base de datos** ejecutando `DB/inout.sql` sobre tu instancia de MariaDB/MySQL.
 4. **Configurar la conexión** copiando el archivo `.env.example` a `.env` y completando tus credenciales de base de datos.
-   Si deseas utilizar la síntesis de voz, proporciona también la ruta del JSON de Google en `TTS_CREDENTIALS_PATH`.
+   Si deseas utilizar la síntesis de voz, define el proveedor en `TTS_PROVIDER` (`google` o `azure`).
+   Para Google especifica la ruta del JSON de credenciales en `GOOGLE_TTS_CREDENTIALS_PATH`.
+   Para Azure configura `SPEECH_KEY` y `SPEECH_REGION`.
    Para mostrar las carátulas en "New Arrivals" especifica la dirección base de tu OPAC en `KOHA_OPAC_URL`.
    Asegúrate de que el archivo `.env` esté ubicado en la raíz del proyecto y que
    dicha variable tenga un valor válido; si está vacía no se cargará la URL.

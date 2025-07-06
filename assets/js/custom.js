@@ -43,14 +43,3 @@ function attachAudioRedirect() {
   setTimeout(cleanupAndRedirect, 10000);
 }
 
-function playTTS(text) {
-  $.ajax({
-    url: 'tts.php',
-    method: 'POST',
-    data: { text: text },
-    success: function (html) {
-      $('body').append(html);
-      attachAudioRedirect();
-    }
-  });
-}

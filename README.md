@@ -18,6 +18,7 @@ Esta versión (`v1.3.2`) incorpora un panel de *Novedades bibliográficas* que c
 * Mensajes de saludo dinámicos y personalizados según rol y género.
 * Avisos automáticos cuando la cuenta de un usuario está expirada.
 * Síntesis de voz con Google Cloud Text-to-Speech para mensajes audibles.
+* El audio se genera directamente desde PHP sin utilizar un script `tts.php`.
 * Configuración flexible mediante variables de entorno.
 * Consultas preparadas y sanitización de entradas para mayor seguridad.
 * El campo de escaneo mantiene el foco automáticamente en el dashboard.

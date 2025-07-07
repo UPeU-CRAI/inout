@@ -108,8 +108,8 @@ class MessageHandler {
                 "Le esperamos nuevamente, {nombre}. Gestión finalizada.",
             ],
             'VISITA' => [
-                "{nombre}, Gracias por preferirnos. Esperamos verle nuevamente.",
-                "{nombre}, Salida registrada como visitante. ¡Buen camino!",
+                "{nombre}. Gracias por preferirnos. Esperamos verle nuevamente.",
+                "{nombre}. Salida registrada como visitante. ¡Buen camino!",
             ],
             'ESTUDI' => [
                 "Hasta luego, {nombre}. ¡Sigue adelante con tus estudios!",

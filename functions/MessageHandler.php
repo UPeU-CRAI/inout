@@ -66,7 +66,7 @@ class MessageHandler {
             ],
             'VISITA' => [
                 "{greeting}, {nombre}. Esperamos que disfrute plenamente su visita.",
-                "{greeting}. {nombre}. Ha sido registrado como visitante. ¡Bienvenido!",
+                "{greeting}, {nombre}. Ha sido registrado como visitante. ¡Bienvenido!",
                 "{greeting}, {nombre}. Gracias por elegirnos.",
             ],
             'ESTUDI' => [

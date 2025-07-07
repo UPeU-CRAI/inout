@@ -50,9 +50,9 @@ class MessageHandler {
                 "{greeting}, {prof_title} {nombre}. ¡Siempre es un honor recibirle!",
             ],
             'INVESTI' => [
-                "{greeting}, investigador{gender_suffix} {nombre}. Le deseamos descubrimientos fructíferos.",
+                "{greeting}, investigador {nombre}. Le deseamos descubrimientos fructíferos.",
                 "{greeting}, {nombre}. El CRAI está a su disposición para avanzar en su investigación.",
-                "{greeting}, investigador{gender_suffix} {nombre}. ¡Las mejores ideas surgen aquí!",
+                "{greeting}, investigador {nombre}. ¡Las mejores ideas surgen aquí!",
             ],
             'STAFF' => [
                 "{greeting}, colega {nombre}. Gracias por formar parte de este gran equipo.",
@@ -60,14 +60,14 @@ class MessageHandler {
                 "{greeting}, {nombre}. ¡A trabajar con energía positiva!",
             ],
             'ADMIN' => [
-                "{greeting}, administrador{gender_suffix} {nombre}. Todo está listo para gestionar un gran día.",
+                "{greeting}, administrador {nombre}. Todo está listo para gestionar un gran día.",
                 "{greeting}, {nombre}. Le damos la bienvenida al panel de administración.",
-                "{greeting}, administrador{gender_suffix} {nombre}. Comencemos con éxito la jornada.",
+                "{greeting}, administrador {nombre}. Comencemos con éxito la jornada.",
             ],
             'VISITA' => [
-                "{greeting}, visitante. Esperamos que disfrute plenamente su visita.",
-                "{greeting}. Ha sido registrado como visitante. ¡Bienvenido!",
-                "{greeting}, visitante. Gracias por elegirnos.",
+                "{greeting}, {nombre}. Esperamos que disfrute plenamente su visita.",
+                "{greeting}. {nombre}. Ha sido registrado como visitante. ¡Bienvenido!",
+                "{greeting}, {nombre}. Gracias por elegirnos.",
             ],
             'ESTUDI' => [
                 "{greeting}, {nombre}. El CRAI está a tu servicio para aprender y crecer.",
@@ -96,8 +96,8 @@ class MessageHandler {
                 "Que tenga un excelente resto del día, {prof_title} {nombre}.",
             ],
             'INVESTI' => [
-                "Gracias por su visita, investigador{gender_suffix} {nombre}. Le esperamos pronto.",
-                "Salida anotada. ¡Siga adelante con sus descubrimientos, {nombre}!",
+                "Gracias por su visita, investigador {nombre}. Le esperamos pronto.",
+                "{nombre}!, Salida anotada. ¡Siga adelante con sus descubrimientos.",
             ],
             'STAFF' => [
                 "¡Buen trabajo hoy, {nombre}! Que tenga un merecido descanso.",
@@ -108,8 +108,8 @@ class MessageHandler {
                 "Le esperamos nuevamente, {nombre}. Gestión finalizada.",
             ],
             'VISITA' => [
-                "Gracias por preferirnos. Esperamos verle nuevamente.",
-                "Salida registrada como visitante. ¡Buen camino!",
+                "{nombre}, Gracias por preferirnos. Esperamos verle nuevamente.",
+                "{nombre}, Salida registrada como visitante. ¡Buen camino!",
             ],
             'ESTUDI' => [
                 "Hasta luego, {nombre}. ¡Sigue adelante con tus estudios!",
